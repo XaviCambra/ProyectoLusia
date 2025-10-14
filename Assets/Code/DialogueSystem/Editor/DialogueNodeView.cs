@@ -38,16 +38,17 @@ public class DialogueNodeView : Node
         inputContainer.Add(_input);
 
         mainContainer.Add(new TextField().BindText("Nombre", Data.speakerName, v => Data.speakerName = v));
-        mainContainer.Add(new TextField().BindText("Nombre", Data.speakerName, v => Data.speakerName = v));
-        mainContainer.Add(new EnumField().BindEnum("Posición", Data.anchor, (CharacterAnchor a) => Data.anchor = a));
-        var customPos = new Vector2Field("Custom") { value = Data.customAnchor };
-        customPos.RegisterValueChangedCallback(e => {
-            var v = e.newValue;
-            v.x = Mathf.Clamp01(v.x);
-            v.y = Mathf.Clamp01(v.y);
-            Data.customAnchor = v;
-            customPos.SetValueWithoutNotify(v);
-        });
+        mainContainer.Add(new TextField().BindText("Texto", Data.lineText, v => Data.lineText = v));
+        //mainContainer.Add(new EnumField().BindEnum("Posición", Data.anchor, (CharacterAnchor a) => Data.anchor = a));
+        //var customPos = new Vector2Field("Custom") { value = Data.customAnchor };
+        //customPos.RegisterValueChangedCallback(e => {
+        //    var v = e.newValue;
+        //    v.x = Mathf.Clamp01(v.x);
+        //    v.y = Mathf.Clamp01(v.y);
+        //    Data.customAnchor = v;
+        //    customPos.SetValueWithoutNotify(v);
+        //});
+        mainContainer.Add(new Toggle().BindToggle("Es nodo inicial", Data.isStart, v => { Data.isStart = v; RebuildOutputs(); }));
         mainContainer.Add(new Toggle().BindToggle("Es nodo de elección", Data.isChoiceNode, v => { Data.isChoiceNode = v; RebuildOutputs(); }));
         mainContainer.Add(new TextField().BindText("Event Key", Data.eventKey, v => Data.eventKey = v));
 

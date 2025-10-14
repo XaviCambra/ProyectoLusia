@@ -1,0 +1,127 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ab21e18d53040c43b9c61e72ca1d3af, type: 3}
+  m_Name: Test3Prueba
+  m_EditorClassIdentifier: 
+  nodes:
+  - guid: c8e0a575-95f3-421d-9a7b-2c219b8dea0c
+    speakerName: Pipo
+    lineText: Tu madre
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    isStart: 0
+    nodeRect:
+      serializedVersion: 2
+      x: 231
+      y: 457
+      width: 260
+      height: 200
+  - guid: fa18e34e-54c6-425d-8ab4-913147dbd943
+    speakerName: Pipo
+    lineText: Lo siento tio
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    isStart: 0
+    nodeRect:
+      serializedVersion: 2
+      x: 1118
+      y: 248
+      width: 260
+      height: 200
+  - guid: a596effc-da5c-4062-92af-62755d08c958
+    speakerName: Pipo
+    lineText: TU ABUELA
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    isStart: 0
+    nodeRect:
+      serializedVersion: 2
+      x: 1142
+      y: 548
+      width: 260
+      height: 200
+  - guid: fae40c65-dd87-458b-93ae-77b3b89087a1
+    speakerName: Pepe
+    lineText: Pos...
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 1
+    choiceCount: 2
+    choices:
+    - choiceText: Esta muerta
+      portName: 415532
+    - choiceText: La tuya mas
+      portName: 4ff0a0
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    isStart: 0
+    nodeRect:
+      serializedVersion: 2
+      x: 612
+      y: 363
+      width: 320
+      height: 243
+  - guid: 5dd786a2-f750-4f81-a6d5-01c370c8e475
+    speakerName: Pepe
+    lineText: Ereh feo
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    isStart: 1
+    nodeRect:
+      serializedVersion: 2
+      x: 31
+      y: 128
+      width: 260
+      height: 200
+  edges:
+  - fromNodeGUID: c8e0a575-95f3-421d-9a7b-2c219b8dea0c
+    fromPortName: Next
+    toNodeGUID: fae40c65-dd87-458b-93ae-77b3b89087a1
+  - fromNodeGUID: fae40c65-dd87-458b-93ae-77b3b89087a1
+    fromPortName: 415532
+    toNodeGUID: fa18e34e-54c6-425d-8ab4-913147dbd943
+  - fromNodeGUID: fae40c65-dd87-458b-93ae-77b3b89087a1
+    fromPortName: 4ff0a0
+    toNodeGUID: a596effc-da5c-4062-92af-62755d08c958
+  - fromNodeGUID: 5dd786a2-f750-4f81-a6d5-01c370c8e475
+    fromPortName: Next
+    toNodeGUID: c8e0a575-95f3-421d-9a7b-2c219b8dea0c

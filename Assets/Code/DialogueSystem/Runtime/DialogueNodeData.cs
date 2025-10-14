@@ -31,6 +31,9 @@ public class DialogueNodeData
     public string eventKey;
     public UnityEvent onEnter;
 
+    [Tooltip("Si está activo, este nodo se usará como punto de inicio del diálogo.")]
+    public bool isStart = false;
+
     [Header("Posición en el editor")]
     public Rect nodeRect = new Rect(100, 100, 320, 180);
 

@@ -12,5 +12,71 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ab21e18d53040c43b9c61e72ca1d3af, type: 3}
   m_Name: Test1
   m_EditorClassIdentifier: 
-  nodes: []
-  edges: []
+  nodes:
+  - guid: d0d9b31d-fc7e-4db0-84d6-308c9d4dbc8c
+    speakerName: aefaefaef
+    lineText: 
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 1
+    choiceCount: 3
+    choices:
+    - choiceText: Opcion
+      portName: 98101f
+    - choiceText: Opcion
+      portName: 76fecc
+    - choiceText: Opcion
+      portName: 705c0f
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    nodeRect:
+      serializedVersion: 2
+      x: 167
+      y: 249
+      width: 307
+      height: 249
+  - guid: 7ab1f96f-6d7e-4a85-a57d-0f9ce7c5ebc7
+    speakerName: 
+    lineText: 
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    nodeRect:
+      serializedVersion: 2
+      x: 582
+      y: 278
+      width: 260
+      height: 182
+  - guid: c0edf333-c221-4322-8f2b-26b38e2f0a0f
+    speakerName: 
+    lineText: 
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    nodeRect:
+      serializedVersion: 2
+      x: 905
+      y: 234
+      width: 260
+      height: 182
+  edges:
+  - fromNodeGUID: d0d9b31d-fc7e-4db0-84d6-308c9d4dbc8c
+    fromPortName: 98101f
+    toNodeGUID: 7ab1f96f-6d7e-4a85-a57d-0f9ce7c5ebc7
+  - fromNodeGUID: 7ab1f96f-6d7e-4a85-a57d-0f9ce7c5ebc7
+    fromPortName: Next
+    toNodeGUID: c0edf333-c221-4322-8f2b-26b38e2f0a0f
