@@ -6,7 +6,6 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Dialogue/Profiles/Character Profile", fileName = "NewCharacterProfile")]
 public class CharacterProfile : ScriptableObject
 {
-    [SerializeField, Tooltip("ID inmutable para referenciar este perfil desde otros sistemas.")]
     private string profileId;
 
     [Header("Datos")]

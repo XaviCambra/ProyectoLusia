@@ -10,10 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6716407c336cca4a8ccc456f7df9c26, type: 3}
-  m_Name: CharacterProfiles
+  m_Name: Absurdus
   m_EditorClassIdentifier: 
-  profiles:
-  - {fileID: 11400000, guid: 749ac4cf892bcae4e928c3f1d042fe0f, type: 2}
-  - {fileID: 11400000, guid: 483fcd38de93ead49b7070a42af4189f, type: 2}
-  - {fileID: 11400000, guid: 9aaaeb30d9702d942a3ebc7c5b3d5396, type: 2}
-  - {fileID: 11400000, guid: 179dfbba364543c4d899a95ac5e113f2, type: 2}
+  profiles: []
