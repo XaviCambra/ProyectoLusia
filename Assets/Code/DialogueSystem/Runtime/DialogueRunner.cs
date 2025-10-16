@@ -29,8 +29,20 @@ public class DialogueRunner : MonoBehaviour
     private DialogueNodeData _current;
     private bool _waitingChoice;
 
+    // Profile character service
+    private ICharacterProfileService _profiles;
+
+    // Referencias UI (ajústalas a tu caso real)
+    [Header("UI (opcional)")]
+    //[SerializeField] private Text nameText;        // o TMP_Text si usas TMP
+    [SerializeField] private Image portraitImage;  // si tienes retrato en UI
+
     private void Awake()
     {
+        // 1) Resolver servicio de perfiles primero
+        _profiles = FindObjectOfType<CharacterProfileService>();
+
+        // 2) Validar y arrancar diálogo
         if (!ValidateGraph()) return;
         BuildLookups();
         StartDialogue();
@@ -108,6 +120,42 @@ public class DialogueRunner : MonoBehaviour
         }
     }
 
+    private void ApplyNodeToUI(DialogueNodeData node)
+    {
+        if (portraitImage == null) return; // si no usas retratos en UI, no hacemos nada
+        Debug.LogWarning("HAY PORTRAITIMAGE");
+        Sprite sprite = null;
+
+        if (node != null && _profiles != null && !string.IsNullOrEmpty(node.profileId))
+        {
+            Debug.LogWarning("PASA LOS VERIFICADORES");
+
+            var profile = _profiles.GetById(node.profileId);
+            if (profile != null)
+            {
+                // 1) retrato pedido explícito por el nodo
+                if (!string.IsNullOrEmpty(node.portraitKey))
+                    sprite = profile.GetPortraitByKey(node.portraitKey);
+
+                // 2) si no hay, intenta "Default"
+                if (sprite == null)
+                    sprite = profile.GetPortraitByKey("Default");
+
+                // 3) si sigue sin haber, coge el primero que exista
+                if (sprite == null)
+                {
+                    var firstKey = profile.GetPortraitKeys().FirstOrDefault();
+                    if (!string.IsNullOrEmpty(firstKey))
+                        sprite = profile.GetPortraitByKey(firstKey);
+                }
+            }
+        }
+
+        portraitImage.sprite = sprite;
+        portraitImage.enabled = sprite != null; // oculta la imagen si no hay sprite
+    }
+
+
     private void StartDialogue()
     {
         DialogueNodeData start = null;
@@ -147,6 +195,8 @@ public class DialogueRunner : MonoBehaviour
 
         if (speakerText) speakerText.text = GetSpeakerName(_current);
         if (bodyText) bodyText.text = GetNodeText(_current);
+
+        ApplyNodeToUI(_current);
 
         if (_current.isChoiceNode)
             ShowChoices(_current);
@@ -221,6 +271,13 @@ public class DialogueRunner : MonoBehaviour
         HideChoices();
         if (speakerText) speakerText.text = "";
         if (bodyText) bodyText.text = "<i>(Fin del diálogo)</i>";
+
+        if (portraitImage)
+        {
+            portraitImage.sprite = null;
+            portraitImage.enabled = false;
+        }
+
         _current = null;
         _waitingChoice = false;
         OnDialogueEnd?.Invoke();
@@ -232,6 +289,19 @@ public class DialogueRunner : MonoBehaviour
 
     private static string GetSpeakerName(object node)
         => TryGetStringField(node, "speakerName", "speaker", "character", "name");
+    //private string GetSpeakerName(DialogueNodeData node)
+    //{
+    //    if (node == null) return string.Empty;
+
+    //    if (_profiles != null && !string.IsNullOrEmpty(node.profileId))
+    //    {
+    //        var profile = _profiles.GetById(node.profileId);
+    //        if (profile != null && !string.IsNullOrEmpty(profile.displayName))
+    //            return profile.displayName; // prioriza el nombre del perfil
+    //    }
+
+    //    return node.speakerName; // fallback al del nodo
+    //}
 
     private static string TryGetStringField(object obj, params string[] names)
     {

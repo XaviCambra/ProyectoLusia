@@ -37,6 +37,13 @@ public class DialogueNodeData
     [Header("Posición en el editor")]
     public Rect nodeRect = new Rect(100, 100, 320, 180);
 
+    // --- NUEVO: referencia lógica a un perfil ---
+    [Header("Perfil (opcional)")]
+    [Tooltip("ID del CharacterProfile almacenado en la base de datos")]
+    public string profileId;     // string llano: sin referencia directa al asset
+    [Tooltip("Clave del retrato a usar dentro del perfil (PortraitEntry.key)")]
+    public string portraitKey;
+
     public DialogueNodeData()
     {
         guid = System.Guid.NewGuid().ToString();

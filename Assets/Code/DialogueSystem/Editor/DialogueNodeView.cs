@@ -3,8 +3,13 @@
 using System;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
+using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
+
+using EditorObjectField = UnityEditor.UIElements.ObjectField;
+
 
 public class DialogueNodeView : Node
 {
@@ -15,6 +20,7 @@ public class DialogueNodeView : Node
 
     private Port _input;
     private bool _didFirstAutosize = false;
+
 
     public DialogueNodeView(DialogueNodeData data)
     {
@@ -34,6 +40,26 @@ public class DialogueNodeView : Node
         style.maxWidth = MaxSize.x;
         style.maxHeight = MaxSize.y;
 
+        // ---------- PERFIL (SO) ----------
+        var profileField = new EditorObjectField("Perfil (SO)")
+        {
+            objectType = typeof(CharacterProfile),
+            allowSceneObjects = false // ahora sí compila
+        };
+        profileField.value = FindProfileById(Data.profileId);
+        profileField.RegisterValueChangedCallback(e =>
+        {
+            var so = e.newValue as CharacterProfile;
+            Data.profileId = so ? so.ProfileId : null;
+        });
+        mainContainer.Add(profileField);
+
+        // ---------- PORTRAIT KEY ----------
+        var portraitKeyField = new TextField("Retrato (key)") { value = Data.portraitKey };
+        portraitKeyField.RegisterValueChangedCallback(e => Data.portraitKey = e.newValue);
+        mainContainer.Add(portraitKeyField);
+
+        // ---------- Resto de tu UI ----------
         _input = PortUtils.CreatePort(this, Direction.Input, Port.Capacity.Multi, "In");
         inputContainer.Add(_input);
 
@@ -67,6 +93,21 @@ public class DialogueNodeView : Node
         RegisterCallback<GeometryChangedEvent>(OnGeometryChangedOnce);
         SetPosition(Data.nodeRect);
         tooltip = $"GUID: {Data.GUID}";
+    }
+
+    // --- Helper para resolver el asset desde el ID guardado en el nodo ---
+    private CharacterProfile FindProfileById(string id)
+    {
+        if (string.IsNullOrEmpty(id)) return null;
+        var guids = AssetDatabase.FindAssets("t:CharacterProfile");
+        foreach (var g in guids)
+        {
+            var path = AssetDatabase.GUIDToAssetPath(g);
+            var p = AssetDatabase.LoadAssetAtPath<CharacterProfile>(path);
+            if (p != null && p.ProfileId == id)
+                return p;
+        }
+        return null;
     }
 
     private void OnGeometryChangedOnce(GeometryChangedEvent evt)

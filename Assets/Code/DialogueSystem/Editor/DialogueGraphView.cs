@@ -18,7 +18,7 @@ public class DialogueGraphView : GraphView
         this.AddManipulator(new ContentDragger());
         this.AddManipulator(new SelectionDragger());
         this.AddManipulator(new RectangleSelector());
-
+        
         var grid = new GridBackground();
         Insert(0, grid);
         grid.StretchToParentSize();

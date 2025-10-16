@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodes:
   - guid: d0d9b31d-fc7e-4db0-84d6-308c9d4dbc8c
-    speakerName: aefaefaef
-    lineText: 
+    speakerName: Pitbull
+    lineText: Esa jebita...
     anchor: 0
     customAnchor: {x: 0, y: 0}
-    isChoiceNode: 1
+    isChoiceNode: 0
     choiceCount: 3
     choices:
     - choiceText: Opcion
@@ -31,15 +31,18 @@ MonoBehaviour:
     onEnter:
       m_PersistentCalls:
         m_Calls: []
+    isStart: 1
     nodeRect:
       serializedVersion: 2
-      x: 167
+      x: 166
       y: 249
-      width: 307
-      height: 249
+      width: 320
+      height: 239
+    profileId: f63d2202c866414386667d7d92b5bbc8
+    portraitKey: CalientePapi
   - guid: 7ab1f96f-6d7e-4a85-a57d-0f9ce7c5ebc7
-    speakerName: 
-    lineText: 
+    speakerName: Pitbull
+    lineText: Tiene tremendo
     anchor: 0
     customAnchor: {x: 0, y: 0}
     isChoiceNode: 0
@@ -49,34 +52,40 @@ MonoBehaviour:
     onEnter:
       m_PersistentCalls:
         m_Calls: []
+    isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 582
-      y: 278
-      width: 260
-      height: 182
-  - guid: c0edf333-c221-4322-8f2b-26b38e2f0a0f
-    speakerName: 
-    lineText: 
-    anchor: 0
-    customAnchor: {x: 0, y: 0}
-    isChoiceNode: 0
-    choiceCount: 2
-    choices: []
-    eventKey: 
-    onEnter:
-      m_PersistentCalls:
-        m_Calls: []
-    nodeRect:
-      serializedVersion: 2
-      x: 905
+      x: 550
       y: 234
-      width: 260
-      height: 182
+      width: 320
+      height: 239
+    profileId: f63d2202c866414386667d7d92b5bbc8
+    portraitKey: CalientePapi
+  - guid: c0edf333-c221-4322-8f2b-26b38e2f0a0f
+    speakerName: Pitbull Ebullicion
+    lineText: CULOOOOOO
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    isStart: 0
+    nodeRect:
+      serializedVersion: 2
+      x: 989
+      y: 270
+      width: 320
+      height: 239
+    profileId: f63d2202c866414386667d7d92b5bbc8
+    portraitKey: SoyLaEvolucionBigBigBoss
   edges:
-  - fromNodeGUID: d0d9b31d-fc7e-4db0-84d6-308c9d4dbc8c
-    fromPortName: 98101f
-    toNodeGUID: 7ab1f96f-6d7e-4a85-a57d-0f9ce7c5ebc7
   - fromNodeGUID: 7ab1f96f-6d7e-4a85-a57d-0f9ce7c5ebc7
     fromPortName: Next
     toNodeGUID: c0edf333-c221-4322-8f2b-26b38e2f0a0f
+  - fromNodeGUID: d0d9b31d-fc7e-4db0-84d6-308c9d4dbc8c
+    fromPortName: Next
+    toNodeGUID: 7ab1f96f-6d7e-4a85-a57d-0f9ce7c5ebc7
