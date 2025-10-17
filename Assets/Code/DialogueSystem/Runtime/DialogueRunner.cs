@@ -40,6 +40,7 @@ public class DialogueRunner : MonoBehaviour
     private void Awake()
     {
         // 1) Resolver servicio de perfiles primero
+        // REVISAR
         _profiles = FindObjectOfType<CharacterProfileService>();
 
         // 2) Validar y arrancar diálogo
