@@ -235,13 +235,6 @@ public class CharacterProfilesWindow : EditorWindow
         nameLbl.style.unityTextAlign = TextAnchor.MiddleCenter;
         card.Add(nameLbl);
 
-        if (!string.IsNullOrEmpty(p.pseudonym))
-        {
-            var pseudoLbl = new Label(p.pseudonym);
-            pseudoLbl.style.opacity = 0.75f;
-            pseudoLbl.style.unityTextAlign = TextAnchor.MiddleCenter;
-            card.Add(pseudoLbl);
-        }
         AddSpacer(card, 8);
 
         var btnRow = new VisualElement();

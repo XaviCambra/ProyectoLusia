@@ -10,7 +10,6 @@ public class CharacterProfile : ScriptableObject
 
     [Header("Datos")]
     public string displayName;
-    public string pseudonym;
 
     [Header("Retratos")]
     public List<PortraitEntry> portraits = new();
@@ -21,7 +20,7 @@ public class CharacterProfile : ScriptableObject
         // Genera un ID si está vacío (solo una vez)
         if (string.IsNullOrEmpty(profileId))
         {
-            profileId = System.Guid.NewGuid().ToString("N");
+            profileId = Guid.NewGuid().ToString("N");
             UnityEditor.EditorUtility.SetDirty(this);
         }
     }

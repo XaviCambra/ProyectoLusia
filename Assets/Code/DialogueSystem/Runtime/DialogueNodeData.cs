@@ -11,7 +11,8 @@ using UnityEngine.Events;
 [Serializable]
 public class DialogueNodeData
 {
-    [SerializeField] private string guid;  // Identificador único (no editable)
+    // [SerializeField] private string guid;  // Identificador único (no editable)
+    private string guid;  // Identificador único (no editable)
     public string GUID => guid;
 
     [Header("Contenido del diálogo")]
