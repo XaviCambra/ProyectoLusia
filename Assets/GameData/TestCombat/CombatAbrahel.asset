@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 970b747eee3277942b77604cdadc1a8b, type: 3}
+  m_Name: CombatAbrahel
+  m_EditorClassIdentifier: 
+  m_CharacterProfile: {fileID: 11400000, guid: b18658f0d860be847945d3af4af40229, type: 2}
+  m_Vitalidad: 0
+  m_Fuerza: 0
+  m_Resistencia: 0
+  m_Velocidad: 0
+  m_Suerte: 0
+  m_VitalidadPorNivel: 0
+  m_FuerzaPorNivel: 0
+  m_ResistenciaPorNivel: 0
+  m_VelocidadPorNivel: 0
+  m_SuertePorNivel: 0
+  m_CombatAbilities: []
