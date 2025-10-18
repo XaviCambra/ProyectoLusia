@@ -25,8 +25,9 @@ public static class DialogueGraphSaveUtility
 
         var nodes = new List<DialogueNodeData>();
         var edges = new List<EdgeData>();
+        var frames = view.CollectBackdropFrames(); // <- ya lo recoges
 
-        // ✅ Nodos
+        // Nodos
         foreach (var node in view.nodes.ToList())
         {
             if (node is DialogueNodeView nodeView)
@@ -36,7 +37,7 @@ public static class DialogueGraphSaveUtility
             }
         }
 
-        // ✅ Conexiones
+        // Conexiones
         foreach (var e in view.edges.ToList())
         {
             if (e.output?.node is DialogueNodeView fromNode &&
@@ -52,12 +53,15 @@ public static class DialogueGraphSaveUtility
         }
 
         asset.SetData(nodes, edges);
+        asset.SetFrames(frames); // <- **IMPRESCINDIBLE** para persistir marcos
+
 #if UNITY_EDITOR
         EditorUtility.SetDirty(asset);
         AssetDatabase.SaveAssets();
 #endif
-        Debug.Log($"[DialogueGraphSaveUtility] Guardado: {nodes.Count} nodos, {edges.Count} conexiones.");
+        Debug.Log($"[DialogueGraphSaveUtility] Guardado: {nodes.Count} nodos, {edges.Count} conexiones, {frames.Count} marcos.");
     }
+
 
 
     /// <summary>
@@ -71,14 +75,16 @@ public static class DialogueGraphSaveUtility
             return;
         }
 
-        // Limpia contenido actual (nodos + edges) de forma explícita
-        var toRemove = new System.Collections.Generic.List<GraphElement>();
+        // Limpiar TODO lo visual: edges + nodes + frames
+        var toRemove = new List<GraphElement>();
         toRemove.AddRange(view.edges.ToList());
         toRemove.AddRange(view.nodes.ToList());
+        // NUEVO: también marcos existentes
+        toRemove.AddRange(view.graphElements.Where(ge => ge is BackdropFrameView));
         if (toRemove.Count > 0) view.DeleteElements(toRemove);
         view.ClearSelection();
 
-        // Crea NodeViews, pero difiere SetPosition hasta después del layout
+        // ---- (tu lógica de crear NodeViews y Edges sigue igual) ----
         var guidToView = new Dictionary<string, DialogueNodeView>();
         var pendingPositions = new List<(DialogueNodeView view, Rect rect)>();
 
@@ -87,17 +93,14 @@ public static class DialogueGraphSaveUtility
             var nodeView = new DialogueNodeView(n);
             view.AddElement(nodeView);
 
-            // Normaliza por si w/h vienen 0 desde un asset antiguo
             var r = n.nodeRect;
             if (r.width <= 1f || r.height <= 1f)
                 r = new Rect(r.x, r.y, 320f, 180f);
 
-            // NO setear aquí; se setea tras el layout
             pendingPositions.Add((nodeView, r));
             guidToView[n.GUID] = nodeView;
         }
 
-        // Reconstruye edges
         foreach (var ed in asset.Edges)
         {
             if (!guidToView.TryGetValue(ed.fromNodeGUID, out var from)) continue;
@@ -111,18 +114,20 @@ public static class DialogueGraphSaveUtility
             view.AddElement(edge);
         }
 
-        // Posiciona nodos tras el primer layout para que no se “reapilen”
+        // Posicionar nodos tras layout
         view.schedule.Execute(() =>
         {
             foreach (var (nv, rect) in pendingPositions)
                 nv.SetPosition(rect);
-
-            // opcional: encuadrar todo
-            // view.FrameAll();
         }).ExecuteLater(0);
 
-        Debug.Log($"[DialogueGraphSaveUtility] Cargado: {asset.Nodes.Count} nodos, {asset.Edges.Count} conexiones.");
+        // NUEVO: cargar marcos desde el asset y mandarlos al fondo
+        view.LoadBackdropFrames(asset.Frames);
+        view.EnsureFramesBehindNodes();
+
+        Debug.Log($"[DialogueGraphSaveUtility] Cargado: {asset.Nodes.Count} nodos, {asset.Edges.Count} conexiones, {asset.Frames?.Count ?? 0} marcos.");
     }
+
 
     /// <summary>
     /// Busca un puerto de salida por nombre en un DialogueNodeView.

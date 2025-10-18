@@ -9,6 +9,7 @@ public class DialogueGraphEditorWindow : EditorWindow
 {
     private DialogueGraphView _graphView;
     private DialogueGraph _asset;
+    private bool _isLoading = false;   // <-- usado para envolver cargas
 
     [MenuItem("Window/Dialogue/Dialogue Graph Editor")]
     public static void Open()
@@ -38,7 +39,7 @@ public class DialogueGraphEditorWindow : EditorWindow
     {
         var toolbar = new Toolbar();
 
-        // Selector del asset (¡este debe estar visible!)
+        // Selector del asset
         var assetField = new ObjectField("Graph")
         {
             objectType = typeof(DialogueGraph),
@@ -49,19 +50,38 @@ public class DialogueGraphEditorWindow : EditorWindow
             _asset = evt.newValue as DialogueGraph;
             if (_asset != null)
             {
+                _isLoading = true;
                 DialogueGraphSaveUtility.LoadGraph(_graphView, _asset);
+                // Asegurar que los marcos (si existen) se envíen detrás de los nodos
+                _graphView.EnsureFramesBehindNodes();
+                _isLoading = false;
             }
         });
-        toolbar.Add(assetField); // <- importante: añade el ObjectField a la toolbar
+        toolbar.Add(assetField);
+
+        // ---- NUEVO: crear un Backdrop/Marco centrado en la vista ----
+        var btnNewFrame = new Button(() =>
+        {
+            if (_isLoading) return;
+            _graphView.CreateBackdropFrameCentered("Frame");
+            _graphView.EnsureFramesBehindNodes();
+        })
+        { text = "+ Marco" };
+        toolbar.Add(btnNewFrame);
 
         // Crear nodo nuevo
-        var btnNewNode = new Button(() => _graphView.CreateNodeAtCenter())
+        var btnNewNode = new Button(() =>
+        {
+            if (_isLoading) return;
+            _graphView.CreateNodeAtCenter();
+        })
         { text = "+ Nodo" };
         toolbar.Add(btnNewNode);
 
         // Guardar al asset (si no existe, crear uno)
         var btnSave = new Button(() =>
         {
+            if (_isLoading) return;
             if (_asset == null)
             {
                 var path = EditorUtility.SaveFilePanelInProject(
@@ -86,7 +106,12 @@ public class DialogueGraphEditorWindow : EditorWindow
         var btnLoad = new Button(() =>
         {
             if (_asset != null)
+            {
+                _isLoading = true;
                 DialogueGraphSaveUtility.LoadGraph(_graphView, _asset);
+                _graphView.EnsureFramesBehindNodes();
+                _isLoading = false;
+            }
         })
         { text = "Recargar" };
         toolbar.Add(btnLoad);
@@ -96,10 +121,7 @@ public class DialogueGraphEditorWindow : EditorWindow
 
     private void OnDisable()
     {
-        // (Opcional) auto-guardar si hay un asset asignado
-        if (_graphView != null && _asset != null)
-            DialogueGraphSaveUtility.SaveGraph(_graphView, _asset);
-
+        // ❌ Se elimina el auto-guardado para evitar sobrescrituras accidentales
         if (_graphView != null)
             rootVisualElement.Remove(_graphView);
     }

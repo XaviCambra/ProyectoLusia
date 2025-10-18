@@ -11,9 +11,25 @@ using UnityEngine.Events;
 [Serializable]
 public class DialogueNodeData
 {
-    // [SerializeField] private string guid;  // Identificador único (no editable)
-    private string guid;  // Identificador único (no editable)
+    [SerializeField, HideInInspector] private string guid;   // <- ¡serializado no tocar!
     public string GUID => guid;
+
+    // noop: forzar recompilación sin cambiar la lógica
+
+    [Header("Apariencia (Editor)")]
+    public int bgColorIndex = 0; // índice en la paleta
+    public Color bgColor = new Color(0.16f, 0.16f, 0.20f, 1f); // se mantiene para retrocompat
+
+    // Paleta fija (puedes cambiar/añadir)
+    public static readonly (string name, Color color)[] NodePalette = new (string, Color)[]
+    {
+        ("Gris",    new Color(0.16f, 0.16f, 0.20f, 1f)),
+        ("Azul",    new Color(0.18f, 0.24f, 0.32f, 1f)),
+        ("Morado",  new Color(0.22f, 0.18f, 0.30f, 1f)),
+        ("Verde",   new Color(0.20f, 0.26f, 0.20f, 1f)),
+        ("Ambar",   new Color(0.30f, 0.25f, 0.12f, 1f)),
+        ("Cian",    new Color(0.16f, 0.28f, 0.30f, 1f)),
+    };
 
     [Header("Contenido del diálogo")]
     public string speakerName;
@@ -47,7 +63,20 @@ public class DialogueNodeData
 
     public DialogueNodeData()
     {
-        guid = System.Guid.NewGuid().ToString();
+        if (string.IsNullOrEmpty(guid))
+            guid = Guid.NewGuid().ToString();
         onEnter = new UnityEvent();
+    }
+
+    public void OnBeforeSerialize()
+    {
+        if (string.IsNullOrEmpty(guid))
+            guid = Guid.NewGuid().ToString();
+    }
+
+    public void OnAfterDeserialize()
+    {
+        if (string.IsNullOrEmpty(guid))
+            guid = Guid.NewGuid().ToString();
     }
 }

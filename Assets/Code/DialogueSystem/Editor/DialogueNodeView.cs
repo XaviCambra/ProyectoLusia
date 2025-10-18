@@ -1,8 +1,10 @@
 // Editor/GraphView/DialogueNodeView.cs
 #if UNITY_EDITOR
 using System;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using EditorObjectField = UnityEditor.UIElements.ObjectField;
@@ -35,6 +37,56 @@ public class DialogueNodeView : Node
         style.minHeight = MinSize.y;
         style.maxWidth = MaxSize.x;
         style.maxHeight = MaxSize.y;
+
+       
+        var bg = Data.bgColor;
+        mainContainer.style.backgroundColor = new StyleColor(bg);
+        mainContainer.style.borderTopLeftRadius = 8;
+        mainContainer.style.borderTopRightRadius = 8;
+        mainContainer.style.borderBottomLeftRadius = 8;
+        mainContainer.style.borderBottomRightRadius = 8;
+
+        var border = new Color(0, 0, 0, 0.35f);
+        mainContainer.style.borderLeftWidth = 1;
+        mainContainer.style.borderRightWidth = 1;
+        mainContainer.style.borderTopWidth = 1;
+        mainContainer.style.borderBottomWidth = 1;
+        mainContainer.style.borderLeftColor = border;
+        mainContainer.style.borderRightColor = border;
+        mainContainer.style.borderTopColor = border;
+        mainContainer.style.borderBottomColor = border;
+
+        // === Selector fijo (dropdown) con la paleta de DialogueNodeData ===
+        var paletteNames = DialogueNodeData.NodePalette.Select(p => p.name).ToList();
+        int safeIndex = Mathf.Clamp(Data.bgColorIndex, 0, paletteNames.Count - 1);
+
+        // Sincroniza por si el asset viene con índice fuera de rango
+        Data.bgColorIndex = safeIndex;
+        Data.bgColor = DialogueNodeData.NodePalette[safeIndex].color;
+        mainContainer.style.backgroundColor = new StyleColor(Data.bgColor);
+
+        var paletteDropdown = new DropdownField("Color de fondo", paletteNames, safeIndex);
+        paletteDropdown.RegisterValueChangedCallback(e =>
+        {
+            int idx = paletteNames.IndexOf(e.newValue);
+            if (idx < 0) return;
+
+            Data.bgColorIndex = idx;
+            Data.bgColor = DialogueNodeData.NodePalette[idx].color;
+            mainContainer.style.backgroundColor = new StyleColor(Data.bgColor);
+
+            // Opcional: persistir al instante
+            // UnityEditor.EditorUtility.SetDirty(/* tu DialogueGraph SO */);
+            // AssetDatabase.SaveAssets();
+        });
+
+        mainContainer.Add(paletteDropdown);
+
+        //// Espaciado agradable
+        //mainContainer.style.paddingLeft = 8;
+        //mainContainer.style.paddingRight = 8;
+        //mainContainer.style.paddingTop = 6;
+        //mainContainer.style.paddingBottom = 8;
 
         // ---------- PERFIL (SO) ----------
         var profileField = new EditorObjectField("Perfil (SO)")

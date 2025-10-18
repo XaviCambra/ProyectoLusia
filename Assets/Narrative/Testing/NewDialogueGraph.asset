@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: NewDialogueGraph
   m_EditorClassIdentifier: 
   nodes:
-  - speakerName: Mortem
+  - guid: 7dfd1423-b0d1-4783-81c9-092cfd5b47da
+    bgColorIndex: 0
+    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
+    speakerName: 
     lineText: 
     anchor: 0
     customAnchor: {x: 0, y: 0}
@@ -24,42 +27,19 @@ MonoBehaviour:
     onEnter:
       m_PersistentCalls:
         m_Calls: []
-    isStart: 1
-    nodeRect:
-      serializedVersion: 2
-      x: 134
-      y: 457
-      width: 320
-      height: 239
-    profileId: 7e9e1a3d8fb14e17b204f6b891a21747
-    portraitKey: Happy
-  - speakerName: 
-    lineText: 
-    anchor: 0
-    customAnchor: {x: 0, y: 0}
-    isChoiceNode: 1
-    choiceCount: 3
-    choices:
-    - choiceText: 00100100004
-      portName: 944f03
-    - choiceText: 00100100004
-      portName: ee2fd4
-    - choiceText: 00100100004
-      portName: 81d46f
-    eventKey: 
-    onEnter:
-      m_PersistentCalls:
-        m_Calls: []
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 570
-      y: 303
-      width: 320
-      height: 306
+      x: 453
+      y: 234
+      width: 301
+      height: 259
     profileId: 
     portraitKey: 
-  - speakerName: 
+  - guid: c7d802e8-c711-4043-be08-ea03897c02c5
+    bgColorIndex: 0
+    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
+    speakerName: 
     lineText: 
     anchor: 0
     customAnchor: {x: 0, y: 0}
@@ -73,13 +53,16 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 971
-      y: 158
+      x: 901
+      y: 234
       width: 301
-      height: 239
+      height: 259
     profileId: 
     portraitKey: 
-  - speakerName: 
+  - guid: 9d57bc37-f817-481a-82d3-4f176e818a93
+    bgColorIndex: 2
+    bgColor: {r: 0.22, g: 0.18, b: 0.3, a: 1}
+    speakerName: 
     lineText: 
     anchor: 0
     customAnchor: {x: 0, y: 0}
@@ -93,13 +76,16 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 984
-      y: 425
+      x: 1290
+      y: 261
       width: 301
-      height: 239
+      height: 259
     profileId: 
     portraitKey: 
-  - speakerName: 
+  - guid: 17041fe6-ac61-41ce-ab5f-e2c113c572a9
+    bgColorIndex: 0
+    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
+    speakerName: 
     lineText: 
     anchor: 0
     customAnchor: {x: 0, y: 0}
@@ -113,45 +99,19 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 984
-      y: 696
+      x: 1873
+      y: 234
       width: 301
-      height: 239
-    profileId: 
-    portraitKey: 
-  - speakerName: 001111 + 000412
-    lineText: 
-    anchor: 0
-    customAnchor: {x: 0, y: 0}
-    isChoiceNode: 0
-    choiceCount: 2
-    choices: []
-    eventKey: 
-    onEnter:
-      m_PersistentCalls:
-        m_Calls: []
-    isStart: 0
-    nodeRect:
-      serializedVersion: 2
-      x: 134
-      y: 158
-      width: 301
-      height: 239
+      height: 259
     profileId: 
     portraitKey: 
   edges:
-  - fromNodeGUID: f31e2dd1-5b11-4f8e-96d0-ab9583578961
+  - fromNodeGUID: 7dfd1423-b0d1-4783-81c9-092cfd5b47da
     fromPortName: Next
-    toNodeGUID: 0098a0ba-4d84-465d-a83d-7e12d81fbcb8
-  - fromNodeGUID: 17437dab-70c0-426f-bab5-a83133fabf81
+    toNodeGUID: c7d802e8-c711-4043-be08-ea03897c02c5
+  - fromNodeGUID: c7d802e8-c711-4043-be08-ea03897c02c5
     fromPortName: Next
-    toNodeGUID: 0098a0ba-4d84-465d-a83d-7e12d81fbcb8
-  - fromNodeGUID: 0098a0ba-4d84-465d-a83d-7e12d81fbcb8
-    fromPortName: 944f03
-    toNodeGUID: 74168733-a7d3-4ea9-9de0-4d8bae0758d8
-  - fromNodeGUID: 0098a0ba-4d84-465d-a83d-7e12d81fbcb8
-    fromPortName: ee2fd4
-    toNodeGUID: 8dbe6abe-e94f-4f73-8bea-9f393e025f77
-  - fromNodeGUID: 0098a0ba-4d84-465d-a83d-7e12d81fbcb8
-    fromPortName: 81d46f
-    toNodeGUID: 408e11a8-964c-4b5f-8d89-17a3d5afd432
+    toNodeGUID: 9d57bc37-f817-481a-82d3-4f176e818a93
+  - fromNodeGUID: 9d57bc37-f817-481a-82d3-4f176e818a93
+    fromPortName: Next
+    toNodeGUID: 17041fe6-ac61-41ce-ab5f-e2c113c572a9
