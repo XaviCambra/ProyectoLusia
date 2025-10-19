@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbd023dbc88fe124899e717fd6c638db, type: 3}
+  m_Name: TypewriterProfile
+  m_EditorClassIdentifier: 
+  secondsPerChar: 0.0754
+  globalSpeed: 1
+  respectRichText: 1
+  minimalWhitespaceDelay: 1
+  commaPct: 2
+  periodPct: 3
+  ellipsisPct: 5
+  questionPct: 3
+  exclaimPct: 3
+  semicolonPct: 2.5
+  colonPct: 2.5
+  quotePct: 1.5
+  parenPct: 1.5
