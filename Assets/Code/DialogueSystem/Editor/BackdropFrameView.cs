@@ -16,6 +16,9 @@ public class BackdropFrameView : GraphElement
     private TextField _title;
     private ColorField _color;
 
+    // Evita guardar mientras estamos aplicando un rect por código (carga)
+    private bool _suppressAutoSave;
+
     public BackdropFrameView(BackdropFrameData data)
     {
         Data = data ?? new BackdropFrameData(
@@ -84,8 +87,14 @@ public class BackdropFrameView : GraphElement
         // Handles de resize (8)
         AddResizeHandles();
 
-        // Persistir rect
-        RegisterCallback<GeometryChangedEvent>(_ => SaveRect());
+        // Persistir rect solo cuando no estamos “silenciados”
+        RegisterCallback<GeometryChangedEvent>(e =>
+        {
+            if (!_suppressAutoSave)
+                SaveRect();
+        });
+
+        // Por si sueltas en el cuerpo sin pasar por header/grips
         RegisterCallback<PointerUpEvent>(_ => SaveRect());
     }
 
@@ -112,10 +121,9 @@ public class BackdropFrameView : GraphElement
             // Delta en coords de panel
             Vector2 deltaPanel = (Vector2)e.position - startMousePanel;
 
-            // Compensar zoom del GraphView (muy importante)
+            // Compensar zoom del GraphView
             var gv = this.GetFirstAncestorOfType<GraphView>();
             var scale = gv != null ? gv.viewTransform.scale : Vector3.one;
-            // (x, y, z)
             if (scale.x == 0f) scale.x = 1f;
             if (scale.y == 0f) scale.y = 1f;
             Vector2 delta = new(deltaPanel.x / scale.x, deltaPanel.y / scale.y);
@@ -134,20 +142,47 @@ public class BackdropFrameView : GraphElement
             if (!dragging) return;
             dragging = false;
             header.ReleasePointer(e.pointerId);
-            SaveRect(); // persistir al soltar
+            SaveRect(); // (1c) persistir al soltar
             e.StopImmediatePropagation();
         });
     }
 
-    private void SaveRect()
+    // ---- helpers de rect ----
+
+    // Lee los valores “crudos” (sin redondeos) desde style.*
+    private Rect GetStyleRect()
     {
-        var r = GetPosition();
-        Data.rect = new Rect(r.x, r.y, Mathf.Max(MinW, r.width), Mathf.Max(MinH, r.height));
+        float left = style.left.value.value;
+        float top = style.top.value.value;
+        float width = style.width.value.value;
+        float height = style.height.value.value;
+        return new Rect(left, top, width, height);
     }
 
+    // Aplica un rect sin disparar guardado (para cuando cargamos desde el asset)
+    public void SetRectSilently(Rect r)
+    {
+        _suppressAutoSave = true;
+        style.left = r.x;
+        style.top = r.y;
+        style.width = Mathf.Max(MinW, r.width);
+        style.height = Mathf.Max(MinH, r.height);
+
+        // Rehabilitar guardado tras el siguiente layout
+        this.schedule.Execute(() => _suppressAutoSave = false);
+    }
+
+    // Guardado hacia el Data.rect usando los valores crudos
+    private void SaveRect()
+    {
+        if (_suppressAutoSave) return;
+        Data.rect = GetStyleRect();
+    }
+
+    // (1d) Usa valores crudos en lugar de resolvedStyle (evita “derrape” por redondeos)
     public override Rect GetPosition()
     {
-        return new Rect(resolvedStyle.left, resolvedStyle.top, resolvedStyle.width, resolvedStyle.height);
+        return GetStyleRect();
     }
 
     public override void SetPosition(Rect newPos)
@@ -186,7 +221,6 @@ public class BackdropFrameView : GraphElement
         ve.style.width = Handle;
         ve.style.height = Handle;
         ve.style.backgroundColor = new Color(0, 0, 0, 0.15f);
-        ve.style.cursor = new StyleCursor((StyleKeyword)MouseCursor.ResizeUpLeft); // se ajusta abajo según tipo
 
         // Cursor por tipo
         switch (g)
@@ -216,6 +250,7 @@ public class BackdropFrameView : GraphElement
 
         ve.RegisterCallback<PointerDownEvent>(e =>
         {
+            if (e.button != 0) return;
             dragging = true;
             startMouse = e.position;
             startRect = GetPosition();
@@ -259,7 +294,7 @@ public class BackdropFrameView : GraphElement
             if (!dragging) return;
             dragging = false;
             ve.ReleasePointer(e.pointerId);
-            SaveRect();
+            SaveRect(); // (1c) persistir al soltar
             e.StopImmediatePropagation();
         });
 

@@ -78,6 +78,38 @@ public class DialogueGraphEditorWindow : EditorWindow
         { text = "+ Nodo" };
         toolbar.Add(btnNewNode);
 
+        // Crear diálogo nuevo
+        var newDialogueButton = new Button(() =>
+        {
+            var newAsset = ScriptableObject.CreateInstance<DialogueGraph>();
+            string path = EditorUtility.SaveFilePanelInProject(
+                "Nuevo Dialogue Graph",
+                "NewDialogueGraph",
+                "asset",
+                "Selecciona la ubicación para guardar el nuevo DialogueGraph."
+            );
+
+            if (!string.IsNullOrEmpty(path))
+            {
+                AssetDatabase.CreateAsset(newAsset, path);
+                AssetDatabase.SaveAssets();
+
+                // Actualizar campo visual (usa la variable local 'assetField')
+                assetField.value = newAsset;
+
+                // Actualizar referencia interna
+                _asset = newAsset;
+
+                // Cargar el grafo recién creado
+                _isLoading = true;
+                DialogueGraphSaveUtility.LoadGraph(_graphView, _asset);
+                _graphView.EnsureFramesBehindNodes();
+                _isLoading = false;
+            }
+        })
+        { text = "+ Dialogue" };
+        toolbar.Add(newDialogueButton);
+
         // Guardar al asset (si no existe, crear uno)
         var btnSave = new Button(() =>
         {

@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0ab21e18d53040c43b9c61e72ca1d3af, type: 3}
-  m_Name: NewDialogueGraph
+  m_Name: Dialogo random
   m_EditorClassIdentifier: 
   nodes:
-  - guid: 7dfd1423-b0d1-4783-81c9-092cfd5b47da
+  - guid: 1a412ea1-20bf-4822-9ede-2938d8705763
     bgColorIndex: 0
     bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
     speakerName: 
@@ -30,13 +30,13 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 496
-      y: 250
+      x: 144
+      y: 308
       width: 301
       height: 259
     profileId: 
     portraitKey: 
-  - guid: c7d802e8-c711-4043-be08-ea03897c02c5
+  - guid: b9d0e9fc-bae1-4491-9e05-be820f58a43a
     bgColorIndex: 0
     bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
     speakerName: 
@@ -53,36 +53,13 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 892
-      y: 273
+      x: 517
+      y: 330
       width: 301
       height: 259
     profileId: 
     portraitKey: 
-  - guid: 9d57bc37-f817-481a-82d3-4f176e818a93
-    bgColorIndex: 2
-    bgColor: {r: 0.22, g: 0.18, b: 0.3, a: 1}
-    speakerName: 
-    lineText: 
-    anchor: 0
-    customAnchor: {x: 0, y: 0}
-    isChoiceNode: 0
-    choiceCount: 2
-    choices: []
-    eventKey: 
-    onEnter:
-      m_PersistentCalls:
-        m_Calls: []
-    isStart: 0
-    nodeRect:
-      serializedVersion: 2
-      x: 1290
-      y: 261
-      width: 301
-      height: 259
-    profileId: 
-    portraitKey: 
-  - guid: 17041fe6-ac61-41ce-ab5f-e2c113c572a9
+  - guid: fb031e83-8ca5-4887-b9a8-43ac0b9066cb
     bgColorIndex: 0
     bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
     speakerName: 
@@ -99,19 +76,16 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 1873
-      y: 234
+      x: 934
+      y: 147
       width: 301
       height: 259
     profileId: 
     portraitKey: 
   edges:
-  - fromNodeGUID: 7dfd1423-b0d1-4783-81c9-092cfd5b47da
+  - fromNodeGUID: 1a412ea1-20bf-4822-9ede-2938d8705763
     fromPortName: Next
-    toNodeGUID: c7d802e8-c711-4043-be08-ea03897c02c5
-  - fromNodeGUID: c7d802e8-c711-4043-be08-ea03897c02c5
+    toNodeGUID: b9d0e9fc-bae1-4491-9e05-be820f58a43a
+  - fromNodeGUID: b9d0e9fc-bae1-4491-9e05-be820f58a43a
     fromPortName: Next
-    toNodeGUID: 9d57bc37-f817-481a-82d3-4f176e818a93
-  - fromNodeGUID: 9d57bc37-f817-481a-82d3-4f176e818a93
-    fromPortName: Next
-    toNodeGUID: 17041fe6-ac61-41ce-ab5f-e2c113c572a9
+    toNodeGUID: fb031e83-8ca5-4887-b9a8-43ac0b9066cb
