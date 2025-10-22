@@ -32,6 +32,10 @@ public class DialogueRunner : MonoBehaviour
     // Profile character service
     private ICharacterProfileService _profiles;
 
+    [Header("Localización (opcional)")]
+    [SerializeField] private MonoBehaviour localizationServiceRef;
+    private ILocalizationService _loc;
+
     // Referencias UI (ajústalas a tu caso real)
     [Header("UI (opcional)")]
     //[SerializeField] private Text nameText;        // o TMP_Text si usas TMP
@@ -42,6 +46,9 @@ public class DialogueRunner : MonoBehaviour
         // 1) Resolver servicio de perfiles primero
         // REVISAR
         _profiles = FindObjectOfType<CharacterProfileService>();
+
+        // resolver servicio de localización
+        _loc = (localizationServiceRef as ILocalizationService) ?? FindAnyObjectByType<CsvLocalizationService>();
 
         // 2) Validar y arrancar diálogo
         if (!ValidateGraph()) return;
@@ -195,7 +202,7 @@ public class DialogueRunner : MonoBehaviour
             GlobalDialogueEvents.Fire(_current.eventKey);
 
         if (speakerText) speakerText.text = GetSpeakerName(_current);
-        if (bodyText) bodyText.text = GetNodeText(_current);
+        if (bodyText) bodyText.text = ResolveBodyText(_current);
 
         ApplyNodeToUI(_current);
 
@@ -203,6 +210,22 @@ public class DialogueRunner : MonoBehaviour
             ShowChoices(_current);
         else
             HideChoices();
+    }
+
+    private string ResolveBodyText(DialogueNodeData node)
+    {
+        if (node == null) return string.Empty; // seguridad
+
+        // si el nodo usa clave localizada
+        if (node.localization && !string.IsNullOrEmpty(node.locKey) && _loc != null)
+        {
+            if (_loc.TryGet(node.locKey, out var localizedText))
+                return localizedText;
+            else
+                Debug.LogWarning($"[DialogueRunner] Clave de localización no encontrada: {node.locKey}");
+        }
+
+        return GetNodeText(node);
     }
 
     private void ShowChoices(DialogueNodeData node)

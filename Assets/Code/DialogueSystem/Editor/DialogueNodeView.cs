@@ -19,6 +19,10 @@ public class DialogueNodeView : Node
     private Port _input;
     private bool _didFirstAutosize = false;
 
+    // --- NUEVO: referencias UI para alternar visibilidad ---
+    private Toggle _locToggle;
+    private TextField _textField;     // Texto literal
+    private TextField _locKeyField;   // Clave de localización
 
     public DialogueNodeView(DialogueNodeData data)
     {
@@ -112,7 +116,30 @@ public class DialogueNodeView : Node
         inputContainer.Add(_input);
 
         mainContainer.Add(new TextField().BindText("Nombre", Data.speakerName, v => Data.speakerName = v));
-        mainContainer.Add(new TextField().BindText("Texto", Data.lineText, v => Data.lineText = v));
+
+        // ---------- NUEVO: TOGGLE Localización sobre el bloque de texto ----------
+        _locToggle = new Toggle("Localización") { tooltip = "Activa para usar una clave de localización en vez de texto literal." };
+        _locToggle.value = Data.localization;
+        _locToggle.RegisterValueChangedCallback(e =>
+        {
+            Data.localization = e.newValue;
+            UpdateLocalizationVisibility();
+            ScheduleAutoSize();
+        });
+        mainContainer.Add(_locToggle);
+
+        // ---------- Campo de texto literal ----------
+        _textField = new TextField("Texto") { multiline = true, value = Data.lineText };
+        _textField.RegisterValueChangedCallback(e => Data.lineText = e.newValue);
+        mainContainer.Add(_textField);
+
+        // ---------- Campo de clave de localización ----------
+        _locKeyField = new TextField("Clave de localización") { value = Data.locKey };
+        _locKeyField.RegisterValueChangedCallback(e => Data.locKey = e.newValue);
+        mainContainer.Add(_locKeyField);
+
+        UpdateLocalizationVisibility();
+
         //mainContainer.Add(new EnumField().BindEnum("Posición", Data.anchor, (CharacterAnchor a) => Data.anchor = a));
         //var customPos = new Vector2Field("Custom") { value = Data.customAnchor };
         //customPos.RegisterValueChangedCallback(e => {
@@ -207,6 +234,16 @@ public class DialogueNodeView : Node
         var children = new System.Collections.Generic.List<VisualElement>(outputContainer.Children());
         foreach (var c in children) outputContainer.Remove(c);
         outputContainer.Clear();
+    }
+
+    private void UpdateLocalizationVisibility()
+    {
+        // Si 'localizacion' está activa -> mostrar clave, ocultar texto literal
+        if (_textField != null)
+            _textField.style.display = Data.localization ? DisplayStyle.None : DisplayStyle.Flex;
+
+        if (_locKeyField != null)
+            _locKeyField.style.display = Data.localization ? DisplayStyle.Flex : DisplayStyle.None;
     }
 
     private void RebuildOutputs()

@@ -33,7 +33,17 @@ public class DialogueNodeData
 
     [Header("Contenido del diálogo")]
     public string speakerName;
-    [TextArea(3, 8)] public string lineText;
+
+    [TextArea(3, 8)] 
+    public string lineText;
+
+    // --- NUEVO: Soporte de localización ---
+    [Header("Localización")]
+    [Tooltip("Si está activo, el nodo usará una clave de localización en lugar de texto literal.")]
+    public bool localization = false;
+
+    [Tooltip("Clave de localización (por ejemplo: dialogue.intro.hello)")]
+    public string locKey;
 
     [Header("Posición del personaje")]
     public CharacterAnchor anchor = CharacterAnchor.Left;

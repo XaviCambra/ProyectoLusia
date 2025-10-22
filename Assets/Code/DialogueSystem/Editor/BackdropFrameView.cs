@@ -51,7 +51,7 @@ public class BackdropFrameView : GraphElement
         capabilities = Capabilities.Movable | Capabilities.Resizable | Capabilities.Deletable | Capabilities.Selectable;
 
         // Siempre detrás de los nodos
-        layer = -1;
+        layer = -1000; // Siempre detrás de los edges
         SendToBack();
 
         // Header (para editar título/color)
