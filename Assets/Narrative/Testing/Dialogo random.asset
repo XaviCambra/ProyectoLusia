@@ -18,6 +18,8 @@ MonoBehaviour:
     bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
     speakerName: 
     lineText: 
+    localization: 0
+    locKey: 
     anchor: 0
     customAnchor: {x: 0, y: 0}
     isChoiceNode: 0
@@ -30,40 +32,19 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 144
-      y: 308
+      x: 92
+      y: 317
       width: 301
-      height: 259
-    profileId: 
-    portraitKey: 
-  - guid: b9d0e9fc-bae1-4491-9e05-be820f58a43a
-    bgColorIndex: 0
-    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
-    speakerName: 
-    lineText: 
-    anchor: 0
-    customAnchor: {x: 0, y: 0}
-    isChoiceNode: 0
-    choiceCount: 2
-    choices: []
-    eventKey: 
-    onEnter:
-      m_PersistentCalls:
-        m_Calls: []
-    isStart: 0
-    nodeRect:
-      serializedVersion: 2
-      x: 517
-      y: 330
-      width: 301
-      height: 259
+      height: 277
     profileId: 
     portraitKey: 
   - guid: fb031e83-8ca5-4887-b9a8-43ac0b9066cb
-    bgColorIndex: 0
-    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
-    speakerName: 
-    lineText: 
+    bgColorIndex: 2
+    bgColor: {r: 0.22, g: 0.18, b: 0.3, a: 1}
+    speakerName: Nero
+    lineText: No me gusta eso
+    localization: 0
+    locKey: 
     anchor: 0
     customAnchor: {x: 0, y: 0}
     isChoiceNode: 0
@@ -76,10 +57,93 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 934
-      y: 147
+      x: 856
+      y: 112
       width: 301
-      height: 259
+      height: 277
+    profileId: 
+    portraitKey: 
+  - guid: 99ee57fb-63ed-43b8-ab7e-f4c664eb97f7
+    bgColorIndex: 2
+    bgColor: {r: 0.22, g: 0.18, b: 0.3, a: 1}
+    speakerName: Nero
+    lineText: Podria tolerarlo, venga
+    localization: 0
+    locKey: 
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    isStart: 0
+    nodeRect:
+      serializedVersion: 2
+      x: 866
+      y: 432
+      width: 301
+      height: 277
+    profileId: 
+    portraitKey: 
+  - guid: b9d0e9fc-bae1-4491-9e05-be820f58a43a
+    bgColorIndex: 3
+    bgColor: {r: 0.2, g: 0.26, b: 0.2, a: 1}
+    speakerName: Alastor
+    lineText: "\xBFQue te parece si lo hacemos?"
+    localization: 0
+    locKey: 
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 1
+    choiceCount: 2
+    choices:
+    - choiceText: No me gusta eso
+      portName: 053184
+    - choiceText: Podria tolerarlo, venga
+      portName: c88363
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    isStart: 1
+    nodeRect:
+      serializedVersion: 2
+      x: 441
+      y: 253
+      width: 320
+      height: 320
+    profileId: 
+    portraitKey: 
+  - guid: 4bf2b099-b0f2-48ed-9940-366278ae1729
+    bgColorIndex: 3
+    bgColor: {r: 0.2, g: 0.26, b: 0.2, a: 1}
+    speakerName: Alastor
+    lineText: Pero seguro que no te convence la idea?
+    localization: 0
+    locKey: 
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 1
+    choiceCount: 2
+    choices:
+    - choiceText: Opcion
+      portName: 7a413c
+    - choiceText: Opcion
+      portName: 618d8e
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    isStart: 0
+    nodeRect:
+      serializedVersion: 2
+      x: 1256
+      y: -29
+      width: 320
+      height: 320
     profileId: 
     portraitKey: 
   edges:
@@ -87,5 +151,11 @@ MonoBehaviour:
     fromPortName: Next
     toNodeGUID: b9d0e9fc-bae1-4491-9e05-be820f58a43a
   - fromNodeGUID: b9d0e9fc-bae1-4491-9e05-be820f58a43a
-    fromPortName: Next
+    fromPortName: 053184
     toNodeGUID: fb031e83-8ca5-4887-b9a8-43ac0b9066cb
+  - fromNodeGUID: b9d0e9fc-bae1-4491-9e05-be820f58a43a
+    fromPortName: c88363
+    toNodeGUID: 99ee57fb-63ed-43b8-ab7e-f4c664eb97f7
+  - fromNodeGUID: fb031e83-8ca5-4887-b9a8-43ac0b9066cb
+    fromPortName: Next
+    toNodeGUID: 4bf2b099-b0f2-48ed-9940-366278ae1729

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading;
 using TMPro;
 
 public class DialogueRunner : MonoBehaviour
@@ -25,6 +26,10 @@ public class DialogueRunner : MonoBehaviour
     private readonly Dictionary<string, DialogueNodeData> _nodeByGuid = new();
     private readonly Dictionary<(string fromGuid, string fromPort), string> _edgeLookup = new();
     private readonly Dictionary<string, int> _incomingCount = new();
+
+    // --- Typewriter ---
+    private readonly TypewriterService _typewriter = new();
+    private CancellationTokenSource _twCts;
 
     private DialogueNodeData _current;
     private bool _waitingChoice;
@@ -54,6 +59,13 @@ public class DialogueRunner : MonoBehaviour
         if (!ValidateGraph()) return;
         BuildLookups();
         StartDialogue();
+    }
+
+    private void OnDestroy()
+    {
+        _twCts?.Cancel();
+        _twCts?.Dispose();
+        _twCts = null;
     }
 
     private void Update()
@@ -201,8 +213,11 @@ public class DialogueRunner : MonoBehaviour
         if (!string.IsNullOrEmpty(_current.eventKey))
             GlobalDialogueEvents.Fire(_current.eventKey);
 
+        //if (speakerText) speakerText.text = GetSpeakerName(_current);
+        //if (bodyText) bodyText.text = ResolveBodyText(_current);
+        // REMPLAZADO
         if (speakerText) speakerText.text = GetSpeakerName(_current);
-        if (bodyText) bodyText.text = ResolveBodyText(_current);
+        DisplayNodeBodyAsync(_current); // <- animación o instantáneo según flag del nodo
 
         ApplyNodeToUI(_current);
 
@@ -211,6 +226,50 @@ public class DialogueRunner : MonoBehaviour
         else
             HideChoices();
     }
+
+    private async void DisplayNodeBodyAsync(DialogueNodeData node)
+    {
+        if (bodyText == null)
+            return;
+
+        // Texto resuelto (localización incluida)
+        string nodeText = ResolveBodyText(node);
+
+        // Si no hay Typewriter, mostrar instantáneo
+        // (si tu DialogueNodeData aún no tiene useTypewriter, añade ese bool en tu modelo)
+        if (node == null || !node.useTypewriter)
+        {
+            bodyText.SetText(nodeText);
+            return;
+        }
+
+        // Preparar CTS y cancelar la animación previa si la hubiera
+        _twCts?.Cancel();
+        _twCts?.Dispose();
+        _twCts = new CancellationTokenSource();
+
+        // Construir perfil desde los overrides del nodo (mínimo y claro)
+        var p = ScriptableObject.CreateInstance<TypewriterProfile>();
+        p.secondsPerChar = node.tw.secondsPerChar;
+        p.globalSpeed = node.tw.globalSpeed;
+        p.respectRichText = node.tw.respectRichText;
+        p.minimalWhitespaceDelay = node.tw.minimalWhitespaceDelay;
+
+        // pausas comunes (si no las tienes en tu struct, elimínalas o añádelas)
+        p.commaPct = node.tw.commaPct;
+        p.periodPct = node.tw.periodPct;
+        p.ellipsisPct = node.tw.ellipsisPct;
+
+        try
+        {
+            await _typewriter.RunAsync(nodeText, p, bodyText, null, _twCts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            // Cambio de nodo/skip: ignorar
+        }
+    }
+
 
     private string ResolveBodyText(DialogueNodeData node)
     {

@@ -13,7 +13,17 @@ MonoBehaviour:
   m_Name: DialogueWithNeroAndAlastor
   m_EditorClassIdentifier: 
   nodes:
-  - guid: 11f01338-cb6d-473a-b203-45c8158ba877
+  - useTypewriter: 0
+    twShowAdvanced: 1
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    guid: 11f01338-cb6d-473a-b203-45c8158ba877
     bgColorIndex: 2
     bgColor: {r: 0.22, g: 0.18, b: 0.3, a: 1}
     speakerName: Nero
@@ -32,13 +42,23 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 1321
+      x: 1243
       y: 200
-      width: 310
-      height: 277
+      width: 380
+      height: 295
     profileId: c41fb37a19564948bac29ac3cca6438c
     portraitKey: 
-  - guid: d1d24c88-3dcc-4514-907e-095428cc26e9
+  - useTypewriter: 1
+    twShowAdvanced: 1
+    tw:
+      secondsPerChar: 0.2
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    guid: d1d24c88-3dcc-4514-907e-095428cc26e9
     bgColorIndex: 0
     bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
     speakerName: Alastor
@@ -57,13 +77,23 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 1696
+      x: 1682
       y: 268
-      width: 301
-      height: 277
+      width: 380
+      height: 452
     profileId: 696e22c681d3459ea06c3fce41bab9cd
     portraitKey: 
-  - guid: 04a20a78-beb2-4e3a-8563-fcd5760f71f9
+  - useTypewriter: 1
+    twShowAdvanced: 1
+    tw:
+      secondsPerChar: 0.2
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    guid: 04a20a78-beb2-4e3a-8563-fcd5760f71f9
     bgColorIndex: 0
     bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
     speakerName: Alastor
@@ -82,13 +112,23 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 2458
+      x: 2583
       y: 268
-      width: 301
-      height: 277
+      width: 380
+      height: 452
     profileId: 696e22c681d3459ea06c3fce41bab9cd
     portraitKey: 
-  - guid: 2b7b652e-8ef9-4e82-944c-10b6c711e49f
+  - useTypewriter: 1
+    twShowAdvanced: 1
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    guid: 2b7b652e-8ef9-4e82-944c-10b6c711e49f
     bgColorIndex: 2
     bgColor: {r: 0.22, g: 0.18, b: 0.3, a: 1}
     speakerName: Nero
@@ -107,13 +147,23 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 2834
+      x: 3035
       y: 200
-      width: 310
-      height: 277
+      width: 380
+      height: 452
     profileId: c41fb37a19564948bac29ac3cca6438c
     portraitKey: 
-  - guid: 8b38a2af-478d-42f7-ab9b-c401450ba645
+  - useTypewriter: 1
+    twShowAdvanced: 1
+    tw:
+      secondsPerChar: 0.2
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    guid: 8b38a2af-478d-42f7-ab9b-c401450ba645
     bgColorIndex: 0
     bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
     speakerName: Alastor
@@ -132,13 +182,23 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 3242
+      x: 3475
       y: 268
-      width: 301
-      height: 277
+      width: 380
+      height: 452
     profileId: 
     portraitKey: 
-  - guid: b14e2716-e9a1-436e-b1b4-872b283bb10f
+  - useTypewriter: 1
+    twShowAdvanced: 1
+    tw:
+      secondsPerChar: 0.2
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    guid: b14e2716-e9a1-436e-b1b4-872b283bb10f
     bgColorIndex: 0
     bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
     speakerName: Alastor
@@ -157,13 +217,23 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 4018
+      x: 4356
       y: 268
-      width: 301
-      height: 277
+      width: 380
+      height: 452
     profileId: 
     portraitKey: 
-  - guid: 132e3f96-c11f-438b-961a-587c2c1b41d0
+  - useTypewriter: 1
+    twShowAdvanced: 1
+    tw:
+      secondsPerChar: 0.2
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    guid: 132e3f96-c11f-438b-961a-587c2c1b41d0
     bgColorIndex: 0
     bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
     speakerName: Alastor
@@ -182,38 +252,23 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 908
+      x: 795
       y: 268
-      width: 301
-      height: 277
+      width: 380
+      height: 452
     profileId: 696e22c681d3459ea06c3fce41bab9cd
     portraitKey: 
-  - guid: 0496fa1a-2ed6-4501-a004-aad8ba7272ed
-    bgColorIndex: 2
-    bgColor: {r: 0.22, g: 0.18, b: 0.3, a: 1}
-    speakerName: Nero
-    lineText: 
-    localization: 1
-    locKey: 100100001
-    anchor: 0
-    customAnchor: {x: 0, y: 0}
-    isChoiceNode: 0
-    choiceCount: 2
-    choices: []
-    eventKey: 
-    onEnter:
-      m_PersistentCalls:
-        m_Calls: []
-    isStart: 1
-    nodeRect:
-      serializedVersion: 2
-      x: 511
-      y: 200
-      width: 310
-      height: 277
-    profileId: c41fb37a19564948bac29ac3cca6438c
-    portraitKey: 
-  - guid: c23dcd94-4b9d-47ca-a45d-f9e573f84781
+  - useTypewriter: 1
+    twShowAdvanced: 1
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    guid: c23dcd94-4b9d-47ca-a45d-f9e573f84781
     bgColorIndex: 2
     bgColor: {r: 0.22, g: 0.18, b: 0.3, a: 1}
     speakerName: Nero
@@ -232,13 +287,62 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 2080
+      x: 2154
       y: 200
-      width: 310
-      height: 277
+      width: 380
+      height: 452
     profileId: c41fb37a19564948bac29ac3cca6438c
     portraitKey: 
-  - guid: 0325bdcc-9a89-459f-8757-2cd4621bd2de
+  - useTypewriter: 1
+    twShowAdvanced: 1
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    guid: 0496fa1a-2ed6-4501-a004-aad8ba7272ed
+    bgColorIndex: 2
+    bgColor: {r: 0.22, g: 0.18, b: 0.3, a: 1}
+    speakerName: Nero
+    lineText: 
+    localization: 1
+    locKey: 100100001
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 0
+    choiceCount: 2
+    choices:
+    - choiceText: Opcion
+      portName: c263ba
+    - choiceText: Opcion
+      portName: f9cbc5
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    isStart: 1
+    nodeRect:
+      serializedVersion: 2
+      x: 348
+      y: 200
+      width: 380
+      height: 452
+    profileId: c41fb37a19564948bac29ac3cca6438c
+    portraitKey: 
+  - useTypewriter: 1
+    twShowAdvanced: 1
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    guid: 0325bdcc-9a89-459f-8757-2cd4621bd2de
     bgColorIndex: 2
     bgColor: {r: 0.22, g: 0.18, b: 0.3, a: 1}
     speakerName: Nero
@@ -257,10 +361,10 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 3628
+      x: 3917
       y: 200
-      width: 301
-      height: 277
+      width: 380
+      height: 452
     profileId: 
     portraitKey: 
   edges:

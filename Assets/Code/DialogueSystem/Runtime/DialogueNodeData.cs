@@ -9,8 +9,17 @@ using UnityEngine.Events;
 /// Define la información básica que el diseñador edita en el GraphView.
 /// </summary>
 [Serializable]
-public class DialogueNodeData
+public class DialogueNodeData : ISerializationCallbackReceiver
 {
+    // Flag maestro: este nodo usa efecto typewriter al mostrarse
+    public bool useTypewriter = false;
+
+    // Solo para editor/UI (puede no serializarse si no quieres)
+    public bool twShowAdvanced = false;
+
+    // Overrides locales del nodo (subconjunto mínimo)
+    public TypewriterOverrides tw = TypewriterOverrides.Default();
+
     [SerializeField, HideInInspector] private string guid;   // <- ¡serializado no tocar!
     public string GUID => guid;
 
@@ -89,4 +98,31 @@ public class DialogueNodeData
         if (string.IsNullOrEmpty(guid))
             guid = Guid.NewGuid().ToString();
     }
+}
+
+// En DialogueNodeData.cs (o donde declares el modelo del nodo)
+[System.Serializable]
+public struct TypewriterOverrides
+{
+    // Subconjunto mínimo y útil (puedes ampliar fácilmente)
+    public float secondsPerChar;      // 0.001–0.2
+    public float globalSpeed;         // 0.1–3
+    public bool respectRichText;      // true/false
+    public bool minimalWhitespaceDelay; // true/false
+
+    public float commaPct;            // x multiplicador
+    public float periodPct;
+    public float ellipsisPct;
+
+    // Fábrica de valores por defecto sensatos (alineados al Profile por defecto)
+    public static TypewriterOverrides Default() => new TypewriterOverrides
+    {
+        secondsPerChar = 0.03f,
+        globalSpeed = 1f,
+        respectRichText = true,
+        minimalWhitespaceDelay = true,
+        commaPct = 2.0f,
+        periodPct = 3.0f,
+        ellipsisPct = 5.0f,
+    };
 }

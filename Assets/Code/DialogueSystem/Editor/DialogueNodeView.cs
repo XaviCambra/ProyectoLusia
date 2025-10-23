@@ -12,8 +12,8 @@ using EditorObjectField = UnityEditor.UIElements.ObjectField;
 public class DialogueNodeView : Node
 {
     public readonly DialogueNodeData Data;
-    public readonly Vector2 MinSize = new(260, 140);
-    public readonly Vector2 MaxSize = new(320, 420);
+    public readonly Vector2 MinSize = new(380, 160);
+    public readonly Vector2 MaxSize = new(420, 560);
     public Vector2 DefaultSize => new(320, 200);
 
     private Port _input;
@@ -23,6 +23,11 @@ public class DialogueNodeView : Node
     private Toggle _locToggle;
     private TextField _textField;     // Texto literal
     private TextField _locKeyField;   // Clave de localización
+
+    // --- TYPEWRITER UI ---
+    private Toggle _twEnableToggle;
+    private Toggle _twAdvancedToggle;
+    private VisualElement _twAdvancedBox;
 
     public DialogueNodeView(DialogueNodeData data)
     {
@@ -140,6 +145,85 @@ public class DialogueNodeView : Node
 
         UpdateLocalizationVisibility();
 
+        // TYPEWRITER OPTIONS (placeholder, puedes expandir)
+
+        // ---------- TYPEWRITER ----------
+        _twEnableToggle = new Toggle("Typewriter") { tooltip = "Activar escritura progresiva en este nodo." };
+        _twEnableToggle.value = Data.useTypewriter;
+        _twEnableToggle.RegisterValueChangedCallback(e =>
+        {
+            Data.useTypewriter = e.newValue;
+            UpdateTypewriterVisibility();
+            ScheduleAutoSize();
+        });
+        mainContainer.Add(_twEnableToggle);
+
+        // Toggle para mostrar/ocultar el bloque avanzado
+        _twAdvancedToggle = new Toggle("Mostrar opciones avanzadas")
+        {
+            tooltip = "Muestra algunos parámetros comunes del Typewriter para ajustar en este nodo."
+        };
+        _twAdvancedToggle.value = Data.twShowAdvanced;
+        _twAdvancedToggle.RegisterValueChangedCallback(e =>
+        {
+            Data.twShowAdvanced = e.newValue;
+            UpdateTypewriterVisibility();
+            ScheduleAutoSize();
+        });
+        mainContainer.Add(_twAdvancedToggle);
+
+        // Contenedor avanzado (se oculta si no se usa)
+        _twAdvancedBox = new VisualElement();
+        _twAdvancedBox.style.marginLeft = 10;
+        _twAdvancedBox.style.marginTop = 4;
+        _twAdvancedBox.style.marginBottom = 4;
+        _twAdvancedBox.style.flexDirection = FlexDirection.Column;
+
+        // Campos mínimos y útiles
+        var fSeconds = new FloatField("Segundos/char") { value = Mathf.Clamp(Data.tw.secondsPerChar, 0.001f, 0.2f) };
+        fSeconds.RegisterValueChangedCallback(e =>
+        {
+            Data.tw.secondsPerChar = Mathf.Clamp(e.newValue, 0.001f, 0.2f);
+        });
+
+        var fGlobal = new FloatField("Velocidad global (x)") { value = Mathf.Clamp(Data.tw.globalSpeed, 0.1f, 3f) };
+        fGlobal.RegisterValueChangedCallback(e =>
+        {
+            Data.tw.globalSpeed = Mathf.Clamp(e.newValue, 0.1f, 3f);
+        });
+
+        var tRich = new Toggle("Respetar RichText") { value = Data.tw.respectRichText };
+        tRich.RegisterValueChangedCallback(e => Data.tw.respectRichText = e.newValue);
+
+        var tWhitespace = new Toggle("Min. delay en espacios") { value = Data.tw.minimalWhitespaceDelay };
+        tWhitespace.RegisterValueChangedCallback(e => Data.tw.minimalWhitespaceDelay = e.newValue);
+
+        // Pausas comunes
+        var fComma = new FloatField("Pausa coma (x)") { value = Data.tw.commaPct };
+        fComma.RegisterValueChangedCallback(e => Data.tw.commaPct = Mathf.Max(0f, e.newValue));
+
+        var fPeriod = new FloatField("Pausa punto (x)") { value = Data.tw.periodPct };
+        fPeriod.RegisterValueChangedCallback(e => Data.tw.periodPct = Mathf.Max(0f, e.newValue));
+
+        var fEllipsis = new FloatField("Pausa '...' (x)") { value = Data.tw.ellipsisPct };
+        fEllipsis.RegisterValueChangedCallback(e => Data.tw.ellipsisPct = Mathf.Max(0f, e.newValue));
+
+        _twAdvancedBox.Add(fSeconds);
+        _twAdvancedBox.Add(fGlobal);
+        _twAdvancedBox.Add(tRich);
+        _twAdvancedBox.Add(tWhitespace);
+        _twAdvancedBox.Add(fComma);
+        _twAdvancedBox.Add(fPeriod);
+        _twAdvancedBox.Add(fEllipsis);
+
+        mainContainer.Add(_twAdvancedBox);
+
+        // Ajustar visibilidad inicial
+        UpdateTypewriterVisibility();
+
+
+        // END TYPEWRITER OPTIONS
+
         //mainContainer.Add(new EnumField().BindEnum("Posición", Data.anchor, (CharacterAnchor a) => Data.anchor = a));
         //var customPos = new Vector2Field("Custom") { value = Data.customAnchor };
         //customPos.RegisterValueChangedCallback(e => {
@@ -192,6 +276,17 @@ public class DialogueNodeView : Node
         _didFirstAutosize = true;
         ScheduleAutoSize();
     }
+
+    private void UpdateTypewriterVisibility()
+    {
+        // Si no está activo el typewriter, ocultamos todo lo relacionado
+        _twAdvancedToggle.style.display = Data.useTypewriter ? DisplayStyle.Flex : DisplayStyle.None;
+
+        // Si está activo y además pedimos opciones avanzadas, mostramos el bloque
+        bool showAdvanced = Data.useTypewriter && Data.twShowAdvanced;
+        _twAdvancedBox.style.display = showAdvanced ? DisplayStyle.Flex : DisplayStyle.None;
+    }
+
 
     private void ScheduleAutoSize()
     {
