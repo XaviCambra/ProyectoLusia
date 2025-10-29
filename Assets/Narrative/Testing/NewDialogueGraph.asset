@@ -13,11 +13,73 @@ MonoBehaviour:
   m_Name: NewDialogueGraph
   m_EditorClassIdentifier: 
   nodes:
-  - guid: 7dfd1423-b0d1-4783-81c9-092cfd5b47da
+  - useTypewriter: 1
+    twShowAdvanced: 1
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    guid: 7dfd1423-b0d1-4783-81c9-092cfd5b47da
+    bgColorIndex: 4
+    bgColor: {r: 0.3, g: 0.25, b: 0.12, a: 1}
+    speakerName: Elliot
+    lineText: Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+      Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
+      when an unknown printer took a galley of type and scrambled it to make a type
+      specimen book.
+    localization: 0
+    locKey: 
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    isStart: 1
+    nodeRect:
+      serializedVersion: 2
+      x: 148
+      y: 166
+      width: 480
+      height: 508
+    showExtrasBox: 1
+    appearance: 1
+    origin: 5
+    target: 3
+    moveSpeed: 600
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    showTypewriterBox: 0
+    profileId: 0b62b00b24f9424193e8477a988847e6
+    portraitKey: idle
+  - useTypewriter: 0
+    twShowAdvanced: 0
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    guid: 56acd476-21f1-4a96-ba78-8c2e4f426530
     bgColorIndex: 0
     bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
     speakerName: 
-    lineText: 
+    lineText: Uishhh bandido
+    localization: 0
+    locKey: 
     anchor: 0
     customAnchor: {x: 0, y: 0}
     isChoiceNode: 0
@@ -30,17 +92,42 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 496
-      y: 250
-      width: 301
-      height: 259
-    profileId: 
-    portraitKey: 
-  - guid: c7d802e8-c711-4043-be08-ea03897c02c5
-    bgColorIndex: 0
-    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
-    speakerName: 
-    lineText: 
+      x: 1271
+      y: 233
+      width: 480
+      height: 508
+    showExtrasBox: 1
+    appearance: 1
+    origin: 0
+    target: 2
+    moveSpeed: 300
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    showTypewriterBox: 0
+    profileId: 0b62b00b24f9424193e8477a988847e6
+    portraitKey: horny
+  - useTypewriter: 0
+    twShowAdvanced: 0
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    guid: c7d802e8-c711-4043-be08-ea03897c02c5
+    bgColorIndex: 4
+    bgColor: {r: 0.3, g: 0.25, b: 0.12, a: 1}
+    speakerName: Elliot
+    lineText: It is a long established fact that a reader will be distracted by the
+      readable content of a page when looking at its layout.
+    localization: 0
+    locKey: 
     anchor: 0
     customAnchor: {x: 0, y: 0}
     isChoiceNode: 0
@@ -53,65 +140,28 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 892
-      y: 273
-      width: 301
-      height: 259
-    profileId: 
-    portraitKey: 
-  - guid: 9d57bc37-f817-481a-82d3-4f176e818a93
-    bgColorIndex: 2
-    bgColor: {r: 0.22, g: 0.18, b: 0.3, a: 1}
-    speakerName: 
-    lineText: 
-    anchor: 0
-    customAnchor: {x: 0, y: 0}
-    isChoiceNode: 0
-    choiceCount: 2
-    choices: []
-    eventKey: 
-    onEnter:
-      m_PersistentCalls:
-        m_Calls: []
-    isStart: 0
-    nodeRect:
-      serializedVersion: 2
-      x: 1290
-      y: 261
-      width: 301
-      height: 259
-    profileId: 
-    portraitKey: 
-  - guid: 17041fe6-ac61-41ce-ab5f-e2c113c572a9
-    bgColorIndex: 0
-    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
-    speakerName: 
-    lineText: 
-    anchor: 0
-    customAnchor: {x: 0, y: 0}
-    isChoiceNode: 0
-    choiceCount: 2
-    choices: []
-    eventKey: 
-    onEnter:
-      m_PersistentCalls:
-        m_Calls: []
-    isStart: 0
-    nodeRect:
-      serializedVersion: 2
-      x: 1873
-      y: 234
-      width: 301
-      height: 259
-    profileId: 
-    portraitKey: 
+      x: 716
+      y: 233
+      width: 480
+      height: 508
+    showExtrasBox: 1
+    appearance: 1
+    origin: 0
+    target: 4
+    moveSpeed: 600
+    textStart: 0
+    useFade: 0
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    showTypewriterBox: 0
+    profileId: 0b62b00b24f9424193e8477a988847e6
+    portraitKey: idle
   edges:
   - fromNodeGUID: 7dfd1423-b0d1-4783-81c9-092cfd5b47da
     fromPortName: Next
     toNodeGUID: c7d802e8-c711-4043-be08-ea03897c02c5
   - fromNodeGUID: c7d802e8-c711-4043-be08-ea03897c02c5
     fromPortName: Next
-    toNodeGUID: 9d57bc37-f817-481a-82d3-4f176e818a93
-  - fromNodeGUID: 9d57bc37-f817-481a-82d3-4f176e818a93
-    fromPortName: Next
-    toNodeGUID: 17041fe6-ac61-41ce-ab5f-e2c113c572a9
+    toNodeGUID: 56acd476-21f1-4a96-ba78-8c2e4f426530

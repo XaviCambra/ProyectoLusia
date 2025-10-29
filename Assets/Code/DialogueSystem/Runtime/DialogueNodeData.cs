@@ -4,6 +4,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+// === Anim / Placement enums (usados por el nodo) ===
+public enum AppearanceMode { Preplaced, SlideIn }
+public enum TextStartTiming { BeforeAnimation, AfterAnimation }
+public enum Spot
+{
+    Auto,     // hereda última posición conocida del perfil
+    Keep,     // no mover (solo posible fade)
+    Left,
+    Center,
+    Right,
+    OffLeft,  // fuera de pantalla por la izquierda
+    OffRight  // fuera de pantalla por la derecha
+}
+
 /// <summary>
 /// Datos serializables de un nodo de diálogo dentro del asset DialogueGraph.
 /// Define la información básica que el diseñador edita en el GraphView.
@@ -72,6 +86,44 @@ public class DialogueNodeData : ISerializationCallbackReceiver
 
     [Header("Posición en el editor")]
     public Rect nodeRect = new Rect(100, 100, 320, 180);
+
+    // ========== EXTRAS / ANIMACIÓN ==========
+    [Header("Extras / Animación (plegable)")]
+    [Tooltip("Muestra/Oculta los campos extra en el editor")]
+    public bool showExtrasBox = false; // Punto 2 (toggle de UI editor)
+
+    [Header("Aparición / Colocación")]
+    [Tooltip("Si 'Preplaced' el personaje ya está en pantalla sin animación; si 'SlideIn' se mueve al destino")]
+    public AppearanceMode appearance = AppearanceMode.Preplaced;
+
+    [Tooltip("Desde dónde empieza este nodo (Auto = hereda última posición conocida)")]
+    public Spot origin = Spot.Auto;
+
+    [Tooltip("Destino del personaje (OffLeft/OffRight = salida por ese lateral)")]
+    public Spot target = Spot.Center;
+
+    [Tooltip("Velocidad de desplazamiento (px/seg)")]
+    public float moveSpeed = 600f; // Punto 7
+
+    [Tooltip("Cuándo empieza el texto del typewriter")]
+    public TextStartTiming textStart = TextStartTiming.AfterAnimation; // Punto 8
+
+    [Header("Fade (entrada/salida)")]
+    [Tooltip("Activar desvanecidos al entrar/salir")]
+    public bool useFade = true; // Punto 9 (toggle maestro de fade)
+
+    [Range(0, 100)] public int enterFromOpacity = 0;   // 0 = 0%, 100 = 100%
+    [Range(0, 100)] public int enterToOpacity = 100;
+
+    [Range(0, 100)] public int exitFromOpacity = 100;
+    [Range(0, 100)] public int exitToOpacity = 0;
+    // ========== END EXTRAS / ANIMACIÓN ==========
+
+    // ========== TYPEWRITER ==========
+    [Header("Typewriter (plegable)")]
+    [Tooltip("Muestra/Oculta los campos del typewriter en el editor")]
+    public bool showTypewriterBox = false;
+    // ========== END TYPEWRITER ==========
 
     // --- NUEVO: referencia lógica a un perfil ---
     [Header("Perfil (opcional)")]

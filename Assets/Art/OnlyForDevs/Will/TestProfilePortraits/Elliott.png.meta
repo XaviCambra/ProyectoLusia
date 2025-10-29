@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 3410978d75cbcce4c8725b474672d438
+guid: afa594ba07cc2da47953e7a1e737fcdb
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7861868341154299528
-    second: pit2_0
+      213: -5623356006370864985
+    second: Elliott_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: pit2_0
+      name: Elliott_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1345
-        height: 1492
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 871cb9ec56805e290800000000000000
-      internalID: -7861868341154299528
+      spriteID: 7a094ba8183d5f1b0800000000000000
+      internalID: -5623356006370864985
       vertices: []
       indices: 
       edges: []

@@ -27,6 +27,14 @@ public class DialogueRunner : MonoBehaviour
     private readonly Dictionary<(string fromGuid, string fromPort), string> _edgeLookup = new();
     private readonly Dictionary<string, int> _incomingCount = new();
 
+    private enum LogicalPos { None, Left, Center, Right, OffLeft, OffRight }
+    private struct PortraitState
+    {
+        public LogicalPos logical;   // última “posición lógica” conocida
+        public Vector3 screenPos;    // última posición real en pantalla
+    }
+    private readonly Dictionary<string, PortraitState> _portraitStateByProfile = new();
+
     // --- Typewriter ---
     private readonly TypewriterService _typewriter = new();
     private CancellationTokenSource _twCts;
@@ -46,6 +54,28 @@ public class DialogueRunner : MonoBehaviour
     //[SerializeField] private Text nameText;        // o TMP_Text si usas TMP
     [SerializeField] private Image portraitImage;  // si tienes retrato en UI
 
+    // --- Retratos por perfil (pool dinámico) ---
+    [Header("Portraits (pool)")]
+    [Tooltip("Contenedor (RectTransform) donde se instancian y gestionan los retratos de cada personaje.")]
+    [SerializeField] private RectTransform portraitsRoot;
+
+    [Tooltip("Plantilla (Image) desactivada que se clona para cada perfil detectado.")]
+    [SerializeField] private Image portraitPrefab;
+
+    private readonly Dictionary<string, Image> _portraitByProfile = new();
+
+    // Áncoras lógicas de posición (ajústalas a tu layout)
+    [Header("Anchors de posición")]
+    [Tooltip("Posición destino a la izquierda para las animaciones de entrada/salida.")]
+    [SerializeField] private RectTransform leftAnchor;
+
+    [Tooltip("Posición destino centrada para colocar al personaje en pantalla.")]
+    [SerializeField] private RectTransform centerAnchor;
+
+    [Tooltip("Posición destino a la derecha para las animaciones de entrada/salida.")]
+    [SerializeField] private RectTransform rightAnchor;
+    // --- END Retratos por perfil (pool dinámico) ---
+
     private void Awake()
     {
         // 1) Resolver servicio de perfiles primero
@@ -56,8 +86,13 @@ public class DialogueRunner : MonoBehaviour
         _loc = (localizationServiceRef as ILocalizationService) ?? FindAnyObjectByType<CsvLocalizationService>();
 
         // 2) Validar y arrancar diálogo
+        //if (!ValidateGraph()) return;
+        //BuildLookups();
+        //StartDialogue();
+
         if (!ValidateGraph()) return;
         BuildLookups();
+        BuildPortraitPool();   // NUEVO: crea/activa 1 Image por perfil usado en el graph
         StartDialogue();
     }
 
@@ -142,26 +177,52 @@ public class DialogueRunner : MonoBehaviour
 
     private void ApplyNodeToUI(DialogueNodeData node)
     {
-        if (portraitImage == null) return; // si no usas retratos en UI, no hacemos nada
-        Debug.LogWarning("HAY PORTRAITIMAGE");
+        //if (portraitImage == null) return; // si no usas retratos en UI, no hacemos nada
+        //Debug.LogWarning("HAY PORTRAITIMAGE");
+        //Sprite sprite = null;
+
+        //if (node != null && _profiles != null && !string.IsNullOrEmpty(node.profileId))
+        //{
+        //    Debug.LogWarning("PASA LOS VERIFICADORES");
+
+        //    var profile = _profiles.GetById(node.profileId);
+        //    if (profile != null)
+        //    {
+        //        // 1) retrato pedido explícito por el nodo
+        //        if (!string.IsNullOrEmpty(node.portraitKey))
+        //            sprite = profile.GetPortraitByKey(node.portraitKey);
+
+        //        // 2) si no hay, intenta "Default"
+        //        if (sprite == null)
+        //            sprite = profile.GetPortraitByKey("Default");
+
+        //        // 3) si sigue sin haber, coge el primero que exista
+        //        if (sprite == null)
+        //        {
+        //            var firstKey = profile.GetPortraitKeys().FirstOrDefault();
+        //            if (!string.IsNullOrEmpty(firstKey))
+        //                sprite = profile.GetPortraitByKey(firstKey);
+        //        }
+        //    }
+        //}
+
+        //portraitImage.sprite = sprite;
+        //portraitImage.enabled = sprite != null; // oculta la imagen si no hay sprite
+        // Si no hay pool y solo usas legacy, aplica al portraitImage y sal
+        if ((_portraitByProfile == null || _portraitByProfile.Count == 0) && portraitImage == null) return;
+
         Sprite sprite = null;
 
         if (node != null && _profiles != null && !string.IsNullOrEmpty(node.profileId))
         {
-            Debug.LogWarning("PASA LOS VERIFICADORES");
-
             var profile = _profiles.GetById(node.profileId);
+
             if (profile != null)
             {
-                // 1) retrato pedido explícito por el nodo
                 if (!string.IsNullOrEmpty(node.portraitKey))
                     sprite = profile.GetPortraitByKey(node.portraitKey);
-
-                // 2) si no hay, intenta "Default"
                 if (sprite == null)
                     sprite = profile.GetPortraitByKey("Default");
-
-                // 3) si sigue sin haber, coge el primero que exista
                 if (sprite == null)
                 {
                     var firstKey = profile.GetPortraitKeys().FirstOrDefault();
@@ -171,8 +232,20 @@ public class DialogueRunner : MonoBehaviour
             }
         }
 
-        portraitImage.sprite = sprite;
-        portraitImage.enabled = sprite != null; // oculta la imagen si no hay sprite
+        // 1) Legacy (si no hay pool)
+        if ((_portraitByProfile == null || _portraitByProfile.Count == 0) && portraitImage != null)
+        {
+            portraitImage.sprite = sprite;
+            portraitImage.enabled = sprite != null;
+            return;
+        }
+
+        // 2) Pool por perfil
+        if (!string.IsNullOrEmpty(node.profileId) && _portraitByProfile.TryGetValue(node.profileId, out var img))
+        {
+            img.sprite = sprite;
+            img.enabled = sprite != null;
+        }
     }
 
 
@@ -201,30 +274,185 @@ public class DialogueRunner : MonoBehaviour
 
     private void SetCurrent(DialogueNodeData node)
     {
+        // 0) Actualizar referencia actual y limpiar estado
         _current = node;
         _waitingChoice = false;
+        HideChoices(); // por si venimos de un nodo de elección
 
-        if (_current == null)
+        // 1) Speaker (nombre)
+        if (speakerText) speakerText.text = GetSpeakerName(_current);
+
+        // 2) ¿El texto empieza antes de la animación o después?
+        bool startTextNow = _current != null && _current.textStart == TextStartTiming.BeforeAnimation;
+
+        // 3) Sprite del perfil del nodo
+        ApplyNodeToUI(_current);
+
+        // 4) Anim / Placement
+        RunCharacterPlacement(_current, onAnimDone: () =>
         {
-            EndDialogue();
+            // 4.1) Mostrar el texto si estaba esperando al final de la animación
+            if (!startTextNow)
+                DisplayNodeBodyAsync(_current);
+
+            // 4.2) Si este nodo es de elección, mostramos las opciones ahora
+            if (_current != null && _current.isChoiceNode)
+                ShowChoices(_current);
+        });
+
+        // 5) Si el texto debe empezar ANTES de la animación:
+        if (startTextNow)
+            DisplayNodeBodyAsync(_current);
+
+        // 6) Si el nodo no es de elección, nos quedamos a la espera de la tecla avanzar/edges
+        // (la lógica de Update y GoNext ya se encarga)
+    }
+
+    private void RunCharacterPlacement(DialogueNodeData node, Action onAnimDone)
+    {
+        // 0) Validaciones + obtener la Image del perfil
+        if (node == null || string.IsNullOrEmpty(node.profileId) ||
+            _portraitByProfile == null || !_portraitByProfile.TryGetValue(node.profileId, out var img) ||
+            img == null)
+        {
+            onAnimDone?.Invoke();
             return;
         }
 
-        if (!string.IsNullOrEmpty(_current.eventKey))
-            GlobalDialogueEvents.Fire(_current.eventKey);
+        var rt = img.rectTransform;
 
-        //if (speakerText) speakerText.text = GetSpeakerName(_current);
-        //if (bodyText) bodyText.text = ResolveBodyText(_current);
-        // REMPLAZADO
-        if (speakerText) speakerText.text = GetSpeakerName(_current);
-        DisplayNodeBodyAsync(_current); // <- animación o instantáneo según flag del nodo
+        // 1) CanvasGroup (fade)
+        var cg = img.GetComponent<CanvasGroup>();
+        if (cg == null) cg = img.gameObject.AddComponent<CanvasGroup>();
 
-        ApplyNodeToUI(_current);
-
-        if (_current.isChoiceNode)
-            ShowChoices(_current);
+        // 2) Posición de ORIGEN
+        Vector3 startPos;
+        if (node.origin == Spot.Auto && _portraitStateByProfile.TryGetValue(node.profileId, out var prev))
+            startPos = prev.screenPos;
         else
-            HideChoices();
+            startPos = ResolveSpot(node.origin, rt);
+
+        rt.position = startPos;
+
+        // 3) Fades (entrada vs salida según target)
+        float from, to;
+        bool exiting = (node.target == Spot.OffLeft || node.target == Spot.OffRight);
+        if (node.useFade)
+        {
+            if (exiting) { from = node.exitFromOpacity / 100f; to = node.exitToOpacity / 100f; }
+            else { from = node.enterFromOpacity / 100f; to = node.enterToOpacity / 100f; }
+        }
+        else { from = to = 1f; }
+        cg.alpha = from;
+
+        // 4) Destino
+        if (node.target == Spot.Keep)
+        {
+            if (node.useFade) cg.alpha = node.enterToOpacity / 100f;
+
+            _portraitStateByProfile[node.profileId] = new PortraitState
+            {
+                logical = LogicalPos.None,
+                screenPos = rt.position
+            };
+            onAnimDone?.Invoke();
+            return;
+        }
+
+        Vector3 endPos = ResolveSpot(node.target, rt);
+
+        // 5) Animar o teletransportar
+        bool doTeleport = (node.appearance == AppearanceMode.Preplaced) || (node.moveSpeed <= 1f);
+
+        Action persistAndDone = () =>
+        {
+            _portraitStateByProfile[node.profileId] = new PortraitState
+            {
+                logical = ResolveLogical(node.target),
+                screenPos = rt.position
+            };
+            onAnimDone?.Invoke();
+        };
+
+        if (doTeleport)
+        {
+            rt.position = endPos;
+            cg.alpha = to;
+            persistAndDone();
+        }
+        else
+        {
+            StartCoroutine(SlideAndFade(rt, cg, endPos, to, node.moveSpeed, persistAndDone));
+        }
+    }
+
+    private System.Collections.IEnumerator SlideAndFade(RectTransform rt, CanvasGroup cg, Vector3 endPos, float endAlpha, float speed, Action onDone)
+    {
+        // Movimiento lineal a 'speed' px/s + Lerp de alpha
+        Vector3 startPos = rt.position;
+        float startAlpha = cg.alpha;
+
+        // Si speed ~ 0, teletransporte
+        if (speed <= 1f)
+        {
+            rt.position = endPos;
+            cg.alpha = endAlpha;
+            onDone?.Invoke();
+            yield break;
+        }
+
+        float totalDist = Vector3.Distance(startPos, endPos);
+        float t = 0f;
+        while (t < 1f)
+        {
+            // p = v * dt / d
+            float step = (speed * Time.deltaTime) / Mathf.Max(1f, totalDist);
+            t = Mathf.Clamp01(t + step);
+
+            rt.position = Vector3.Lerp(startPos, endPos, t);
+            cg.alpha = Mathf.Lerp(startAlpha, endAlpha, t);
+
+            yield return null;
+        }
+
+        onDone?.Invoke();
+    }
+
+
+    private void BuildPortraitPool()
+    {
+        if (portraitsRoot == null || portraitPrefab == null) return;
+
+        // Limpiar previos
+        foreach (var kv in _portraitByProfile)
+            if (kv.Value) Destroy(kv.Value.gameObject);
+        _portraitByProfile.Clear();
+
+        // Perfiles únicos usados en nodos del graph
+        var uniqueProfiles = graph.Nodes
+            .Where(n => n != null && !string.IsNullOrEmpty(n.profileId))
+            .Select(n => n.profileId)
+            .Distinct();
+
+        // AQUI FALTABA UNA COSA
+        foreach (var pid in uniqueProfiles)
+        {
+            var img = Instantiate(portraitPrefab, portraitsRoot);
+            img.gameObject.name = $"Portrait_{pid}";
+            img.gameObject.SetActive(true);
+            img.enabled = false; // hasta que tenga sprite
+                                 // Colocación inicial: lo dejamos centrado; el nodo dictará target/anims.
+            var rt = img.rectTransform;
+            if (centerAnchor != null)
+            {
+                rt.position = centerAnchor.position;
+            }
+            _portraitByProfile[pid] = img;
+            _portraitStateByProfile[pid] = new PortraitState { logical = LogicalPos.None, screenPos = img.rectTransform.position };
+        }
+
+        // Si mantenemos support para portraitImage "legacy", lo ocultamos por defecto:
+        if (portraitImage) { portraitImage.enabled = false; }
     }
 
     private async void DisplayNodeBodyAsync(DialogueNodeData node)
@@ -263,6 +491,11 @@ public class DialogueRunner : MonoBehaviour
         try
         {
             await _typewriter.RunAsync(nodeText, p, bodyText, null, _twCts.Token);
+            // Al terminar de escribir, si el nodo actual es de elección y seguimos en él, muestra opciones
+            if (_current == node && node.isChoiceNode)
+            {
+                ShowChoices(node);
+            }
         }
         catch (OperationCanceledException)
         {
@@ -361,6 +594,17 @@ public class DialogueRunner : MonoBehaviour
             portraitImage.enabled = false;
         }
 
+        // Ocultar todos los retratos del pool
+        foreach (var kv in _portraitByProfile)
+        {
+            if (kv.Value)
+            {
+                kv.Value.enabled = false;
+                var cg = kv.Value.GetComponent<CanvasGroup>();
+                if (cg) cg.alpha = 0f;
+            }
+        }
+
         _current = null;
         _waitingChoice = false;
         OnDialogueEnd?.Invoke();
@@ -400,5 +644,43 @@ public class DialogueRunner : MonoBehaviour
                 return (string)(p.GetValue(obj) ?? "");
         }
         return "";
+    }
+
+    private Vector3 GetAnchorPos(RectTransform anchor, Vector3 fallback)
+    => anchor ? anchor.position : fallback;
+
+    private Vector3 GetOffscreenPos(Vector3 around, bool toLeft, float offsetPx)
+    {
+        var p = around;
+        p.x += toLeft ? -offsetPx : offsetPx;
+        return p;
+    }
+
+    private Vector3 ResolveSpot(Spot spot, RectTransform rt)
+    {
+        switch (spot)
+        {
+            case Spot.Left: return GetAnchorPos(leftAnchor, rt.position);
+            case Spot.Center: return GetAnchorPos(centerAnchor, rt.position);
+            case Spot.Right: return GetAnchorPos(rightAnchor, rt.position);
+            case Spot.OffLeft: return GetOffscreenPos(GetAnchorPos(leftAnchor, rt.position), true, Screen.width * 0.6f);
+            case Spot.OffRight: return GetOffscreenPos(GetAnchorPos(rightAnchor, rt.position), false, Screen.width * 0.6f);
+            case Spot.Auto:
+            case Spot.Keep:
+            default: return rt.position; // se resuelve antes con estado previo
+        }
+    }
+
+    private LogicalPos ResolveLogical(Spot s)
+    {
+        switch (s)
+        {
+            case Spot.Left: return LogicalPos.Left;
+            case Spot.Center: return LogicalPos.Center;
+            case Spot.Right: return LogicalPos.Right;
+            case Spot.OffLeft: return LogicalPos.OffLeft;
+            case Spot.OffRight: return LogicalPos.OffRight;
+            default: return LogicalPos.None;
+        }
     }
 }

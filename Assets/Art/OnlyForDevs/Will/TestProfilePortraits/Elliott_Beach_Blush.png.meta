@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: f5b92888e67f863499707589dd3ce470
+guid: 71da5e0f7139bd1488b86d15a9c9772f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5685094100023643636
-    second: pit1_0
+      213: -6037533700497626156
+    second: Elliott_Beach_Blush_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: pit1_0
+      name: Elliott_Beach_Blush_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 470
-        height: 526
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c02fb65790d7a11b0800000000000000
-      internalID: -5685094100023643636
+      spriteID: 4dba36e661f563ca0800000000000000
+      internalID: -6037533700497626156
       vertices: []
       indices: 
       edges: []

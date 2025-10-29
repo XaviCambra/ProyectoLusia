@@ -12,8 +12,8 @@ using EditorObjectField = UnityEditor.UIElements.ObjectField;
 public class DialogueNodeView : Node
 {
     public readonly DialogueNodeData Data;
-    public readonly Vector2 MinSize = new(380, 160);
-    public readonly Vector2 MaxSize = new(420, 560);
+    public readonly Vector2 MinSize = new(480, 144);
+    public readonly Vector2 MaxSize = new(480, 1080);
     public Vector2 DefaultSize => new(320, 200);
 
     private Port _input;
@@ -26,13 +26,20 @@ public class DialogueNodeView : Node
 
     // --- TYPEWRITER UI ---
     private Toggle _twEnableToggle;
-    private Toggle _twAdvancedToggle;
-    private VisualElement _twAdvancedBox;
+
+    // Campos avanzados sin caja (sueltos dentro del foldout)
+    private FloatField _twSecondsPerCharField;
+    private FloatField _twGlobalSpeedField;
+    private Toggle _twRespectRichTextToggle;
+    private Toggle _twWhitespaceDelayToggle;
+    private FloatField _twCommaPauseField;
+    private FloatField _twPeriodPauseField;
+    private FloatField _twEllipsisPauseField;
 
     public DialogueNodeView(DialogueNodeData data)
     {
         Data = data;
-        title = "Diologo";
+        title = "Diálogo";
         titleContainer.Q("collapse-button")?.RemoveFromHierarchy();
         viewDataKey = Data.GUID;
 
@@ -83,19 +90,9 @@ public class DialogueNodeView : Node
             Data.bgColorIndex = idx;
             Data.bgColor = DialogueNodeData.NodePalette[idx].color;
             mainContainer.style.backgroundColor = new StyleColor(Data.bgColor);
-
-            // Opcional: persistir al instante
-            // UnityEditor.EditorUtility.SetDirty(/* tu DialogueGraph SO */);
-            // AssetDatabase.SaveAssets();
         });
 
         mainContainer.Add(paletteDropdown);
-
-        //// Espaciado agradable
-        //mainContainer.style.paddingLeft = 8;
-        //mainContainer.style.paddingRight = 8;
-        //mainContainer.style.paddingTop = 6;
-        //mainContainer.style.paddingBottom = 8;
 
         // ---------- PERFIL (SO) ----------
         var profileField = new EditorObjectField("Perfil (SO)")
@@ -115,6 +112,67 @@ public class DialogueNodeView : Node
         var portraitKeyField = new TextField("Retrato (key)") { value = Data.portraitKey };
         portraitKeyField.RegisterValueChangedCallback(e => Data.portraitKey = e.newValue);
         mainContainer.Add(portraitKeyField);
+
+        // ---------- EXTRAS / ANIMACIÓN (PLEGABLE) ----------
+        var extrasFold = new Foldout { text = "Extras / Animación" };
+        extrasFold.viewDataKey = Data.GUID + "_EXTRAS";
+        extrasFold.value = Data.showExtrasBox; // estado inicial
+        extrasFold.RegisterValueChangedCallback(e => { Data.showExtrasBox = e.newValue; });
+        mainContainer.Add(extrasFold);
+
+        // Aparición
+        var appearanceField = new EnumField("Aparición", Data.appearance);
+        appearanceField.Init(Data.appearance);
+        appearanceField.RegisterValueChangedCallback(e => Data.appearance = (AppearanceMode)e.newValue);
+        extrasFold.Add(appearanceField);
+
+        // Origin (Spot)
+        var originField = new EnumField("Origin", Data.origin);
+        originField.Init(Data.origin);
+        originField.RegisterValueChangedCallback(e => Data.origin = (Spot)e.newValue);
+        extrasFold.Add(originField);
+
+        // Target (Spot)
+        var targetField = new EnumField("Target", Data.target);
+        targetField.Init(Data.target);
+        targetField.RegisterValueChangedCallback(e => Data.target = (Spot)e.newValue);
+        extrasFold.Add(targetField);
+
+        // Move speed
+        var moveSpeedField = new FloatField("Move Speed (px/s)") { value = Data.moveSpeed };
+        moveSpeedField.RegisterValueChangedCallback(e => Data.moveSpeed = Mathf.Max(0f, e.newValue));
+        extrasFold.Add(moveSpeedField);
+
+        // Cuándo empieza el texto
+        var textStartField = new EnumField("Inicio del texto", Data.textStart);
+        textStartField.Init(Data.textStart);
+        textStartField.RegisterValueChangedCallback(e => Data.textStart = (TextStartTiming)e.newValue);
+        extrasFold.Add(textStartField);
+
+        // Fade
+        var useFadeToggle = new Toggle("Usar desvanecido") { value = Data.useFade };
+        useFadeToggle.RegisterValueChangedCallback(e => Data.useFade = e.newValue);
+        extrasFold.Add(useFadeToggle);
+
+        // Opacidades (en %)
+        var enterFrom = new IntegerField("Enter From %") { value = Data.enterFromOpacity };
+        enterFrom.RegisterValueChangedCallback(e => Data.enterFromOpacity = Mathf.Clamp(e.newValue, 0, 100));
+        extrasFold.Add(enterFrom);
+
+        var enterTo = new IntegerField("Enter To %") { value = Data.enterToOpacity };
+        enterTo.RegisterValueChangedCallback(e => Data.enterToOpacity = Mathf.Clamp(e.newValue, 0, 100));
+        extrasFold.Add(enterTo);
+
+        var exitFrom = new IntegerField("Exit From %") { value = Data.exitFromOpacity };
+        exitFrom.RegisterValueChangedCallback(e => Data.exitFromOpacity = Mathf.Clamp(e.newValue, 0, 100));
+        extrasFold.Add(exitFrom);
+
+        var exitTo = new IntegerField("Exit To %") { value = Data.exitToOpacity };
+        exitTo.RegisterValueChangedCallback(e => Data.exitToOpacity = Mathf.Clamp(e.newValue, 0, 100));
+        extrasFold.Add(exitTo);
+        // ---------- END EXTRAS / ANIMACIÓN (PLEGABLE) ----------
+
+        
 
         // ---------- Resto de tu UI ----------
         _input = PortUtils.CreatePort(this, Direction.Input, Port.Capacity.Multi, "In");
@@ -145,94 +203,59 @@ public class DialogueNodeView : Node
 
         UpdateLocalizationVisibility();
 
-        // TYPEWRITER OPTIONS (placeholder, puedes expandir)
+        // ---------- TYPEWRITER (PLEGABLE) ----------
+        var typewriterFold = new Foldout { text = "Typewriter" };
+        typewriterFold.viewDataKey = Data.GUID + "_TW";
+        typewriterFold.value = Data.showTypewriterBox; // estado inicial
+        typewriterFold.RegisterValueChangedCallback(e => { Data.showTypewriterBox = e.newValue; });
+        mainContainer.Add(typewriterFold);
 
-        // ---------- TYPEWRITER ----------
+        // Toggle principal (usar typewriter)
         _twEnableToggle = new Toggle("Typewriter") { tooltip = "Activar escritura progresiva en este nodo." };
         _twEnableToggle.value = Data.useTypewriter;
         _twEnableToggle.RegisterValueChangedCallback(e =>
         {
             Data.useTypewriter = e.newValue;
-            UpdateTypewriterVisibility();
             ScheduleAutoSize();
         });
-        mainContainer.Add(_twEnableToggle);
+        typewriterFold.Add(_twEnableToggle);
 
-        // Toggle para mostrar/ocultar el bloque avanzado
-        _twAdvancedToggle = new Toggle("Mostrar opciones avanzadas")
-        {
-            tooltip = "Muestra algunos parámetros comunes del Typewriter para ajustar en este nodo."
-        };
-        _twAdvancedToggle.value = Data.twShowAdvanced;
-        _twAdvancedToggle.RegisterValueChangedCallback(e =>
-        {
-            Data.twShowAdvanced = e.newValue;
-            UpdateTypewriterVisibility();
-            ScheduleAutoSize();
-        });
-        mainContainer.Add(_twAdvancedToggle);
-
-        // Contenedor avanzado (se oculta si no se usa)
-        _twAdvancedBox = new VisualElement();
-        _twAdvancedBox.style.marginLeft = 10;
-        _twAdvancedBox.style.marginTop = 4;
-        _twAdvancedBox.style.marginBottom = 4;
-        _twAdvancedBox.style.flexDirection = FlexDirection.Column;
-
-        // Campos mínimos y útiles
-        var fSeconds = new FloatField("Segundos/char") { value = Mathf.Clamp(Data.tw.secondsPerChar, 0.001f, 0.2f) };
-        fSeconds.RegisterValueChangedCallback(e =>
+        // === CAMPOS AVANZADOS (sueltos, sin caja) ===
+        _twSecondsPerCharField = new FloatField("Segundos/char") { value = Mathf.Clamp(Data.tw.secondsPerChar, 0.001f, 0.2f) };
+        _twSecondsPerCharField.RegisterValueChangedCallback(e =>
         {
             Data.tw.secondsPerChar = Mathf.Clamp(e.newValue, 0.001f, 0.2f);
         });
+        typewriterFold.Add(_twSecondsPerCharField);
 
-        var fGlobal = new FloatField("Velocidad global (x)") { value = Mathf.Clamp(Data.tw.globalSpeed, 0.1f, 3f) };
-        fGlobal.RegisterValueChangedCallback(e =>
+        _twGlobalSpeedField = new FloatField("Velocidad global (x)") { value = Mathf.Clamp(Data.tw.globalSpeed, 0.1f, 3f) };
+        _twGlobalSpeedField.RegisterValueChangedCallback(e =>
         {
             Data.tw.globalSpeed = Mathf.Clamp(e.newValue, 0.1f, 3f);
         });
+        typewriterFold.Add(_twGlobalSpeedField);
 
-        var tRich = new Toggle("Respetar RichText") { value = Data.tw.respectRichText };
-        tRich.RegisterValueChangedCallback(e => Data.tw.respectRichText = e.newValue);
+        _twRespectRichTextToggle = new Toggle("Respetar RichText") { value = Data.tw.respectRichText };
+        _twRespectRichTextToggle.RegisterValueChangedCallback(e => Data.tw.respectRichText = e.newValue);
+        typewriterFold.Add(_twRespectRichTextToggle);
 
-        var tWhitespace = new Toggle("Min. delay en espacios") { value = Data.tw.minimalWhitespaceDelay };
-        tWhitespace.RegisterValueChangedCallback(e => Data.tw.minimalWhitespaceDelay = e.newValue);
+        _twWhitespaceDelayToggle = new Toggle("Min. delay en espacios") { value = Data.tw.minimalWhitespaceDelay };
+        _twWhitespaceDelayToggle.RegisterValueChangedCallback(e => Data.tw.minimalWhitespaceDelay = e.newValue);
+        typewriterFold.Add(_twWhitespaceDelayToggle);
 
-        // Pausas comunes
-        var fComma = new FloatField("Pausa coma (x)") { value = Data.tw.commaPct };
-        fComma.RegisterValueChangedCallback(e => Data.tw.commaPct = Mathf.Max(0f, e.newValue));
+        _twCommaPauseField = new FloatField("Pausa coma (x)") { value = Data.tw.commaPct };
+        _twCommaPauseField.RegisterValueChangedCallback(e => Data.tw.commaPct = Mathf.Max(0f, e.newValue));
+        typewriterFold.Add(_twCommaPauseField);
 
-        var fPeriod = new FloatField("Pausa punto (x)") { value = Data.tw.periodPct };
-        fPeriod.RegisterValueChangedCallback(e => Data.tw.periodPct = Mathf.Max(0f, e.newValue));
+        _twPeriodPauseField = new FloatField("Pausa punto (x)") { value = Data.tw.periodPct };
+        _twPeriodPauseField.RegisterValueChangedCallback(e => Data.tw.periodPct = Mathf.Max(0f, e.newValue));
+        typewriterFold.Add(_twPeriodPauseField);
 
-        var fEllipsis = new FloatField("Pausa '...' (x)") { value = Data.tw.ellipsisPct };
-        fEllipsis.RegisterValueChangedCallback(e => Data.tw.ellipsisPct = Mathf.Max(0f, e.newValue));
+        _twEllipsisPauseField = new FloatField("Pausa '...' (x)") { value = Data.tw.ellipsisPct };
+        _twEllipsisPauseField.RegisterValueChangedCallback(e => Data.tw.ellipsisPct = Mathf.Max(0f, e.newValue));
+        typewriterFold.Add(_twEllipsisPauseField);
+        // ---------- END TYPEWRITER (PLEGABLE) ----------
 
-        _twAdvancedBox.Add(fSeconds);
-        _twAdvancedBox.Add(fGlobal);
-        _twAdvancedBox.Add(tRich);
-        _twAdvancedBox.Add(tWhitespace);
-        _twAdvancedBox.Add(fComma);
-        _twAdvancedBox.Add(fPeriod);
-        _twAdvancedBox.Add(fEllipsis);
-
-        mainContainer.Add(_twAdvancedBox);
-
-        // Ajustar visibilidad inicial
-        UpdateTypewriterVisibility();
-
-
-        // END TYPEWRITER OPTIONS
-
-        //mainContainer.Add(new EnumField().BindEnum("Posición", Data.anchor, (CharacterAnchor a) => Data.anchor = a));
-        //var customPos = new Vector2Field("Custom") { value = Data.customAnchor };
-        //customPos.RegisterValueChangedCallback(e => {
-        //    var v = e.newValue;
-        //    v.x = Mathf.Clamp01(v.x);
-        //    v.y = Mathf.Clamp01(v.y);
-        //    Data.customAnchor = v;
-        //    customPos.SetValueWithoutNotify(v);
-        //});
         mainContainer.Add(new Toggle().BindToggle("Es nodo inicial", Data.isStart, v => { Data.isStart = v; RebuildOutputs(); }));
         mainContainer.Add(new Toggle().BindToggle("Es nodo de elección", Data.isChoiceNode, v => { Data.isChoiceNode = v; RebuildOutputs(); }));
         mainContainer.Add(new TextField().BindText("Event Key", Data.eventKey, v => Data.eventKey = v));
@@ -276,17 +299,6 @@ public class DialogueNodeView : Node
         _didFirstAutosize = true;
         ScheduleAutoSize();
     }
-
-    private void UpdateTypewriterVisibility()
-    {
-        // Si no está activo el typewriter, ocultamos todo lo relacionado
-        _twAdvancedToggle.style.display = Data.useTypewriter ? DisplayStyle.Flex : DisplayStyle.None;
-
-        // Si está activo y además pedimos opciones avanzadas, mostramos el bloque
-        bool showAdvanced = Data.useTypewriter && Data.twShowAdvanced;
-        _twAdvancedBox.style.display = showAdvanced ? DisplayStyle.Flex : DisplayStyle.None;
-    }
-
 
     private void ScheduleAutoSize()
     {
@@ -354,18 +366,18 @@ public class DialogueNodeView : Node
         {
             Data.choiceCount = Mathf.Clamp(Data.choiceCount, 2, 4);
             while (Data.choices.Count < Data.choiceCount)
-                Data.choices.Add(new ChoiceData { choiceText = "Opcion", portName = Guid.NewGuid().ToString("N").Substring(0, 6) });
+                Data.choices.Add(new ChoiceData { choiceText = "Opción", portName = Guid.NewGuid().ToString("N").Substring(0, 6) });
             while (Data.choices.Count > Data.choiceCount)
                 Data.choices.RemoveAt(Data.choices.Count - 1);
 
-            var countField = new IntegerField("No opciones") { value = Data.choiceCount };
+            var countField = new IntegerField("Número de opciones") { value = Data.choiceCount };
             countField.RegisterValueChangedCallback(e => { Data.choiceCount = Mathf.Clamp(e.newValue, 2, 4); RebuildOutputs(); });
             outputContainer.Add(countField);
 
             for (int i = 0; i < Data.choiceCount; i++)
             {
                 var row = new VisualElement { style = { flexDirection = FlexDirection.Row, alignItems = Align.Center } };
-                var optField = new TextField($"Opcion {i + 1}") { value = Data.choices[i].choiceText };
+                var optField = new TextField($"Opción {i + 1}") { value = Data.choices[i].choiceText };
                 optField.style.flexGrow = 1;
                 int idx = i;
                 optField.RegisterValueChangedCallback(e => Data.choices[idx].choiceText = e.newValue);

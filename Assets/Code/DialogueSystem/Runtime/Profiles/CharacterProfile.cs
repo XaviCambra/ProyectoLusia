@@ -14,6 +14,10 @@ public class CharacterProfile : ScriptableObject
     [Header("Retratos")]
     public List<PortraitEntry> portraits = new();
 
+    // Aliases para compatibilidad con código previo:
+    public string DisplayName => displayName;
+    public Sprite GetSprite(string key) => GetPortraitByKey(key);
+
 #if UNITY_EDITOR
     private void OnValidate()
     {
