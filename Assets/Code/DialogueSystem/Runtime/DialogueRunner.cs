@@ -76,6 +76,12 @@ public class DialogueRunner : MonoBehaviour
     [SerializeField] private RectTransform rightAnchor;
     // --- END Retratos por perfil (pool dinámico) ---
 
+    // Animation curves
+    [Header("Movimiento de retratos")]
+    [Tooltip("Curva de interpolación para el movimiento (0..1). 0: inicio, 1: fin")]
+    [SerializeField] private AnimationCurve moveCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+    // --- END Animation curves ---
+
     private void Awake()
     {
         // 1) Resolver servicio de perfiles primero
@@ -388,11 +394,11 @@ public class DialogueRunner : MonoBehaviour
 
     private System.Collections.IEnumerator SlideAndFade(RectTransform rt, CanvasGroup cg, Vector3 endPos, float endAlpha, float speed, Action onDone)
     {
-        // Movimiento lineal a 'speed' px/s + Lerp de alpha
+        // Posición y alpha de partida
         Vector3 startPos = rt.position;
         float startAlpha = cg.alpha;
 
-        // Si speed ~ 0, teletransporte
+        // Si la velocidad es muy baja, teletransportamos (mismo comportamiento previo)
         if (speed <= 1f)
         {
             rt.position = endPos;
@@ -401,23 +407,52 @@ public class DialogueRunner : MonoBehaviour
             yield break;
         }
 
+        // Duración total = distancia / velocidad (respetamos la velocidad que dicta el nodo)
         float totalDist = Vector3.Distance(startPos, endPos);
-        float t = 0f;
-        while (t < 1f)
+        if (totalDist <= Mathf.Epsilon)
         {
-            // p = v * dt / d
-            float step = (speed * Time.deltaTime) / Mathf.Max(1f, totalDist);
-            t = Mathf.Clamp01(t + step);
+            // No hay movimiento, solo fade
+            float t0 = 0f;
+            while (t0 < 1f)
+            {
+                t0 = Mathf.Clamp01(t0 + Time.deltaTime); // ~1s de fade lineal si no hay distancia
+                cg.alpha = Mathf.Lerp(startAlpha, endAlpha, t0);
+                yield return null;
+            }
+            onDone?.Invoke();
+            yield break;
+        }
 
-            rt.position = Vector3.Lerp(startPos, endPos, t);
-            cg.alpha = Mathf.Lerp(startAlpha, endAlpha, t);
+        float duration = totalDist / speed; // clave: respeta moveSpeed del nodo
+        float elapsed = 0f;
+
+        // Seguridad: si no hay curva definida, usamos interpolación lineal
+        AnimationCurve curve = moveCurve != null ? moveCurve : AnimationCurve.Linear(0f, 0f, 1f, 1f);
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            // Progreso "crudo" 0..1 basado en tiempo (mantiene la misma duración total)
+            float rawT = Mathf.Clamp01(elapsed / duration);
+
+            // Progreso "suavizado" por la curva del inspector (solo afecta a la posición)
+            float easedT = Mathf.Clamp01(curve.Evaluate(rawT));
+
+            // Movimiento con curva
+            rt.position = Vector3.LerpUnclamped(startPos, endPos, easedT);
+
+            // Alpha sigue lineal (si quieres que también use la curva, cambia rawT -> easedT)
+            cg.alpha = Mathf.Lerp(startAlpha, endAlpha, rawT);
+            //cg.alpha = Mathf.Lerp(startAlpha, endAlpha, easedT); // opcional: alpha también con curva
 
             yield return null;
         }
 
+        // Aseguramos estado final exacto
+        rt.position = endPos;
+        cg.alpha = endAlpha;
         onDone?.Invoke();
     }
-
 
     private void BuildPortraitPool()
     {

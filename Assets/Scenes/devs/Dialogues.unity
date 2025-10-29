@@ -1955,13 +1955,37 @@ MonoBehaviour:
   - {fileID: 1231740076}
   - {fileID: 105253536}
   - {fileID: 1600962994}
-  localizationServiceRef: {fileID: 465389642}
-  portraitImage: {fileID: 1941044985}
+  localizationServiceRef: {fileID: 0}
+  portraitImage: {fileID: 0}
   portraitsRoot: {fileID: 1045239993}
   portraitPrefab: {fileID: 1941044985}
   leftAnchor: {fileID: 751734330}
   centerAnchor: {fileID: 591321225}
   rightAnchor: {fileID: 149658829}
+  moveCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &2146046527
 GameObject:
   m_ObjectHideFlags: 0
