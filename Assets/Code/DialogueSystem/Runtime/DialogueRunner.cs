@@ -21,6 +21,10 @@ public class DialogueRunner : MonoBehaviour
     [Tooltip("Botones de elección (hasta 4) en orden.")]
     public Button[] choiceButtons;
 
+    [Header("Choices - resaltado")]
+    [SerializeField] private Color normalChoiceColor = Color.white;
+    [SerializeField] private Color visitedChoiceColor = new Color(1f, 0.85f, 0.2f, 1f); // ámbar suave
+
     public event Action OnDialogueEnd;
 
     private readonly Dictionary<string, DialogueNodeData> _nodeByGuid = new();
@@ -34,6 +38,9 @@ public class DialogueRunner : MonoBehaviour
         public Vector3 screenPos;    // última posición real en pantalla
     }
     private readonly Dictionary<string, PortraitState> _portraitStateByProfile = new();
+
+    // Elecciones ya realizadas durante la sesión actual de diálogo
+    private readonly HashSet<string> _visitedChoiceKeys = new();
 
     // --- Typewriter ---
     private readonly TypewriterService _typewriter = new();
@@ -257,6 +264,7 @@ public class DialogueRunner : MonoBehaviour
 
     private void StartDialogue()
     {
+        _visitedChoiceKeys.Clear(); // reinicia el historial de elecciones para esta sesión
         DialogueNodeData start = null;
 
         // 1) Prioriza flag isStart
@@ -572,6 +580,13 @@ public class DialogueRunner : MonoBehaviour
                 if (txt) txt.text = string.IsNullOrEmpty(choice.choiceText) ? $"Opción {i + 1}" : choice.choiceText;
 
                 var port = string.IsNullOrEmpty(choice.portName) ? $"choice_{i}" : choice.portName;
+
+                // Resalte si la opción ya fue escogida previamente en esta sesión
+                var visited = _visitedChoiceKeys.Contains(MakeChoiceKey(node.GUID, port));
+                // 1) Cambiar el color del Image del propio Button (Source Image)
+                var bg = btn.image; // Image en el mismo GameObject del Button
+                if (bg) bg.color = visited ? visitedChoiceColor : normalChoiceColor;
+
                 btn.onClick.AddListener(() => OnChoiceSelected(node.GUID, port));
                 btn.gameObject.SetActive(true);
             }
@@ -591,6 +606,7 @@ public class DialogueRunner : MonoBehaviour
     private void OnChoiceSelected(string fromGuid, string fromPort)
     {
         _waitingChoice = false;
+        _visitedChoiceKeys.Add(MakeChoiceKey(fromGuid, fromPort)); // registrar como ya escogida
         var key = (fromGuid, fromPort);
 
         if (_edgeLookup.TryGetValue(key, out var toGuid) && _nodeByGuid.TryGetValue(toGuid, out var toNode))
@@ -598,6 +614,9 @@ public class DialogueRunner : MonoBehaviour
         else
             EndDialogue();
     }
+
+    // Clave única por opción: nodoGUID + puerto
+    private static string MakeChoiceKey(string guid, string port) => $"{guid}::{port}";
 
     private void GoNext()
     {

@@ -1955,6 +1955,8 @@ MonoBehaviour:
   - {fileID: 1231740076}
   - {fileID: 105253536}
   - {fileID: 1600962994}
+  normalChoiceColor: {r: 1, g: 1, b: 1, a: 1}
+  visitedChoiceColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
   localizationServiceRef: {fileID: 0}
   portraitImage: {fileID: 0}
   portraitsRoot: {fileID: 1045239993}

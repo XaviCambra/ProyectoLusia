@@ -32,9 +32,15 @@ MonoBehaviour:
     locKey: 
     anchor: 0
     customAnchor: {x: 0, y: 0}
-    isChoiceNode: 0
-    choiceCount: 2
-    choices: []
+    isChoiceNode: 1
+    choiceCount: 3
+    choices:
+    - choiceText: LLAMAR A MADRE
+      portName: e24d6d
+    - choiceText: LLAMAR A ABUELO
+      portName: 6272b4
+    - choiceText: LLAMAR AL PERRO
+      portName: 1af57b
     eventKey: 
     onEnter:
       m_PersistentCalls:
@@ -42,10 +48,10 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 1271
-      y: 233
+      x: 1355
+      y: 512
       width: 480
-      height: 657
+      height: 724
     showExtrasBox: 0
     appearance: 1
     origin: 0
@@ -90,8 +96,8 @@ MonoBehaviour:
     isStart: 0
     nodeRect:
       serializedVersion: 2
-      x: 716
-      y: 233
+      x: 721
+      y: 227
       width: 480
       height: 657
     showExtrasBox: 1
@@ -158,10 +164,169 @@ MonoBehaviour:
     showTypewriterBox: 0
     profileId: feb4a147cc894086989b162047bd529d
     portraitKey: idle
+  - useTypewriter: 0
+    twShowAdvanced: 0
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    guid: 1d22b9ec-b6d8-4c0a-a000-4881e29209b4
+    bgColorIndex: 0
+    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
+    speakerName: TU MADRE
+    lineText: A COMER
+    localization: 0
+    locKey: 
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    isStart: 0
+    nodeRect:
+      serializedVersion: 2
+      x: 1909
+      y: 355
+      width: 480
+      height: 315
+    showExtrasBox: 0
+    appearance: 0
+    origin: 0
+    target: 3
+    moveSpeed: 600
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    showTypewriterBox: 0
+    profileId: 
+    portraitKey: 
+  - useTypewriter: 0
+    twShowAdvanced: 0
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    guid: e22a1f62-e9cf-48be-bc41-a1e3b3ccf57b
+    bgColorIndex: 0
+    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
+    speakerName: Perro
+    lineText: "QUE WOOFCO\xD1O QUIERES?"
+    localization: 0
+    locKey: 
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    isStart: 0
+    nodeRect:
+      serializedVersion: 2
+      x: 1909
+      y: 1099
+      width: 480
+      height: 315
+    showExtrasBox: 0
+    appearance: 0
+    origin: 0
+    target: 3
+    moveSpeed: 600
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    showTypewriterBox: 0
+    profileId: 
+    portraitKey: 
+  - useTypewriter: 0
+    twShowAdvanced: 0
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    guid: ba3e7723-ace1-4d91-93f0-bf2058613b79
+    bgColorIndex: 0
+    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
+    speakerName: ABUELO
+    lineText: SI YO ESTOY MUERTO
+    localization: 0
+    locKey: 
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    isStart: 0
+    nodeRect:
+      serializedVersion: 2
+      x: 1935
+      y: 727
+      width: 480
+      height: 315
+    showExtrasBox: 0
+    appearance: 0
+    origin: 0
+    target: 3
+    moveSpeed: 600
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    showTypewriterBox: 0
+    profileId: 
+    portraitKey: 
   edges:
   - fromNodeGUID: 7dfd1423-b0d1-4783-81c9-092cfd5b47da
     fromPortName: Next
     toNodeGUID: c7d802e8-c711-4043-be08-ea03897c02c5
   - fromNodeGUID: c7d802e8-c711-4043-be08-ea03897c02c5
+    fromPortName: Next
+    toNodeGUID: 56acd476-21f1-4a96-ba78-8c2e4f426530
+  - fromNodeGUID: 56acd476-21f1-4a96-ba78-8c2e4f426530
+    fromPortName: e24d6d
+    toNodeGUID: 1d22b9ec-b6d8-4c0a-a000-4881e29209b4
+  - fromNodeGUID: 1d22b9ec-b6d8-4c0a-a000-4881e29209b4
+    fromPortName: Next
+    toNodeGUID: 56acd476-21f1-4a96-ba78-8c2e4f426530
+  - fromNodeGUID: 56acd476-21f1-4a96-ba78-8c2e4f426530
+    fromPortName: 1af57b
+    toNodeGUID: e22a1f62-e9cf-48be-bc41-a1e3b3ccf57b
+  - fromNodeGUID: ba3e7723-ace1-4d91-93f0-bf2058613b79
+    fromPortName: Next
+    toNodeGUID: 56acd476-21f1-4a96-ba78-8c2e4f426530
+  - fromNodeGUID: 56acd476-21f1-4a96-ba78-8c2e4f426530
+    fromPortName: 6272b4
+    toNodeGUID: ba3e7723-ace1-4d91-93f0-bf2058613b79
+  - fromNodeGUID: e22a1f62-e9cf-48be-bc41-a1e3b3ccf57b
     fromPortName: Next
     toNodeGUID: 56acd476-21f1-4a96-ba78-8c2e4f426530
