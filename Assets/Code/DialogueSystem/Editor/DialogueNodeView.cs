@@ -100,12 +100,30 @@ public class DialogueNodeView : Node
             objectType = typeof(CharacterProfile),
             allowSceneObjects = false // ahora sí compila
         };
-        profileField.value = FindProfileById(Data.profileId);
+        // Prioriza la referencia directa si existe; si no, intenta por ID.
+        profileField.value = Data.profileRef != null ? Data.profileRef : FindProfileById(Data.profileId);
         profileField.RegisterValueChangedCallback(e =>
         {
             var so = e.newValue as CharacterProfile;
+
+#if UNITY_EDITOR
+            if (so != null && string.IsNullOrEmpty(so.ProfileId))
+            {
+                // Autogenera un ID persistente y lo guarda en el asset del perfil
+                var soObj = new SerializedObject(so);
+                var idProp = soObj.FindProperty("profileId"); // campo privado del SO
+                idProp.stringValue = System.Guid.NewGuid().ToString();
+                soObj.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(so);
+                AssetDatabase.SaveAssets();
+            }
+#endif
+
+            // Ahora sí: el nodo guarda un ID válido y persistente
+            Data.profileRef = so;
             Data.profileId = so ? so.ProfileId : null;
         });
+
         mainContainer.Add(profileField);
 
         // ---------- PORTRAIT KEY ----------

@@ -127,6 +127,8 @@ public class DialogueNodeData : ISerializationCallbackReceiver
 
     // --- NUEVO: referencia lógica a un perfil ---
     [Header("Perfil (opcional)")]
+    [Tooltip("Referencia directa (editor/runtime) al perfil. Si está, tiene prioridad en el editor.")]
+    public CharacterProfile profileRef;   // <--- NUEVO
     [Tooltip("ID del CharacterProfile almacenado en la base de datos")]
     public string profileId;     // string llano: sin referencia directa al asset
     [Tooltip("Clave del retrato a usar dentro del perfil (PortraitEntry.key)")]

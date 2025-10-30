@@ -6,6 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Dialogue/Profiles/Character Profile", fileName = "NewCharacterProfile")]
 public class CharacterProfile : ScriptableObject
 {
+    [SerializeField, HideInInspector]
     private string profileId;
 
     [Header("Datos")]
@@ -21,10 +22,10 @@ public class CharacterProfile : ScriptableObject
 #if UNITY_EDITOR
     private void OnValidate()
     {
-        // Genera un ID si está vacío (solo una vez)
+        // Si el asset aún no tiene ID, crear uno persistente
         if (string.IsNullOrEmpty(profileId))
         {
-            profileId = Guid.NewGuid().ToString("N");
+            profileId = System.Guid.NewGuid().ToString();
             UnityEditor.EditorUtility.SetDirty(this);
         }
     }

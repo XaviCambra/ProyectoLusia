@@ -2096,8 +2096,36 @@ MonoBehaviour:
   normalChoiceColor: {r: 1, g: 1, b: 1, a: 1}
   visitedChoiceColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
   dimNonSpeaking: 1
+  scaleNonSpeaking: 1
+  speakingScale: {x: 1, y: 1, z: 1}
+  nonSpeakingScale: {x: 0.95, y: 0.95, z: 0.95}
+  scaleTweenDuration: 0.15
+  scaleTweenCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   speakingTint: {r: 1, g: 1, b: 1, a: 1}
-  nonSpeakingTint: {r: 0.6862745, g: 0.6862745, b: 0.6862745, a: 1}
+  nonSpeakingTint: {r: 0.39215687, g: 0.39215687, b: 0.39215687, a: 1}
   localizationServiceRef: {fileID: 0}
   portraitImage: {fileID: 0}
   portraitsRoot: {fileID: 1045239993}

@@ -61,7 +61,8 @@ MonoBehaviour:
     exitFromOpacity: 100
     exitToOpacity: 0
     showTypewriterBox: 0
-    profileId: 344edad5bd334042b7c9f0613ae5cd5d
+    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+    profileId: 16eea611-d505-460a-a653-00fbd1271eac
     portraitKey: idle
   - useTypewriter: 0
     twShowAdvanced: 0
@@ -108,7 +109,8 @@ MonoBehaviour:
     exitFromOpacity: 100
     exitToOpacity: 0
     showTypewriterBox: 0
-    profileId: de9b09012db44bbda811c81992984fa1
+    profileRef: {fileID: 11400000, guid: 8d53569ffc0d98942b7f0baf25aac63f, type: 2}
+    profileId: a6874051-ae66-449a-a2ad-7a74f4d9ad80
     portraitKey: idle
   - useTypewriter: 0
     twShowAdvanced: 0
@@ -155,7 +157,8 @@ MonoBehaviour:
     exitFromOpacity: 100
     exitToOpacity: 0
     showTypewriterBox: 0
-    profileId: 6be071a6b87d4d8bbdca749ae5a5eb83
+    profileRef: {fileID: 11400000, guid: 61f6d4e73b2c6e94285723ad575d568a, type: 2}
+    profileId: 71681313-2d32-4b04-8f18-92541f8a0695
     portraitKey: idle
   - useTypewriter: 0
     twShowAdvanced: 0
@@ -193,7 +196,7 @@ MonoBehaviour:
     showExtrasBox: 0
     appearance: 0
     origin: 0
-    target: 3
+    target: 2
     moveSpeed: 600
     textStart: 1
     useFade: 0
@@ -202,7 +205,8 @@ MonoBehaviour:
     exitFromOpacity: 100
     exitToOpacity: 0
     showTypewriterBox: 0
-    profileId: 344edad5bd334042b7c9f0613ae5cd5d
+    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+    profileId: 16eea611-d505-460a-a653-00fbd1271eac
     portraitKey: idle
   edges:
   - fromNodeGUID: 7dfd1423-b0d1-4783-81c9-092cfd5b47da

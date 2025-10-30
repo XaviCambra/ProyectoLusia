@@ -130,6 +130,9 @@ public class DialogueGraphEditorWindow : EditorWindow
             }
 
             DialogueGraphSaveUtility.SaveGraph(_graphView, _asset);
+            EditorUtility.SetDirty(_asset);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         })
         { text = "Guardar" };
         toolbar.Add(btnSave);
