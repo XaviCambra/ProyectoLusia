@@ -21,6 +21,13 @@ public class DialogueRunner : MonoBehaviour
     [Tooltip("Botones de elección (hasta 4) en orden.")]
     public Button[] choiceButtons;
 
+    [Header("Debug")]
+    [Tooltip("Si está activo, mostrará en pantalla el GUID del nodo actual.")]
+    public bool debugMode = false;
+
+    [Tooltip("Campo de texto (TMP) en el Canvas donde se mostrará el GUID del nodo actual.")]
+    public TextMeshProUGUI debugNodeText;
+
     [Header("Choices - resaltado")]
     [SerializeField] private Color normalChoiceColor = Color.white;
     [SerializeField] private Color visitedChoiceColor = new Color(1f, 0.85f, 0.2f, 1f); // ámbar suave
@@ -290,6 +297,7 @@ public class DialogueRunner : MonoBehaviour
     {
         // 0) Actualizar referencia actual y limpiar estado
         _current = node;
+        UpdateDebugLabel();
         _waitingChoice = false;
         HideChoices(); // por si venimos de un nodo de elección
 
@@ -660,9 +668,31 @@ public class DialogueRunner : MonoBehaviour
         }
 
         _current = null;
+        UpdateDebugLabel();
         _waitingChoice = false;
         OnDialogueEnd?.Invoke();
     }
+
+    // --- DEBUG ---
+    private void UpdateDebugLabel()
+    {
+        if (debugNodeText == null)
+            return;
+
+        // Activa/oculta el objeto según el toggle
+        debugNodeText.gameObject.SetActive(debugMode);
+
+        if (!debugMode)
+            return;
+
+        // Muestra el GUID del nodo actual o un marcador si no hay
+        var id = _current != null ? _current.GUID : "(end/null)";
+        debugNodeText.text = $"Node GUID: {id}";
+    }
+
+    // Getter público opcional (útil si otro script necesita el GUID actual)
+    public string CurrentNodeGuid => _current != null ? _current.GUID : null;
+
 
     // --- Helpers de compatibilidad de nombres ---
     private static string GetNodeText(object node)
