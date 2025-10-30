@@ -2095,6 +2095,9 @@ MonoBehaviour:
   debugNodeText: {fileID: 897445293}
   normalChoiceColor: {r: 1, g: 1, b: 1, a: 1}
   visitedChoiceColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+  dimNonSpeaking: 1
+  speakingTint: {r: 1, g: 1, b: 1, a: 1}
+  nonSpeakingTint: {r: 0.6862745, g: 0.6862745, b: 0.6862745, a: 1}
   localizationServiceRef: {fileID: 0}
   portraitImage: {fileID: 0}
   portraitsRoot: {fileID: 1045239993}

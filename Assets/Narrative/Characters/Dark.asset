@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Dark
   m_EditorClassIdentifier: 
   displayName: Dark
-  pseudonym: 
-  portraits: []
+  portraits:
+  - key: idle
+    sprite: {fileID: -9117427310488185321, guid: affee00d57fe5a44ea246bb2ef321cdb, type: 3}

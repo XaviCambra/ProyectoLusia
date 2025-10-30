@@ -32,6 +32,31 @@ public class DialogueRunner : MonoBehaviour
     [SerializeField] private Color normalChoiceColor = Color.white;
     [SerializeField] private Color visitedChoiceColor = new Color(1f, 0.85f, 0.2f, 1f); // ámbar suave
 
+    [Header("Portrait Highlight")]
+    [SerializeField] private bool dimNonSpeaking = true;
+
+    [Header("Portrait Scale")]
+    [SerializeField] private bool scaleNonSpeaking = true;
+
+    [Tooltip("Escala del personaje que está hablando.")]
+    [SerializeField] private Vector3 speakingScale = Vector3.one;           // 1.00
+
+    [Tooltip("Escala de los personajes que NO están hablando.")]
+    [SerializeField] private Vector3 nonSpeakingScale = new Vector3(0.95f, 0.95f, 0.95f); // 0.95
+
+    [Tooltip("Duración del tween de escala (segundos).")]
+    [SerializeField, Min(0f)] private float scaleTweenDuration = 0.15f;
+
+    [Tooltip("Curva de interpolación de la escala.")]
+    [SerializeField] private AnimationCurve scaleTweenCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+
+    [Tooltip("Color/tinte del personaje que está hablando.")]
+    [SerializeField] private Color speakingTint = Color.white;
+
+    [Tooltip("Color/tinte de los personajes que NO están hablando (por ejemplo, más tenue).")]
+    [SerializeField] private Color nonSpeakingTint = new Color(1f, 1f, 1f, 0.50f);
+
+
     public event Action OnDialogueEnd;
 
     private readonly Dictionary<string, DialogueNodeData> _nodeByGuid = new();
@@ -78,6 +103,9 @@ public class DialogueRunner : MonoBehaviour
 
     private readonly Dictionary<string, Image> _portraitByProfile = new();
 
+    // Control de tweens de escala por retrato (para cancelar el anterior si llega uno nuevo)
+    private readonly Dictionary<RectTransform, Coroutine> _scaleTweens = new();
+
     // Áncoras lógicas de posición (ajústalas a tu layout)
     [Header("Anchors de posición")]
     [Tooltip("Posición destino a la izquierda para las animaciones de entrada/salida.")]
@@ -95,6 +123,7 @@ public class DialogueRunner : MonoBehaviour
     [Tooltip("Curva de interpolación para el movimiento (0..1). 0: inicio, 1: fin")]
     [SerializeField] private AnimationCurve moveCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
     // --- END Animation curves ---
+
 
     private void Awake()
     {
@@ -310,6 +339,16 @@ public class DialogueRunner : MonoBehaviour
         // 3) Sprite del perfil del nodo
         ApplyNodeToUI(_current);
 
+        // 3.1) Asegurar que el retrato del hablante quede por encima del resto
+        BringPortraitOnTop(_current?.profileId);
+
+        // 3.2) Atenuar/no atenuar retratos según quién hable
+        UpdatePortraitHighlight(_current?.profileId);
+        UpdatePortraitScale(_current?.profileId);
+
+        // 3.3) Escalar retratos: hablante vs no-hablantes (con tween y curva)
+        UpdatePortraitScale(_current?.profileId);
+
         // 4) Anim / Placement
         RunCharacterPlacement(_current, onAnimDone: () =>
         {
@@ -328,6 +367,19 @@ public class DialogueRunner : MonoBehaviour
 
         // 6) Si el nodo no es de elección, nos quedamos a la espera de la tecla avanzar/edges
         // (la lógica de Update y GoNext ya se encarga)
+    }
+
+    // Sube a tope de la jerarquía el retrato del perfil indicado
+    private void BringPortraitOnTop(string profileId)
+    {
+        if (string.IsNullOrEmpty(profileId)) return;
+        if (portraitsRoot == null) return;
+
+        if (_portraitByProfile != null && _portraitByProfile.TryGetValue(profileId, out var img) && img != null)
+        {
+            // Esto controla el orden de render en la UI (último hijo = arriba del todo)
+            img.transform.SetAsLastSibling();
+        }
     }
 
     private void RunCharacterPlacement(DialogueNodeData node, Action onAnimDone)
@@ -504,6 +556,125 @@ public class DialogueRunner : MonoBehaviour
 
         // Si mantenemos support para portraitImage "legacy", lo ocultamos por defecto:
         if (portraitImage) { portraitImage.enabled = false; }
+    }
+
+    // Aplica (y anima) la escala a todos los retratos del pool en función del hablante actual.
+    // - Si scaleNonSpeaking == false: deja todos con speakingScale (sin diferenciar).
+    // - Si currentProfileId es null o vacío: deja todos con speakingScale (sin atenuar escala).
+    private void UpdatePortraitScale(string currentProfileId)
+    {
+        if (_portraitByProfile == null || _portraitByProfile.Count == 0)
+        {
+            // Ruta legacy: un solo retrato
+            if (portraitImage != null)
+            {
+                var rt = portraitImage.rectTransform;
+                StartScaleTween(rt, speakingScale);
+            }
+            return;
+        }
+
+        bool hasSpeaker = !string.IsNullOrEmpty(currentProfileId);
+
+        foreach (var kv in _portraitByProfile)
+        {
+            var img = kv.Value;
+            if (img == null) continue;
+            var rt = img.rectTransform;
+
+            if (!scaleNonSpeaking || !hasSpeaker)
+            {
+                StartScaleTween(rt, speakingScale);
+                continue;
+            }
+
+            var target = (kv.Key == currentProfileId) ? speakingScale : nonSpeakingScale;
+            StartScaleTween(rt, target);
+        }
+    }
+
+    private void StartScaleTween(RectTransform rt, Vector3 targetScale)
+    {
+        if (rt == null) return;
+
+        // Si había un tween en curso, lo paramos
+        if (_scaleTweens.TryGetValue(rt, out var running) && running != null)
+        {
+            StopCoroutine(running);
+        }
+
+        // Si la duración es 0 o negativa, aplicamos instantáneo
+        if (scaleTweenDuration <= 0f)
+        {
+            rt.localScale = targetScale;
+            _scaleTweens.Remove(rt);
+            return;
+        }
+
+        var co = StartCoroutine(TweenScaleCoroutine(rt, targetScale, scaleTweenDuration, scaleTweenCurve));
+        _scaleTweens[rt] = co;
+    }
+
+    private System.Collections.IEnumerator TweenScaleCoroutine(RectTransform rt, Vector3 to, float duration, AnimationCurve curve)
+    {
+        Vector3 from = rt.localScale;
+        float t = 0f;
+
+        // Usamos deltaTime normal; si tu UI va en pausa, puedes cambiar a unscaledDeltaTime
+        while (t < duration && rt != null)
+        {
+            t += Time.deltaTime;
+            float u = Mathf.Clamp01(t / duration);
+            float k = (curve != null) ? curve.Evaluate(u) : u;
+            rt.localScale = Vector3.LerpUnclamped(from, to, k);
+            yield return null;
+        }
+
+        if (rt != null) rt.localScale = to;
+
+        // Limpiamos referencia del tween terminado
+        if (rt != null) _scaleTweens.Remove(rt);
+    }
+
+    // Aplica el tinte a todos los retratos del pool en función del hablante actual.
+    // - Si dimNonSpeaking == false, no modifica colores (deja todos con speakingTint)
+    // - Si currentProfileId es null o vacío, deja todos con speakingTint (sin atenuar)
+    private void UpdatePortraitHighlight(string currentProfileId)
+    {
+        // Si no hay pool, intenta ruta legacy (portraitImage único)
+        if (_portraitByProfile == null || _portraitByProfile.Count == 0)
+        {
+            if (portraitImage != null)
+            {
+                portraitImage.color = speakingTint; // único retrato, sin dimming real
+            }
+            return;
+        }
+
+        bool hasSpeaker = !string.IsNullOrEmpty(currentProfileId);
+
+        foreach (var kv in _portraitByProfile)
+        {
+            var img = kv.Value;
+            if (img == null) continue;
+
+            if (!dimNonSpeaking)
+            {
+                // Efecto desactivado: todos con el color "hablando"
+                img.color = speakingTint;
+                continue;
+            }
+
+            // Si no hay hablante claro, no atenuamos a nadie
+            if (!hasSpeaker)
+            {
+                img.color = speakingTint;
+                continue;
+            }
+
+            // Tinte según si es el que habla o no
+            img.color = (kv.Key == currentProfileId) ? speakingTint : nonSpeakingTint;
+        }
     }
 
     private async void DisplayNodeBodyAsync(DialogueNodeData node)

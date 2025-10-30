@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Guille
   m_EditorClassIdentifier: 
   displayName: Guille
-  pseudonym: 
-  portraits: []
+  portraits:
+  - key: idle
+    sprite: {fileID: 8019020588823736630, guid: 0799250051fd8a34cb924887144482db, type: 3}
