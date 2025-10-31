@@ -50,7 +50,7 @@ MonoBehaviour:
       x: 707
       y: 235
       width: 480
-      height: 528
+      height: 617
     showExtrasBox: 1
     appearance: 0
     origin: 0
@@ -62,6 +62,10 @@ MonoBehaviour:
     enterToOpacity: 100
     exitFromOpacity: 100
     exitToOpacity: 0
+    playSpecialAnimation: 0
+    specialAnimation: {fileID: 0}
+    specialAnimSpeed: 1
+    specialAnimLoop: 1
     showTypewriterBox: 0
     profileRef: {fileID: 11400000, guid: 8d53569ffc0d98942b7f0baf25aac63f, type: 2}
     profileId: dbc1e80e-2686-4b55-914f-bb5a6e096d4d
@@ -103,7 +107,7 @@ MonoBehaviour:
       x: 1248
       y: 180
       width: 480
-      height: 528
+      height: 617
     showExtrasBox: 1
     appearance: 0
     origin: 0
@@ -115,6 +119,10 @@ MonoBehaviour:
     enterToOpacity: 100
     exitFromOpacity: 100
     exitToOpacity: 0
+    playSpecialAnimation: 0
+    specialAnimation: {fileID: 0}
+    specialAnimSpeed: 1
+    specialAnimLoop: 1
     showTypewriterBox: 0
     profileRef: {fileID: 11400000, guid: 61f6d4e73b2c6e94285723ad575d568a, type: 2}
     profileId: 2e2c8989-6658-413f-b81f-c92f3ab07c8d
@@ -156,7 +164,7 @@ MonoBehaviour:
       x: 1780
       y: 198
       width: 480
-      height: 528
+      height: 617
     showExtrasBox: 0
     appearance: 0
     origin: 0
@@ -168,6 +176,10 @@ MonoBehaviour:
     enterToOpacity: 100
     exitFromOpacity: 100
     exitToOpacity: 0
+    playSpecialAnimation: 0
+    specialAnimation: {fileID: 0}
+    specialAnimSpeed: 1
+    specialAnimLoop: 1
     showTypewriterBox: 0
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
     profileId: dea7160d-22fd-46bc-b32c-507b5149f424
@@ -212,8 +224,8 @@ MonoBehaviour:
       x: 148
       y: 166
       width: 480
-      height: 547
-    showExtrasBox: 0
+      height: 636
+    showExtrasBox: 1
     appearance: 0
     origin: 0
     target: 3
@@ -224,6 +236,10 @@ MonoBehaviour:
     enterToOpacity: 100
     exitFromOpacity: 100
     exitToOpacity: 0
+    playSpecialAnimation: 1
+    specialAnimation: {fileID: 7400000, guid: 84ef4a4bd64349746bb4e0ea11b8e5c6, type: 2}
+    specialAnimSpeed: 1
+    specialAnimLoop: 1
     showTypewriterBox: 0
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
     profileId: dea7160d-22fd-46bc-b32c-507b5149f424

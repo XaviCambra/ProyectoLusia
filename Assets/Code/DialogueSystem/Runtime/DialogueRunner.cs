@@ -4,6 +4,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Threading;
+using UnityEngine.Playables;
+using UnityEngine.Animations;
 using TMPro;
 
 public class DialogueRunner : MonoBehaviour
@@ -70,7 +72,7 @@ public class DialogueRunner : MonoBehaviour
         public Vector3 screenPos;    // última posición real en pantalla
     }
     private readonly Dictionary<string, PortraitState> _portraitStateByProfile = new();
-
+    
     // Elecciones ya realizadas durante la sesión actual de diálogo
     private readonly HashSet<string> _visitedChoiceKeys = new();
 
@@ -98,10 +100,17 @@ public class DialogueRunner : MonoBehaviour
     [Tooltip("Contenedor (RectTransform) donde se instancian y gestionan los retratos de cada personaje.")]
     [SerializeField] private RectTransform portraitsRoot;
 
+    // Plantilla para instanciar retratos
     [Tooltip("Plantilla (Image) desactivada que se clona para cada perfil detectado.")]
     [SerializeField] private Image portraitPrefab;
 
+    // Mapeo de perfilId → Image instanciada
     private readonly Dictionary<string, Image> _portraitByProfile = new();
+    // Mapeo de perfilId → RectTransform raíz (wrapper) que se mueve por pantalla
+    private readonly Dictionary<string, RectTransform> _portraitRootByProfile = new();
+
+    // Playables por retrato (para animaciones especiales por nodo)
+    private readonly Dictionary<Image, PlayableGraph> _specialAnimGraphs = new();
 
     // Control de tweens de escala por retrato (para cancelar el anterior si llega uno nuevo)
     private readonly Dictionary<RectTransform, Coroutine> _scaleTweens = new();
@@ -261,21 +270,18 @@ public class DialogueRunner : MonoBehaviour
         if (node == null)
         {
             DGLog.Err("ApplyNodeToUI: node == null");
-            // Aunque no devolvamos, no podremos resolver sprite; pero salimos para evitar NRE.
             return;
         }
 
         if (_profiles == null)
         {
             DGLog.Err("ApplyNodeToUI: _profiles == null (CharacterProfileService no disponible).");
-            // Seguimos para dejar constancia de que no se puede resolver, pero salimos para evitar errores.
             return;
         }
 
         if (string.IsNullOrEmpty(node.profileId))
         {
             DGLog.Err($"ApplyNodeToUI: node.profileId vacío o null. GUID={node.GUID}");
-            // Podemos continuar y “apagar” la UI del retrato si procede.
         }
 
         // ─────────────────────────────────────────────────────────────────────────────
@@ -342,6 +348,17 @@ public class DialogueRunner : MonoBehaviour
             DGLog.Info($"ApplyNodeToUI[legacy]: set sprite={(sprite ? sprite.name : "NULL")} enabled={(sprite != null)}");
             portraitImage.sprite = sprite;
             portraitImage.enabled = sprite != null; // oculta si no hay sprite
+
+            // --- SPECIAL ANIMATION (por nodo) ---
+            // Obtenemos el Image del perfil activo (ruta legacy = portraitImage)
+            Image activeImg = portraitImage;
+            // Si cambiamos de nodo, paramos la animación previa en este retrato
+            StopSpecialAnimation(activeImg);
+            if (node.playSpecialAnimation && node.specialAnimation != null)
+            {
+                PlaySpecialAnimation(activeImg, node.specialAnimation, node.specialAnimSpeed, node.specialAnimLoop);
+            }
+
             return;
         }
 
@@ -355,6 +372,16 @@ public class DialogueRunner : MonoBehaviour
                     DGLog.Info($"ApplyNodeToUI[pool]: profileId='{node.profileId}' set sprite={(sprite ? sprite.name : "NULL")} enabled={(sprite != null)}");
                     img.sprite = sprite;
                     img.enabled = sprite != null;
+
+                    // --- SPECIAL ANIMATION (por nodo) ---
+                    // Obtenemos el Image del perfil activo (ruta pool = img del diccionario)
+                    Image activeImg = img;
+                    // Si cambiamos de nodo, paramos la animación previa en este retrato
+                    StopSpecialAnimation(activeImg);
+                    if (node.playSpecialAnimation && node.specialAnimation != null)
+                    {
+                        PlaySpecialAnimation(activeImg, node.specialAnimation, node.specialAnimSpeed, node.specialAnimLoop);
+                    }
                 }
                 else
                 {
@@ -369,6 +396,7 @@ public class DialogueRunner : MonoBehaviour
 
         DGLog.Info("ApplyNodeToUI[exit]");
     }
+
 
     private void StartDialogue()
     {
@@ -472,7 +500,7 @@ public class DialogueRunner : MonoBehaviour
 
     private void RunCharacterPlacement(DialogueNodeData node, Action onAnimDone)
     {
-        // 0) Validaciones + obtener la Image del perfil
+        // 0) Validaciones + obtener la Image y el ROOT del perfil
         if (node == null || string.IsNullOrEmpty(node.profileId) ||
             _portraitByProfile == null || !_portraitByProfile.TryGetValue(node.profileId, out var img) ||
             img == null)
@@ -481,20 +509,25 @@ public class DialogueRunner : MonoBehaviour
             return;
         }
 
-        var rt = img.rectTransform;
+        // ROOT (wrapper) que se mueve por pantalla
+        if (!_portraitRootByProfile.TryGetValue(node.profileId, out var rootRt) || rootRt == null)
+        {
+            onAnimDone?.Invoke();
+            return;
+        }
 
-        // 1) CanvasGroup (fade)
-        var cg = img.GetComponent<CanvasGroup>();
-        if (cg == null) cg = img.gameObject.AddComponent<CanvasGroup>();
+        // 1) CanvasGroup (fade) en el ROOT
+        var cg = rootRt.GetComponent<CanvasGroup>();
+        if (cg == null) cg = rootRt.gameObject.AddComponent<CanvasGroup>();
 
-        // 2) Posición de ORIGEN
+        // 2) Posición de ORIGEN (sobre ROOT)
         Vector3 startPos;
         if (node.origin == Spot.Auto && _portraitStateByProfile.TryGetValue(node.profileId, out var prev))
             startPos = prev.screenPos;
         else
-            startPos = ResolveSpot(node.origin, rt);
+            startPos = ResolveSpot(node.origin, rootRt);
 
-        rt.position = startPos;
+        rootRt.position = startPos;
 
         // 3) Fades (entrada vs salida según target)
         float from, to;
@@ -515,15 +548,15 @@ public class DialogueRunner : MonoBehaviour
             _portraitStateByProfile[node.profileId] = new PortraitState
             {
                 logical = LogicalPos.None,
-                screenPos = rt.position
+                screenPos = rootRt.position
             };
             onAnimDone?.Invoke();
             return;
         }
 
-        Vector3 endPos = ResolveSpot(node.target, rt);
+        Vector3 endPos = ResolveSpot(node.target, rootRt);
 
-        // 5) Animar o teletransportar
+        // 5) Animar o teletransportar (sobre ROOT)
         bool doTeleport = (node.appearance == AppearanceMode.Preplaced) || (node.moveSpeed <= 1f);
 
         Action persistAndDone = () =>
@@ -531,20 +564,20 @@ public class DialogueRunner : MonoBehaviour
             _portraitStateByProfile[node.profileId] = new PortraitState
             {
                 logical = ResolveLogical(node.target),
-                screenPos = rt.position
+                screenPos = rootRt.position
             };
             onAnimDone?.Invoke();
         };
 
         if (doTeleport)
         {
-            rt.position = endPos;
+            rootRt.position = endPos;
             cg.alpha = to;
             persistAndDone();
         }
         else
         {
-            StartCoroutine(SlideAndFade(rt, cg, endPos, to, node.moveSpeed, persistAndDone));
+            StartCoroutine(SlideAndFade(rootRt, cg, endPos, to, node.moveSpeed, persistAndDone));
         }
     }
 
@@ -619,30 +652,60 @@ public class DialogueRunner : MonoBehaviour
             if (kv.Value) Destroy(kv.Value.gameObject);
         _portraitByProfile.Clear();
 
+        foreach (var kv in _portraitRootByProfile)
+            if (kv.Value) Destroy(kv.Value.gameObject);
+        _portraitRootByProfile.Clear();
+
         // Perfiles únicos usados en nodos del graph
         var uniqueProfiles = graph.Nodes
             .Where(n => n != null && !string.IsNullOrEmpty(n.profileId))
             .Select(n => n.profileId)
             .Distinct();
 
-        // AQUI FALTABA UNA COSA
         foreach (var pid in uniqueProfiles)
         {
-            var img = Instantiate(portraitPrefab, portraitsRoot);
+            // 1) Crear ROOT (wrapper) vacío
+            var rootGo = new GameObject($"PortraitRoot_{pid}", typeof(RectTransform), typeof(CanvasGroup));
+            var rootRt = (RectTransform)rootGo.transform;
+            rootRt.SetParent(portraitsRoot, worldPositionStays: false);
+
+            // Colocación inicial: centrado (el nodo dictará target/anims)
+            if (centerAnchor != null)
+            {
+                rootRt.position = centerAnchor.position;
+            }
+            else
+            {
+                rootRt.anchorMin = new Vector2(0.5f, 0.5f);
+                rootRt.anchorMax = new Vector2(0.5f, 0.5f);
+                rootRt.anchoredPosition = Vector2.zero;
+            }
+            rootRt.localScale = Vector3.one;
+            var cg = rootGo.GetComponent<CanvasGroup>();
+            cg.alpha = 0f; // arrancan ocultos hasta que tengan sprite y se coloquen
+
+            // 2) Instanciar la Image (HIJO) que contendrá sprite y animaciones especiales
+            var img = Instantiate(portraitPrefab, rootRt);
             img.gameObject.name = $"Portrait_{pid}";
             img.gameObject.SetActive(true);
             img.enabled = false; // hasta que tenga sprite
-                                 // Colocación inicial: lo dejamos centrado; el nodo dictará target/anims.
-            var rt = img.rectTransform;
-            if (centerAnchor != null)
-            {
-                rt.position = centerAnchor.position;
-            }
-            _portraitByProfile[pid] = img;
-            _portraitStateByProfile[pid] = new PortraitState { logical = LogicalPos.None, screenPos = img.rectTransform.position };
+
+            // Aseguramos transform local limpio para animaciones relativas
+            var imgRt = img.rectTransform;
+            imgRt.anchorMin = new Vector2(0.5f, 0.5f);
+            imgRt.anchorMax = new Vector2(0.5f, 0.5f);
+            imgRt.pivot = new Vector2(0.5f, 0.5f);
+            imgRt.anchoredPosition = Vector2.zero;
+            imgRt.localPosition = Vector3.zero;
+            imgRt.localRotation = Quaternion.identity;
+            imgRt.localScale = Vector3.one;
+
+            _portraitByProfile[pid] = img;      // para sprites/tintes/animación especial
+            _portraitRootByProfile[pid] = rootRt;   // para placement (slide/fade)
+            _portraitStateByProfile[pid] = new PortraitState { logical = LogicalPos.None, screenPos = rootRt.position };
         }
 
-        // Si mantenemos support para portraitImage "legacy", lo ocultamos por defecto:
+        // Si mantenemos soporte para portraitImage "legacy", lo ocultamos por defecto:
         if (portraitImage) { portraitImage.enabled = false; }
     }
 
@@ -723,6 +786,62 @@ public class DialogueRunner : MonoBehaviour
         // Limpiamos referencia del tween terminado
         if (rt != null) _scaleTweens.Remove(rt);
     }
+
+    private void StopSpecialAnimation(Image img)
+    {
+        if (img == null) return;
+        if (_specialAnimGraphs.TryGetValue(img, out var g))
+        {
+            if (g.IsValid()) g.Destroy();
+            _specialAnimGraphs.Remove(img);
+        }
+    }
+
+    private void PlaySpecialAnimation(Image img, AnimationClip clip, float speed = 1f, bool loop = true)
+    {
+        if (img == null || clip == null) return;
+
+        // Asegura un Animator en el retrato (Playables lo necesita como output target)
+        var animator = img.GetComponent<Animator>();
+        if (animator == null) animator = img.gameObject.AddComponent<Animator>();
+
+        // Limpia cualquier animación previa
+        StopSpecialAnimation(img);
+
+        // Crea el Graph
+        var graph = PlayableGraph.Create($"DG_SpecialAnim_{img.name}");
+        graph.SetTimeUpdateMode(DirectorUpdateMode.GameTime);
+
+        var playableOutput = AnimationPlayableOutput.Create(graph, "AnimOutput", animator);
+        var clipPlayable = AnimationClipPlayable.Create(graph, clip);
+
+        // Loop: respetamos la importación del clip; si “loop” está activo, nos aseguramos de que no se “pare”
+        clipPlayable.SetSpeed(Mathf.Approximately(speed, 0f) ? 0f : speed);
+
+        playableOutput.SetSourcePlayable(clipPlayable);
+
+        // Arranca
+        graph.Play();
+        _specialAnimGraphs[img] = graph;
+
+        // Si no es loop, destruye al terminar (best-effort)
+        if (!loop && clip.length > 0f && speed > 0f)
+        {
+            StartCoroutine(StopGraphWhenDone(graph, (float)(clip.length / speed)));
+        }
+    }
+
+    private System.Collections.IEnumerator StopGraphWhenDone(PlayableGraph g, float delay)
+    {
+        float t = 0f;
+        while (t < delay && g.IsValid())
+        {
+            t += Time.deltaTime;
+            yield return null;
+        }
+        if (g.IsValid()) g.Destroy();
+    }
+
 
     // Aplica el tinte a todos los retratos del pool en función del hablante actual.
     // - Si dimNonSpeaking == false, no modifica colores (deja todos con speakingTint)

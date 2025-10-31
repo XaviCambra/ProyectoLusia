@@ -144,6 +144,21 @@ public class DialogueNodeData : ISerializationCallbackReceiver
     [Range(0, 100)] public int exitToOpacity = 0;
     // ========== END EXTRAS / ANIMACIÓN ==========
 
+    // ========== SPECIAL ANIMATION (OPCIONAL) ==========
+    [Header("Special Animation (opcional)")]
+    [Tooltip("Si está activo, el retrato del personaje reproducirá una AnimationClip especial en este nodo.")]
+    public bool playSpecialAnimation = false;
+
+    [Tooltip("AnimationClip a reproducir (puede animar RectTransform: anchoredPosition, localScale, etc.).")]
+    public AnimationClip specialAnimation;
+
+    [Tooltip("Velocidad con la que reproducir la animación (1 = normal).")]
+    public float specialAnimSpeed = 1f;
+
+    [Tooltip("Intentar que la animación sea cíclica. Ideal si el clip tiene loop activado en Import Settings.")]
+    public bool specialAnimLoop = true;
+    // ========== END SPECIAL ANIMATION ==========
+
     // ========== TYPEWRITER ==========
     [Header("Typewriter (plegable)")]
     [Tooltip("Muestra/Oculta los campos del typewriter en el editor")]

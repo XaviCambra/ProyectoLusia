@@ -27,6 +27,12 @@ public class DialogueNodeView : Node
     // --- TYPEWRITER UI ---
     private Toggle _twEnableToggle;
 
+    // --- SPECIAL ANIMATION UI ---
+    private Toggle _specialAnimToggle;
+    private ObjectField _specialAnimClipField; // AnimationClip
+    private FloatField _specialAnimSpeedField;
+    private Toggle _specialAnimLoopToggle;
+
     // Campos avanzados sin caja (sueltos dentro del foldout)
     private FloatField _twSecondsPerCharField;
     private FloatField _twGlobalSpeedField;
@@ -218,7 +224,38 @@ public class DialogueNodeView : Node
         extrasFold.Add(exitTo);
         // ---------- END EXTRAS / ANIMACIÓN (PLEGABLE) ----------
 
-        
+        // ---------- SPECIAL ANIMATION ----------
+        var saHeader = new Label("Special Animation");
+        saHeader.style.unityFontStyleAndWeight = FontStyle.Bold;
+        extrasFold.Add(saHeader);
+
+        _specialAnimToggle = new Toggle("Usar animación especial") { value = Data.playSpecialAnimation };
+        _specialAnimToggle.RegisterValueChangedCallback(e => Data.playSpecialAnimation = e.newValue);
+        extrasFold.Add(_specialAnimToggle);
+
+        _specialAnimClipField = new EditorObjectField
+        {
+            label = "Clip",
+            objectType = typeof(AnimationClip),
+            value = Data.specialAnimation
+        };
+        _specialAnimClipField.RegisterValueChangedCallback(e =>
+        {
+            Data.specialAnimation = e.newValue as AnimationClip;
+        });
+        extrasFold.Add(_specialAnimClipField);
+
+        _specialAnimSpeedField = new FloatField("Velocidad") { value = Data.specialAnimSpeed };
+        _specialAnimSpeedField.RegisterValueChangedCallback(e =>
+        {
+            Data.specialAnimSpeed = Mathf.Max(0f, e.newValue);
+        });
+        extrasFold.Add(_specialAnimSpeedField);
+
+        _specialAnimLoopToggle = new Toggle("Loop") { value = Data.specialAnimLoop };
+        _specialAnimLoopToggle.RegisterValueChangedCallback(e => Data.specialAnimLoop = e.newValue);
+        extrasFold.Add(_specialAnimLoopToggle);
+        // ---------- END SPECIAL ANIMATION ----------
 
         // ---------- Resto de tu UI ----------
         _input = PortUtils.CreatePort(this, Direction.Input, Port.Capacity.Multi, "In");
