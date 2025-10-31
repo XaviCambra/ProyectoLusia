@@ -145,12 +145,16 @@ public class DialogueNodeData : ISerializationCallbackReceiver
     {
         if (string.IsNullOrEmpty(guid))
             guid = Guid.NewGuid().ToString();
+
+        DGLog.Info($"NodeData.OnBeforeSerialize GUID={GUID} profileId='{profileId}'");
     }
 
     public void OnAfterDeserialize()
     {
         if (string.IsNullOrEmpty(guid))
             guid = Guid.NewGuid().ToString();
+
+        DGLog.Info($"NodeData.OnAfterDeserialize GUID={GUID} profileId='{profileId}'");
     }
 }
 

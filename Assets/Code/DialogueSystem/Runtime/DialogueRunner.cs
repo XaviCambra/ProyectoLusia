@@ -127,9 +127,26 @@ public class DialogueRunner : MonoBehaviour
 
     private void Awake()
     {
+        DGLog.Info($"DialogueRunner.Awake scene='{UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}' " +
+               $"isPlaying={Application.isPlaying}");
+
         // 1) Resolver servicio de perfiles primero
         // REVISAR
-        _profiles = FindObjectOfType<CharacterProfileService>();
+        _profiles = (ICharacterProfileService)FindAnyObjectByType<CharacterProfileService>();
+        DGLog.Info($"FindAnyObjectByType<CharacterProfileService>() → {(_profiles != null)}");
+
+        if (_profiles == null)
+        {
+            // Autoinstalar un servicio mínimo si no existe en escena
+            var go = new GameObject("_Auto_CharacterProfileService");
+            DontDestroyOnLoad(go);
+            var svc = go.AddComponent<CharacterProfileService>();
+            _profiles = svc;
+            DGLog.Warn("Se auto-creó CharacterProfileService en runtime.", go);
+        }
+
+        if (graph == null) DGLog.Err("DialogueRunner no tiene 'graph' asignado.");
+        else DGLog.Info($"DialogueRunner graph='{graph.name}'");
 
         // resolver servicio de localización
         _loc = (localizationServiceRef as ILocalizationService) ?? FindAnyObjectByType<CsvLocalizationService>();
@@ -226,77 +243,132 @@ public class DialogueRunner : MonoBehaviour
 
     private void ApplyNodeToUI(DialogueNodeData node)
     {
-        //if (portraitImage == null) return; // si no usas retratos en UI, no hacemos nada
-        //Debug.LogWarning("HAY PORTRAITIMAGE");
-        //Sprite sprite = null;
+        // ─────────────────────────────────────────────────────────────────────────────
+        // Entrada y precondiciones
+        // ─────────────────────────────────────────────────────────────────────────────
+        DGLog.Info($"ApplyNodeToUI[enter]: node={(node != null)} guid='{node?.GUID}' profileId='{node?.profileId}' portraitKey='{node?.portraitKey}'");
 
-        //if (node != null && _profiles != null && !string.IsNullOrEmpty(node.profileId))
-        //{
-        //    Debug.LogWarning("PASA LOS VERIFICADORES");
+        bool hasLegacy = portraitImage != null;
+        bool hasPool = _portraitByProfile != null && _portraitByProfile.Count > 0;
 
-        //    var profile = _profiles.GetById(node.profileId);
-        //    if (profile != null)
-        //    {
-        //        // 1) retrato pedido explícito por el nodo
-        //        if (!string.IsNullOrEmpty(node.portraitKey))
-        //            sprite = profile.GetPortraitByKey(node.portraitKey);
+        if (!hasLegacy && !hasPool)
+        {
+            // Ni imagen legacy ni pool configurado → no hay destino donde aplicar el sprite
+            DGLog.Warn("ApplyNodeToUI: NO legacy portraitImage y NO pool (_portraitByProfile vacío o null). Salgo.");
+            return;
+        }
 
-        //        // 2) si no hay, intenta "Default"
-        //        if (sprite == null)
-        //            sprite = profile.GetPortraitByKey("Default");
+        if (node == null)
+        {
+            DGLog.Err("ApplyNodeToUI: node == null");
+            // Aunque no devolvamos, no podremos resolver sprite; pero salimos para evitar NRE.
+            return;
+        }
 
-        //        // 3) si sigue sin haber, coge el primero que exista
-        //        if (sprite == null)
-        //        {
-        //            var firstKey = profile.GetPortraitKeys().FirstOrDefault();
-        //            if (!string.IsNullOrEmpty(firstKey))
-        //                sprite = profile.GetPortraitByKey(firstKey);
-        //        }
-        //    }
-        //}
+        if (_profiles == null)
+        {
+            DGLog.Err("ApplyNodeToUI: _profiles == null (CharacterProfileService no disponible).");
+            // Seguimos para dejar constancia de que no se puede resolver, pero salimos para evitar errores.
+            return;
+        }
 
-        //portraitImage.sprite = sprite;
-        //portraitImage.enabled = sprite != null; // oculta la imagen si no hay sprite
-        // Si no hay pool y solo usas legacy, aplica al portraitImage y sal
-        if ((_portraitByProfile == null || _portraitByProfile.Count == 0) && portraitImage == null) return;
+        if (string.IsNullOrEmpty(node.profileId))
+        {
+            DGLog.Err($"ApplyNodeToUI: node.profileId vacío o null. GUID={node.GUID}");
+            // Podemos continuar y “apagar” la UI del retrato si procede.
+        }
 
+        // ─────────────────────────────────────────────────────────────────────────────
+        // Resolución de perfil y selección de sprite
+        // ─────────────────────────────────────────────────────────────────────────────
         Sprite sprite = null;
 
-        if (node != null && _profiles != null && !string.IsNullOrEmpty(node.profileId))
+        if (!string.IsNullOrEmpty(node.profileId))
         {
+            DGLog.Info($"ApplyNodeToUI: Intentando resolver perfil por id='{node.profileId}' …");
             var profile = _profiles.GetById(node.profileId);
 
             if (profile != null)
             {
+                DGLog.Info($"ApplyNodeToUI: profile OK → '{profile.name}' displayName='{profile.DisplayName}'");
+
+                // 1) Retrato por clave explícita
                 if (!string.IsNullOrEmpty(node.portraitKey))
+                {
                     sprite = profile.GetPortraitByKey(node.portraitKey);
+                    DGLog.Info($"ApplyNodeToUI: key explícita '{node.portraitKey}' → {(sprite ? sprite.name : "NULL")}");
+                }
+
+                // 2) Fallback "Default"
                 if (sprite == null)
+                {
                     sprite = profile.GetPortraitByKey("Default");
+                    DGLog.Info($"ApplyNodeToUI: fallback 'Default' → {(sprite ? sprite.name : "NULL")}");
+                }
+
+                // 3) Fallback al primer retrato disponible
                 if (sprite == null)
                 {
                     var firstKey = profile.GetPortraitKeys().FirstOrDefault();
                     if (!string.IsNullOrEmpty(firstKey))
+                    {
                         sprite = profile.GetPortraitByKey(firstKey);
+                        DGLog.Info($"ApplyNodeToUI: fallback primer retrato '{firstKey}' → {(sprite ? sprite.name : "NULL")}");
+                    }
+                    else
+                    {
+                        DGLog.Warn("ApplyNodeToUI: el perfil no tiene retratos (GetPortraitKeys vacío).");
+                    }
                 }
+            }
+            else
+            {
+                DGLog.Err($"ApplyNodeToUI: profile NULL para id='{node.profileId}'");
             }
         }
 
-        // 1) Legacy (si no hay pool)
-        if ((_portraitByProfile == null || _portraitByProfile.Count == 0) && portraitImage != null)
+        if (sprite == null)
         {
+            DGLog.Warn($"ApplyNodeToUI: SIN sprite final (guid='{node.GUID}', profileId='{node.profileId}', portraitKey='{node.portraitKey}')");
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────────
+        // Aplicación a UI: modo legacy vs pool por perfil
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        // 1) Legacy (si no hay pool)
+        if (!hasPool && hasLegacy)
+        {
+            DGLog.Info($"ApplyNodeToUI[legacy]: set sprite={(sprite ? sprite.name : "NULL")} enabled={(sprite != null)}");
             portraitImage.sprite = sprite;
-            portraitImage.enabled = sprite != null;
+            portraitImage.enabled = sprite != null; // oculta si no hay sprite
             return;
         }
 
         // 2) Pool por perfil
-        if (!string.IsNullOrEmpty(node.profileId) && _portraitByProfile.TryGetValue(node.profileId, out var img))
+        if (hasPool)
         {
-            img.sprite = sprite;
-            img.enabled = sprite != null;
+            if (!string.IsNullOrEmpty(node.profileId))
+            {
+                if (_portraitByProfile.TryGetValue(node.profileId, out var img))
+                {
+                    DGLog.Info($"ApplyNodeToUI[pool]: profileId='{node.profileId}' set sprite={(sprite ? sprite.name : "NULL")} enabled={(sprite != null)}");
+                    img.sprite = sprite;
+                    img.enabled = sprite != null;
+                }
+                else
+                {
+                    DGLog.Warn($"ApplyNodeToUI[pool]: NO hay Image mapeado en _portraitByProfile para profileId='{node.profileId}'");
+                }
+            }
+            else
+            {
+                DGLog.Warn("ApplyNodeToUI[pool]: profileId vacío; no se puede resolver Image del pool.");
+            }
         }
-    }
 
+        DGLog.Info("ApplyNodeToUI[exit]");
+    }
 
     private void StartDialogue()
     {

@@ -122,9 +122,35 @@ public class DialogueNodeView : Node
             // Ahora sí: el nodo guarda un ID válido y persistente
             Data.profileRef = so;
             Data.profileId = so ? so.ProfileId : null;
+            DGLog.Info($"NodeView('{Data.GUID}') perfil cambiado → ref='{(so ? so.name : "NULL")}' id='{Data.profileId}'");
         });
 
         mainContainer.Add(profileField);
+        // ---------- END PERFIL (SO) ----------
+
+#if UNITY_EDITOR
+        // Si profileRef está vacío pero tenemos profileId, intenta rehidratarlo (editor) para que el ObjectField se muestre correcto
+        if (Data.profileRef == null && !string.IsNullOrEmpty(Data.profileId))
+        {
+            var guid = Data.profileId;
+            // Nota: profileId lo generas con Guid.NewGuid(), NO es el GUID del asset de Unity.
+            // Para rehidratar por editor aquí, necesitas la base de datos:
+            DGLog.Info($"NodeView('{Data.GUID}') intenta rehidratar profileRef desde profileId='{Data.profileId}'");
+            var guids = AssetDatabase.FindAssets("t:CharacterProfile");
+            foreach (var g in guids)
+            {
+                var path = AssetDatabase.GUIDToAssetPath(g);
+                var so = AssetDatabase.LoadAssetAtPath<CharacterProfile>(path);
+                if (so != null && so.ProfileId == guid)
+                {
+                    Data.profileRef = so;
+                    DGLog.Info($"NodeView('{Data.GUID}') rehidratado: {so.name} ({so.ProfileId})");
+                    break;
+                }
+            }
+        }
+        profileField.value = Data.profileRef;
+#endif
 
         // ---------- PORTRAIT KEY ----------
         var portraitKeyField = new TextField("Retrato (key)") { value = Data.portraitKey };

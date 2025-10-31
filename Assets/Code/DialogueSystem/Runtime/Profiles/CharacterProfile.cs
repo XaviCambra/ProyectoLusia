@@ -28,6 +28,16 @@ public class CharacterProfile : ScriptableObject
             profileId = System.Guid.NewGuid().ToString();
             UnityEditor.EditorUtility.SetDirty(this);
         }
+
+        if (string.IsNullOrEmpty(profileId))
+        {
+            profileId = System.Guid.NewGuid().ToString("N");
+            DGLog.Warn($"CharacterProfile '{name}' no tenía profileId. Generado nuevo: {profileId}", this);
+        }
+        else
+        {
+            DGLog.Info($"CharacterProfile '{name}' validate OK. id={profileId}", this);
+        }
     }
 #endif
 

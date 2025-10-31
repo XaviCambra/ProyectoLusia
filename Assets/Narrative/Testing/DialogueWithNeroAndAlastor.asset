@@ -46,7 +46,20 @@ MonoBehaviour:
       y: 200
       width: 380
       height: 295
-    profileId: c41fb37a19564948bac29ac3cca6438c
+    showExtrasBox: 0
+    appearance: 0
+    origin: 0
+    target: 3
+    moveSpeed: 600
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    showTypewriterBox: 0
+    profileRef: {fileID: 0}
+    profileId: 
     portraitKey: 
   - useTypewriter: 1
     twShowAdvanced: 1
@@ -81,7 +94,20 @@ MonoBehaviour:
       y: 268
       width: 380
       height: 452
-    profileId: 696e22c681d3459ea06c3fce41bab9cd
+    showExtrasBox: 0
+    appearance: 0
+    origin: 0
+    target: 3
+    moveSpeed: 600
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    showTypewriterBox: 0
+    profileRef: {fileID: 0}
+    profileId: 
     portraitKey: 
   - useTypewriter: 1
     twShowAdvanced: 1
@@ -116,7 +142,20 @@ MonoBehaviour:
       y: 268
       width: 380
       height: 452
-    profileId: 696e22c681d3459ea06c3fce41bab9cd
+    showExtrasBox: 0
+    appearance: 0
+    origin: 0
+    target: 3
+    moveSpeed: 600
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    showTypewriterBox: 0
+    profileRef: {fileID: 0}
+    profileId: 
     portraitKey: 
   - useTypewriter: 1
     twShowAdvanced: 1
@@ -151,7 +190,20 @@ MonoBehaviour:
       y: 200
       width: 380
       height: 452
-    profileId: c41fb37a19564948bac29ac3cca6438c
+    showExtrasBox: 0
+    appearance: 0
+    origin: 0
+    target: 3
+    moveSpeed: 600
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    showTypewriterBox: 0
+    profileRef: {fileID: 0}
+    profileId: 
     portraitKey: 
   - useTypewriter: 1
     twShowAdvanced: 1
@@ -186,6 +238,19 @@ MonoBehaviour:
       y: 268
       width: 380
       height: 452
+    showExtrasBox: 0
+    appearance: 0
+    origin: 0
+    target: 3
+    moveSpeed: 600
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    showTypewriterBox: 0
+    profileRef: {fileID: 0}
     profileId: 
     portraitKey: 
   - useTypewriter: 1
@@ -221,6 +286,19 @@ MonoBehaviour:
       y: 268
       width: 380
       height: 452
+    showExtrasBox: 0
+    appearance: 0
+    origin: 0
+    target: 3
+    moveSpeed: 600
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    showTypewriterBox: 0
+    profileRef: {fileID: 0}
     profileId: 
     portraitKey: 
   - useTypewriter: 1
@@ -256,7 +334,20 @@ MonoBehaviour:
       y: 268
       width: 380
       height: 452
-    profileId: 696e22c681d3459ea06c3fce41bab9cd
+    showExtrasBox: 0
+    appearance: 0
+    origin: 0
+    target: 3
+    moveSpeed: 600
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    showTypewriterBox: 0
+    profileRef: {fileID: 0}
+    profileId: 
     portraitKey: 
   - useTypewriter: 1
     twShowAdvanced: 1
@@ -291,7 +382,20 @@ MonoBehaviour:
       y: 200
       width: 380
       height: 452
-    profileId: c41fb37a19564948bac29ac3cca6438c
+    showExtrasBox: 0
+    appearance: 0
+    origin: 0
+    target: 3
+    moveSpeed: 600
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    showTypewriterBox: 0
+    profileRef: {fileID: 0}
+    profileId: 
     portraitKey: 
   - useTypewriter: 1
     twShowAdvanced: 1
@@ -330,7 +434,20 @@ MonoBehaviour:
       y: 200
       width: 380
       height: 452
-    profileId: c41fb37a19564948bac29ac3cca6438c
+    showExtrasBox: 0
+    appearance: 0
+    origin: 0
+    target: 3
+    moveSpeed: 600
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    showTypewriterBox: 0
+    profileRef: {fileID: 0}
+    profileId: 
     portraitKey: 
   - useTypewriter: 1
     twShowAdvanced: 1
@@ -365,6 +482,19 @@ MonoBehaviour:
       y: 200
       width: 380
       height: 452
+    showExtrasBox: 0
+    appearance: 0
+    origin: 0
+    target: 3
+    moveSpeed: 600
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    showTypewriterBox: 0
+    profileRef: {fileID: 0}
     profileId: 
     portraitKey: 
   edges:

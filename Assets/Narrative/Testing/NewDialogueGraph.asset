@@ -13,6 +13,150 @@ MonoBehaviour:
   m_Name: NewDialogueGraph
   m_EditorClassIdentifier: 
   nodes:
+  - useTypewriter: 0
+    twShowAdvanced: 0
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    guid: d291fc58-8b26-4537-b980-e93ed0c60ec2
+    bgColorIndex: 0
+    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
+    speakerName: Lu
+    lineText: Soy negrosa
+    localization: 0
+    locKey: 
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    isStart: 0
+    nodeRect:
+      serializedVersion: 2
+      x: 707
+      y: 235
+      width: 480
+      height: 508
+    showExtrasBox: 1
+    appearance: 0
+    origin: 0
+    target: 4
+    moveSpeed: 600
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    showTypewriterBox: 0
+    profileRef: {fileID: 11400000, guid: 8d53569ffc0d98942b7f0baf25aac63f, type: 2}
+    profileId: 73583d49-252f-483b-bccd-72e45e303752
+    portraitKey: idle
+  - useTypewriter: 0
+    twShowAdvanced: 0
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    guid: a4bf3031-97d9-49cd-8ad2-7c32b0f7b665
+    bgColorIndex: 0
+    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
+    speakerName: Sora
+    lineText: Me gusta el pollo frito
+    localization: 0
+    locKey: 
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    isStart: 0
+    nodeRect:
+      serializedVersion: 2
+      x: 1248
+      y: 180
+      width: 480
+      height: 508
+    showExtrasBox: 1
+    appearance: 0
+    origin: 0
+    target: 2
+    moveSpeed: 600
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    showTypewriterBox: 0
+    profileRef: {fileID: 11400000, guid: 61f6d4e73b2c6e94285723ad575d568a, type: 2}
+    profileId: caf01f19-7d00-46e0-9eb0-244a0f97f052
+    portraitKey: idle
+  - useTypewriter: 0
+    twShowAdvanced: 0
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    guid: 645d006c-c18f-4842-9d82-e8da3a612784
+    bgColorIndex: 0
+    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
+    speakerName: 
+    lineText: 
+    localization: 0
+    locKey: 
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    isStart: 0
+    nodeRect:
+      serializedVersion: 2
+      x: 1780
+      y: 198
+      width: 480
+      height: 508
+    showExtrasBox: 0
+    appearance: 0
+    origin: 0
+    target: 2
+    moveSpeed: 600
+    textStart: 1
+    useFade: 0
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    showTypewriterBox: 0
+    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+    profileId: 973a29de-96a8-4589-94ad-9c0bb21995d7
+    portraitKey: idle
   - useTypewriter: 1
     twShowAdvanced: 1
     tw:
@@ -62,151 +206,7 @@ MonoBehaviour:
     exitToOpacity: 0
     showTypewriterBox: 0
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: 16eea611-d505-460a-a653-00fbd1271eac
-    portraitKey: idle
-  - useTypewriter: 0
-    twShowAdvanced: 0
-    tw:
-      secondsPerChar: 0.03
-      globalSpeed: 1
-      respectRichText: 1
-      minimalWhitespaceDelay: 1
-      commaPct: 2
-      periodPct: 3
-      ellipsisPct: 5
-    guid: d291fc58-8b26-4537-b980-e93ed0c60ec2
-    bgColorIndex: 0
-    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
-    speakerName: Lu
-    lineText: Soy negrosa
-    localization: 0
-    locKey: 
-    anchor: 0
-    customAnchor: {x: 0, y: 0}
-    isChoiceNode: 0
-    choiceCount: 2
-    choices: []
-    eventKey: 
-    onEnter:
-      m_PersistentCalls:
-        m_Calls: []
-    isStart: 0
-    nodeRect:
-      serializedVersion: 2
-      x: 707
-      y: 235
-      width: 480
-      height: 508
-    showExtrasBox: 1
-    appearance: 0
-    origin: 0
-    target: 4
-    moveSpeed: 600
-    textStart: 1
-    useFade: 1
-    enterFromOpacity: 0
-    enterToOpacity: 100
-    exitFromOpacity: 100
-    exitToOpacity: 0
-    showTypewriterBox: 0
-    profileRef: {fileID: 11400000, guid: 8d53569ffc0d98942b7f0baf25aac63f, type: 2}
-    profileId: a6874051-ae66-449a-a2ad-7a74f4d9ad80
-    portraitKey: idle
-  - useTypewriter: 0
-    twShowAdvanced: 0
-    tw:
-      secondsPerChar: 0.03
-      globalSpeed: 1
-      respectRichText: 1
-      minimalWhitespaceDelay: 1
-      commaPct: 2
-      periodPct: 3
-      ellipsisPct: 5
-    guid: a4bf3031-97d9-49cd-8ad2-7c32b0f7b665
-    bgColorIndex: 0
-    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
-    speakerName: Sora
-    lineText: Me gusta el pollo frito
-    localization: 0
-    locKey: 
-    anchor: 0
-    customAnchor: {x: 0, y: 0}
-    isChoiceNode: 0
-    choiceCount: 2
-    choices: []
-    eventKey: 
-    onEnter:
-      m_PersistentCalls:
-        m_Calls: []
-    isStart: 0
-    nodeRect:
-      serializedVersion: 2
-      x: 1248
-      y: 180
-      width: 480
-      height: 508
-    showExtrasBox: 1
-    appearance: 0
-    origin: 0
-    target: 2
-    moveSpeed: 600
-    textStart: 1
-    useFade: 1
-    enterFromOpacity: 0
-    enterToOpacity: 100
-    exitFromOpacity: 100
-    exitToOpacity: 0
-    showTypewriterBox: 0
-    profileRef: {fileID: 11400000, guid: 61f6d4e73b2c6e94285723ad575d568a, type: 2}
-    profileId: 71681313-2d32-4b04-8f18-92541f8a0695
-    portraitKey: idle
-  - useTypewriter: 0
-    twShowAdvanced: 0
-    tw:
-      secondsPerChar: 0.03
-      globalSpeed: 1
-      respectRichText: 1
-      minimalWhitespaceDelay: 1
-      commaPct: 2
-      periodPct: 3
-      ellipsisPct: 5
-    guid: 645d006c-c18f-4842-9d82-e8da3a612784
-    bgColorIndex: 0
-    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
-    speakerName: 
-    lineText: 
-    localization: 0
-    locKey: 
-    anchor: 0
-    customAnchor: {x: 0, y: 0}
-    isChoiceNode: 0
-    choiceCount: 2
-    choices: []
-    eventKey: 
-    onEnter:
-      m_PersistentCalls:
-        m_Calls: []
-    isStart: 0
-    nodeRect:
-      serializedVersion: 2
-      x: 1780
-      y: 198
-      width: 480
-      height: 508
-    showExtrasBox: 0
-    appearance: 0
-    origin: 0
-    target: 2
-    moveSpeed: 600
-    textStart: 1
-    useFade: 0
-    enterFromOpacity: 0
-    enterToOpacity: 100
-    exitFromOpacity: 100
-    exitToOpacity: 0
-    showTypewriterBox: 0
-    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: 16eea611-d505-460a-a653-00fbd1271eac
+    profileId: 973a29de-96a8-4589-94ad-9c0bb21995d7
     portraitKey: idle
   edges:
   - fromNodeGUID: 7dfd1423-b0d1-4783-81c9-092cfd5b47da
