@@ -182,7 +182,7 @@ MonoBehaviour:
     isChoiceNode: 0
     choiceCount: 2
     choices: []
-    eventKey: 
+    eventKey: OpenDoor
     onEnter:
       m_PersistentCalls:
         m_Calls: []

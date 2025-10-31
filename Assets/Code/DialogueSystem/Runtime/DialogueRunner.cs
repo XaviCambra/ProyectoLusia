@@ -398,6 +398,19 @@ public class DialogueRunner : MonoBehaviour
     {
         // 0) Actualizar referencia actual y limpiar estado
         _current = node;
+
+        // 0.5) Eventos de entrada del nodo (desacoplados + UnityEvent)
+        if (_current != null)
+        {
+            // Dispara el evento global por clave (desacoplado)
+            if (!string.IsNullOrEmpty(_current.eventKey))
+                GlobalDialogueEvents.Fire(_current.eventKey);
+
+            // Opcional: invoca callbacks unidos por inspector
+            // (útil si quieres enganchar cosas sin código)
+            _current.onEnter?.Invoke();
+        }
+
         UpdateDebugLabel();
         _waitingChoice = false;
         HideChoices(); // por si venimos de un nodo de elección
