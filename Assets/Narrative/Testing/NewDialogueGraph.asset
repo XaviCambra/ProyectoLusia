@@ -39,13 +39,18 @@ MonoBehaviour:
     onEnter:
       m_PersistentCalls:
         m_Calls: []
+    eventPayloadType: 0
+    eventInt: 0
+    eventFloat: 0
+    eventString: 
+    eventBool: 0
     isStart: 0
     nodeRect:
       serializedVersion: 2
       x: 707
       y: 235
       width: 480
-      height: 508
+      height: 528
     showExtrasBox: 1
     appearance: 0
     origin: 0
@@ -59,7 +64,7 @@ MonoBehaviour:
     exitToOpacity: 0
     showTypewriterBox: 0
     profileRef: {fileID: 11400000, guid: 8d53569ffc0d98942b7f0baf25aac63f, type: 2}
-    profileId: 73583d49-252f-483b-bccd-72e45e303752
+    profileId: dbc1e80e-2686-4b55-914f-bb5a6e096d4d
     portraitKey: idle
   - useTypewriter: 0
     twShowAdvanced: 0
@@ -87,13 +92,18 @@ MonoBehaviour:
     onEnter:
       m_PersistentCalls:
         m_Calls: []
+    eventPayloadType: 0
+    eventInt: 0
+    eventFloat: 0
+    eventString: 
+    eventBool: 0
     isStart: 0
     nodeRect:
       serializedVersion: 2
       x: 1248
       y: 180
       width: 480
-      height: 508
+      height: 528
     showExtrasBox: 1
     appearance: 0
     origin: 0
@@ -107,7 +117,7 @@ MonoBehaviour:
     exitToOpacity: 0
     showTypewriterBox: 0
     profileRef: {fileID: 11400000, guid: 61f6d4e73b2c6e94285723ad575d568a, type: 2}
-    profileId: caf01f19-7d00-46e0-9eb0-244a0f97f052
+    profileId: 2e2c8989-6658-413f-b81f-c92f3ab07c8d
     portraitKey: idle
   - useTypewriter: 0
     twShowAdvanced: 0
@@ -135,13 +145,18 @@ MonoBehaviour:
     onEnter:
       m_PersistentCalls:
         m_Calls: []
+    eventPayloadType: 0
+    eventInt: 0
+    eventFloat: 0
+    eventString: 
+    eventBool: 0
     isStart: 0
     nodeRect:
       serializedVersion: 2
       x: 1780
       y: 198
       width: 480
-      height: 508
+      height: 528
     showExtrasBox: 0
     appearance: 0
     origin: 0
@@ -155,7 +170,7 @@ MonoBehaviour:
     exitToOpacity: 0
     showTypewriterBox: 0
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: 973a29de-96a8-4589-94ad-9c0bb21995d7
+    profileId: dea7160d-22fd-46bc-b32c-507b5149f424
     portraitKey: idle
   - useTypewriter: 1
     twShowAdvanced: 1
@@ -186,13 +201,18 @@ MonoBehaviour:
     onEnter:
       m_PersistentCalls:
         m_Calls: []
+    eventPayloadType: 1
+    eventInt: 5
+    eventFloat: 0
+    eventString: 
+    eventBool: 0
     isStart: 1
     nodeRect:
       serializedVersion: 2
       x: 148
       y: 166
       width: 480
-      height: 508
+      height: 547
     showExtrasBox: 0
     appearance: 0
     origin: 0
@@ -206,7 +226,7 @@ MonoBehaviour:
     exitToOpacity: 0
     showTypewriterBox: 0
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: 973a29de-96a8-4589-94ad-9c0bb21995d7
+    profileId: dea7160d-22fd-46bc-b32c-507b5149f424
     portraitKey: idle
   edges:
   - fromNodeGUID: 7dfd1423-b0d1-4783-81c9-092cfd5b47da

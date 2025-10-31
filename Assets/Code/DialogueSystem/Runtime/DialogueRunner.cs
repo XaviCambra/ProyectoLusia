@@ -399,15 +399,18 @@ public class DialogueRunner : MonoBehaviour
         // 0) Actualizar referencia actual y limpiar estado
         _current = node;
 
-        // 0.5) Eventos de entrada del nodo (desacoplados + UnityEvent)
+        // 0.5) Eventos de entrada
         if (_current != null)
         {
-            // Dispara el evento global por clave (desacoplado)
             if (!string.IsNullOrEmpty(_current.eventKey))
-                GlobalDialogueEvents.Fire(_current.eventKey);
+            {
+                // NUEVO: payload tipado
+                var payload = _current.BuildEventPayload();
+                GlobalDialogueEvents.Fire(payload);
 
-            // Opcional: invoca callbacks unidos por inspector
-            // (útil si quieres enganchar cosas sin código)
+                // Legacy: ya se lanza dentro del Fire(payload) por compatibilidad
+            }
+
             _current.onEnter?.Invoke();
         }
 

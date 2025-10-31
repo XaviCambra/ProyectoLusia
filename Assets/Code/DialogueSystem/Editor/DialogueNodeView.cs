@@ -36,6 +36,8 @@ public class DialogueNodeView : Node
     private FloatField _twPeriodPauseField;
     private FloatField _twEllipsisPauseField;
 
+    private VisualElement _payloadValueContainer; // contenedor dinámico para el valor del evento
+
     public DialogueNodeView(DialogueNodeData data)
     {
         Data = data;
@@ -302,15 +304,50 @@ public class DialogueNodeView : Node
 
         mainContainer.Add(new Toggle().BindToggle("Es nodo inicial", Data.isStart, v => { Data.isStart = v; RebuildOutputs(); }));
         mainContainer.Add(new Toggle().BindToggle("Es nodo de elección", Data.isChoiceNode, v => { Data.isChoiceNode = v; RebuildOutputs(); }));
-        mainContainer.Add(new TextField().BindText("Event Key", Data.eventKey, v => Data.eventKey = v));
+        //mainContainer.Add(new TextField().BindText("Event Key", Data.eventKey, v => Data.eventKey = v));
 
-        var testEventBtn = new Button(() =>
+        // --- EVENTOS ---
+        // Event Key
+        var eventKeyField = new TextField("Event Key");
+        eventKeyField.value = Data.eventKey;
+        eventKeyField.RegisterValueChangedCallback(evt => {
+            Data.eventKey = evt.newValue;
+            ScheduleAutoSize(); // (opcional, para recalcular altura)
+        });
+        // contentContainer.Add(eventKeyField);
+        mainContainer.Add(eventKeyField);
+
+        // Selector de tipo
+        var typeField = new EnumField("Payload Type", Data.eventPayloadType);
+        typeField.Init(Data.eventPayloadType);
+        typeField.RegisterValueChangedCallback(evt => {
+            Data.eventPayloadType = (EventPayloadType)evt.newValue;
+            RebuildEventValueField();
+            ScheduleAutoSize(); // (opcional)
+        });
+        // contentContainer.Add(typeField);
+        mainContainer.Add(typeField);
+
+        // Contenedor dinámico para el valor
+        _payloadValueContainer = new VisualElement { name = "payload-value-container" };
+        mainContainer.Add(_payloadValueContainer);
+
+        // Construye el campo según el tipo actual
+        RebuildEventValueField();
+        // --- END EVENTOS ---
+
+        var testBtn = new Button(() =>
         {
-            GlobalDialogueEvents.Fire(Data.eventKey);
-            EditorUtility.DisplayDialog("Evento lanzado", $"Se disparo la clave: {Data.eventKey}", "OK");
+            if (!string.IsNullOrEmpty(Data.eventKey))
+            {
+                var payload = Data.BuildEventPayload();
+                GlobalDialogueEvents.Fire(payload);
+                UnityEngine.Debug.Log($"[DialogueNodeView] Probar evento -> {payload}");
+            }
         })
         { text = "Probar evento" };
-        mainContainer.Add(testEventBtn);
+        // contentContainer.Add(testBtn);
+        mainContainer.Add(testBtn);
 
         var delBtn = new Button(DeleteSelf) { text = "Eliminar nodo" };
         titleButtonContainer.Add(delBtn);
@@ -319,6 +356,51 @@ public class DialogueNodeView : Node
         RegisterCallback<GeometryChangedEvent>(OnGeometryChangedOnce);
         SetPosition(Data.nodeRect);
         tooltip = $"GUID: {Data.GUID}";
+    }
+
+    void RebuildEventValueField()
+    {
+        _payloadValueContainer.Clear();
+        switch (Data.eventPayloadType)
+        {
+            case EventPayloadType.Int:
+                var intField = new IntegerField("Value (int)") { value = Data.eventInt };
+                intField.RegisterValueChangedCallback(e => { Data.eventInt = e.newValue; });
+                _payloadValueContainer.Add(intField);
+                break;
+
+            case EventPayloadType.Float:
+                var floatField = new FloatField("Value (float)") { value = Data.eventFloat };
+                floatField.RegisterValueChangedCallback(e => { Data.eventFloat = e.newValue; });
+                _payloadValueContainer.Add(floatField);
+                break;
+
+            case EventPayloadType.String:
+                var strField = new TextField("Value (string)") { value = Data.eventString };
+                strField.RegisterValueChangedCallback(e => { Data.eventString = e.newValue; });
+                _payloadValueContainer.Add(strField);
+                break;
+
+            case EventPayloadType.Bool:
+                var boolField = new Toggle("Value (bool)") { value = Data.eventBool };
+                boolField.RegisterValueChangedCallback(e => { Data.eventBool = e.newValue; });
+                _payloadValueContainer.Add(boolField);
+                break;
+
+            case EventPayloadType.Char:
+                var charField = new TextField("Value (char)") { value = Data.eventString, maxLength = 1 };
+                charField.RegisterValueChangedCallback(e => {
+                    Data.eventString = string.IsNullOrEmpty(e.newValue) ? "" : e.newValue.Substring(0, 1);
+                });
+                _payloadValueContainer.Add(charField);
+                break;
+
+            case EventPayloadType.None:
+            default:
+                // No value UI
+                break;
+        }
+        ScheduleAutoSize(); // recalcula tamaño tras reconstruir UI
     }
 
     // --- Helper para resolver el asset desde el ID guardado en el nodo ---

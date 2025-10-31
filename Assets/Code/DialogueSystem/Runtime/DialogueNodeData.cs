@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+public enum EventPayloadType { None, Int, Float, String, Bool, Char } // Char = string len 1
+
 // === Anim / Placement enums (usados por el nodo) ===
 public enum AppearanceMode { Preplaced, SlideIn }
 public enum TextStartTiming { BeforeAnimation, AfterAnimation }
@@ -80,6 +82,29 @@ public class DialogueNodeData : ISerializationCallbackReceiver
     [Header("Eventos del nodo")]
     public string eventKey;
     public UnityEvent onEnter;
+
+    public EventPayloadType eventPayloadType = EventPayloadType.None;
+    // Valores posibles según el tipo seleccionado
+    public int eventInt;
+    public float eventFloat;
+    public string eventString; // usado también para Char (longitud 1)
+    public bool eventBool;
+
+    /// <summary>
+    /// Construye el payload final a partir de la configuración del nodo.
+    /// </summary>
+    public DialogueEventPayload BuildEventPayload()
+    {
+        return new DialogueEventPayload
+        {
+            key = eventKey,
+            payloadType = eventPayloadType,
+            intValue = eventInt,
+            floatValue = eventFloat,
+            stringValue = eventString,
+            boolValue = eventBool,
+        };
+    }
 
     [Tooltip("Si está activo, este nodo se usará como punto de inicio del diálogo.")]
     public bool isStart = false;

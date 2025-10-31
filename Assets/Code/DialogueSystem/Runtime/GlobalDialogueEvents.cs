@@ -13,6 +13,9 @@ public static class GlobalDialogueEvents
     /// </summary>
     public static event Action<string> OnNodeEvent;
 
+    // Nuevo: clave + payload
+    public static event Action<DialogueEventPayload> OnNodeEventPayload;
+
     /// <summary>
     /// Dispara un evento global para la clave especificada.
     /// </summary>
@@ -22,5 +25,13 @@ public static class GlobalDialogueEvents
             return;
 
         OnNodeEvent?.Invoke(eventKey);
+    }
+
+    public static void Fire(DialogueEventPayload payload)
+    {
+        OnNodeEventPayload?.Invoke(payload);
+        // Compatibilidad: sigue notificando por clave para oyentes antiguos
+        if (!string.IsNullOrEmpty(payload.key))
+            OnNodeEvent?.Invoke(payload.key);
     }
 }
