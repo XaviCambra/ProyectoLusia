@@ -16,6 +16,9 @@ public class DialogueNodeView : Node
     public readonly Vector2 MaxSize = new(480, 1080);
     public Vector2 DefaultSize => new(320, 200);
 
+    // --- declara la variable para que el lambda pueda capturarla
+    TextField startIdField = null;
+
     private Port _input;
     private bool _didFirstAutosize = false;
 
@@ -339,7 +342,27 @@ public class DialogueNodeView : Node
         typewriterFold.Add(_twEllipsisPauseField);
         // ---------- END TYPEWRITER (PLEGABLE) ----------
 
-        mainContainer.Add(new Toggle().BindToggle("Es nodo inicial", Data.isStart, v => { Data.isStart = v; RebuildOutputs(); }));
+        // --- NODOS DE INICIO Y ELECCIÓN ---
+        // Toggle: es nodo de inicio
+        var isStartToggle = new Toggle("Es nodo inicio");
+        isStartToggle.value = Data.isStart;
+        isStartToggle.RegisterValueChangedCallback(evt =>
+        {
+            Data.isStart = evt.newValue;
+            RebuildOutputs();
+            if (startIdField != null)
+                startIdField.style.display = evt.newValue ? DisplayStyle.Flex : DisplayStyle.None;
+        });
+        mainContainer.Add(isStartToggle);
+
+        // Campo: Start Id (solo visible si es nodo de inicio)
+        startIdField = new TextField("Start Id");
+        startIdField.value = Data.startId ?? string.Empty;
+        startIdField.RegisterValueChangedCallback(e => Data.startId = e.newValue);
+        startIdField.style.display = Data.isStart ? DisplayStyle.Flex : DisplayStyle.None;
+        mainContainer.Add(startIdField);
+        // --- END NODOS DE INICIO Y ELECCIÓN ---
+
         mainContainer.Add(new Toggle().BindToggle("Es nodo de elección", Data.isChoiceNode, v => { Data.isChoiceNode = v; RebuildOutputs(); }));
         //mainContainer.Add(new TextField().BindText("Event Key", Data.eventKey, v => Data.eventKey = v));
 

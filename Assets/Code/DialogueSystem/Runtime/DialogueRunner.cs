@@ -58,6 +58,13 @@ public class DialogueRunner : MonoBehaviour
     [Tooltip("Color/tinte de los personajes que NO están hablando (por ejemplo, más tenue).")]
     [SerializeField] private Color nonSpeakingTint = new Color(1f, 1f, 1f, 0.50f);
 
+    [Header("Override de inicio (opcional)")]
+    [SerializeField] private string preferredStartId;   // Coincide con DialogueNodeData.startId
+    [SerializeField] private string preferredStartGuid; // Alternativa: seleccionar por GUID exacto
+
+    // (Opcional) propiedades públicas por si prefieres setearlo sin exponer el campo:
+    public string PreferredStartId { get => preferredStartId; set => preferredStartId = value; }
+    public string PreferredStartGuid { get => preferredStartGuid; set => preferredStartGuid = value; }
 
     public event Action OnDialogueEnd;
 
@@ -403,21 +410,35 @@ public class DialogueRunner : MonoBehaviour
         _visitedChoiceKeys.Clear(); // reinicia el historial de elecciones para esta sesión
         DialogueNodeData start = null;
 
-        // 1) Prioriza flag isStart
-        var starts = _nodeByGuid.Values.Where(n => n.isStart).ToList();
-        if (starts.Count > 1)
-            Debug.LogWarning($"[DialogueRunner] Hay {starts.Count} nodos marcados como inicio; se usará el primero.");
+        // 0) Overrides externos (si están bien formados y apuntan a nodos de inicio)
+        if (!string.IsNullOrEmpty(preferredStartGuid) &&
+            _nodeByGuid.TryGetValue(preferredStartGuid, out var byGuid) &&
+            byGuid.isStart)
+        {
+            start = byGuid;
+        }
+        else if (!string.IsNullOrEmpty(preferredStartId))
+        {
+            start = _nodeByGuid.Values
+                .FirstOrDefault(n => n.isStart && string.Equals(n.startId, preferredStartId, StringComparison.OrdinalIgnoreCase));
+        }
 
-        if (starts.Count >= 1)
-            start = starts[0];
+        // 1) Si no hubo override válido, usa cualquier nodo marcado como inicio (sin warning)
+        if (start == null)
+        {
+            var starts = _nodeByGuid.Values.Where(n => n.isStart).ToList();
+            if (starts.Count >= 1)
+                start = starts[0];
+        }
 
         // 2) Si no hay isStart, elige uno sin entradas
         if (start == null)
             start = _nodeByGuid.Values.FirstOrDefault(n => _incomingCount.TryGetValue(n.GUID, out var c) && c == 0);
 
-        // 3) Fallback absoluto: el primero que exista
+        // 3) Fallback absoluto
         if (start == null)
             start = _nodeByGuid.Values.First();
+
 
         SetCurrent(start);
     }
@@ -795,6 +816,30 @@ public class DialogueRunner : MonoBehaviour
             if (g.IsValid()) g.Destroy();
             _specialAnimGraphs.Remove(img);
         }
+    }
+
+    /// <summary>
+    /// Arranca usando el graph ya asignado en el componente.
+    /// Puedes forzar inicio por startId o por GUID.
+    /// </summary>
+    public void Play(string startId = null, string startGuid = null)
+    {
+        if (startId != null) preferredStartId = startId;
+        if (startGuid != null) preferredStartGuid = startGuid;
+
+        if (!ValidateGraph()) return;
+        BuildLookups();       // tu método actual que llena _nodeByGuid, etc.
+        BuildPortraitPool();  // si lo tienes; deja tal cual tu pipeline
+        StartDialogue();      // usa la selección mejorada (sección C)
+    }
+
+    /// <summary>
+    /// Igual que el anterior pero asignando el graph primero.
+    /// </summary>
+    public void Play(DialogueGraph g, string startId = null, string startGuid = null)
+    {
+        graph = g;
+        Play(startId, startGuid);
     }
 
     private void PlaySpecialAnimation(Image img, AnimationClip clip, float speed = 1f, bool loop = true)

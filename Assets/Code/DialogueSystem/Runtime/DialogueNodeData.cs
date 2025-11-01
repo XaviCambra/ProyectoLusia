@@ -109,6 +109,9 @@ public class DialogueNodeData : ISerializationCallbackReceiver
     [Tooltip("Si está activo, este nodo se usará como punto de inicio del diálogo.")]
     public bool isStart = false;
 
+    [Tooltip("Etiqueta opcional para distinguir entre múltiples nodos de inicio.")]
+    public string startId;   // p.ej. "prologo", "capitulo2", "finalA"
+
     [Header("Posición en el editor")]
     public Rect nodeRect = new Rect(100, 100, 320, 180);
 

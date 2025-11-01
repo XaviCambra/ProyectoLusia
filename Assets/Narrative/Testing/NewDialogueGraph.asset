@@ -45,6 +45,7 @@ MonoBehaviour:
     eventString: 
     eventBool: 0
     isStart: 0
+    startId: 
     nodeRect:
       serializedVersion: 2
       x: 707
@@ -68,7 +69,7 @@ MonoBehaviour:
     specialAnimLoop: 1
     showTypewriterBox: 0
     profileRef: {fileID: 11400000, guid: 8d53569ffc0d98942b7f0baf25aac63f, type: 2}
-    profileId: 0e667228-4507-4ab0-b071-9bf49c4be174
+    profileId: 9ed2fe52-5422-4eb0-964f-c8097798a1d7
     portraitKey: idle
   - useTypewriter: 0
     twShowAdvanced: 0
@@ -102,6 +103,7 @@ MonoBehaviour:
     eventString: 
     eventBool: 0
     isStart: 0
+    startId: 
     nodeRect:
       serializedVersion: 2
       x: 1248
@@ -125,7 +127,7 @@ MonoBehaviour:
     specialAnimLoop: 1
     showTypewriterBox: 0
     profileRef: {fileID: 11400000, guid: 61f6d4e73b2c6e94285723ad575d568a, type: 2}
-    profileId: 2fbc9b2e-eb77-4d9e-986f-50e3e2b3e107
+    profileId: b6e6aa5d-84f9-4b24-80e8-ad9f8526f46b
     portraitKey: idle
   - useTypewriter: 0
     twShowAdvanced: 0
@@ -159,6 +161,7 @@ MonoBehaviour:
     eventString: 
     eventBool: 0
     isStart: 0
+    startId: 
     nodeRect:
       serializedVersion: 2
       x: 1780
@@ -182,7 +185,7 @@ MonoBehaviour:
     specialAnimLoop: 1
     showTypewriterBox: 0
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: 5ee803b5-746c-4eaa-9126-a264000c33c4
+    profileId: cfabe95b-c7b6-4a7f-a584-d2e194a42046
     portraitKey: idle
   - useTypewriter: 1
     twShowAdvanced: 1
@@ -219,12 +222,13 @@ MonoBehaviour:
     eventString: 
     eventBool: 0
     isStart: 1
+    startId: START02
     nodeRect:
       serializedVersion: 2
       x: 148
       y: 166
       width: 480
-      height: 785
+      height: 804
     showExtrasBox: 1
     appearance: 1
     origin: 5
@@ -242,7 +246,65 @@ MonoBehaviour:
     specialAnimLoop: 1
     showTypewriterBox: 1
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: 5ee803b5-746c-4eaa-9126-a264000c33c4
+    profileId: cfabe95b-c7b6-4a7f-a584-d2e194a42046
+    portraitKey: idle
+  - useTypewriter: 0
+    twShowAdvanced: 0
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    guid: ba8e69d4-1ec7-4713-9872-2e1a5827ad98
+    bgColorIndex: 0
+    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
+    speakerName: Guille
+    lineText: HOLIIIII GUAPA
+    localization: 0
+    locKey: 
+    anchor: 0
+    customAnchor: {x: 0, y: 0}
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: 
+    onEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    eventPayloadType: 0
+    eventInt: 0
+    eventFloat: 0
+    eventString: 
+    eventBool: 0
+    isStart: 1
+    startId: START01
+    nodeRect:
+      serializedVersion: 2
+      x: 148
+      y: -282
+      width: 480
+      height: 354
+    showExtrasBox: 0
+    appearance: 0
+    origin: 6
+    target: 3
+    moveSpeed: 600
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    playSpecialAnimation: 0
+    specialAnimation: {fileID: 0}
+    specialAnimSpeed: 1
+    specialAnimLoop: 1
+    showTypewriterBox: 0
+    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+    profileId: cfabe95b-c7b6-4a7f-a584-d2e194a42046
     portraitKey: idle
   edges:
   - fromNodeGUID: 7dfd1423-b0d1-4783-81c9-092cfd5b47da
@@ -254,3 +316,6 @@ MonoBehaviour:
   - fromNodeGUID: a4bf3031-97d9-49cd-8ad2-7c32b0f7b665
     fromPortName: Next
     toNodeGUID: 645d006c-c18f-4842-9d82-e8da3a612784
+  - fromNodeGUID: ba8e69d4-1ec7-4713-9872-2e1a5827ad98
+    fromPortName: Next
+    toNodeGUID: d291fc58-8b26-4537-b980-e93ed0c60ec2
