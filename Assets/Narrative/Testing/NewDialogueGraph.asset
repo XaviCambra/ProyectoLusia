@@ -52,8 +52,8 @@ MonoBehaviour:
       width: 480
       height: 617
     showExtrasBox: 1
-    appearance: 0
-    origin: 0
+    appearance: 1
+    origin: 5
     target: 4
     moveSpeed: 600
     textStart: 1
@@ -68,7 +68,7 @@ MonoBehaviour:
     specialAnimLoop: 1
     showTypewriterBox: 0
     profileRef: {fileID: 11400000, guid: 8d53569ffc0d98942b7f0baf25aac63f, type: 2}
-    profileId: dbc1e80e-2686-4b55-914f-bb5a6e096d4d
+    profileId: 0e667228-4507-4ab0-b071-9bf49c4be174
     portraitKey: idle
   - useTypewriter: 0
     twShowAdvanced: 0
@@ -109,8 +109,8 @@ MonoBehaviour:
       width: 480
       height: 617
     showExtrasBox: 1
-    appearance: 0
-    origin: 0
+    appearance: 1
+    origin: 6
     target: 2
     moveSpeed: 600
     textStart: 1
@@ -125,7 +125,7 @@ MonoBehaviour:
     specialAnimLoop: 1
     showTypewriterBox: 0
     profileRef: {fileID: 11400000, guid: 61f6d4e73b2c6e94285723ad575d568a, type: 2}
-    profileId: 2e2c8989-6658-413f-b81f-c92f3ab07c8d
+    profileId: 2fbc9b2e-eb77-4d9e-986f-50e3e2b3e107
     portraitKey: idle
   - useTypewriter: 0
     twShowAdvanced: 0
@@ -166,7 +166,7 @@ MonoBehaviour:
       width: 480
       height: 617
     showExtrasBox: 0
-    appearance: 0
+    appearance: 1
     origin: 0
     target: 2
     moveSpeed: 600
@@ -182,7 +182,7 @@ MonoBehaviour:
     specialAnimLoop: 1
     showTypewriterBox: 0
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: dea7160d-22fd-46bc-b32c-507b5149f424
+    profileId: 5ee803b5-746c-4eaa-9126-a264000c33c4
     portraitKey: idle
   - useTypewriter: 1
     twShowAdvanced: 1
@@ -224,25 +224,25 @@ MonoBehaviour:
       x: 148
       y: 166
       width: 480
-      height: 636
+      height: 785
     showExtrasBox: 1
-    appearance: 0
-    origin: 0
+    appearance: 1
+    origin: 5
     target: 3
     moveSpeed: 600
     textStart: 1
-    useFade: 0
+    useFade: 1
     enterFromOpacity: 0
     enterToOpacity: 100
     exitFromOpacity: 100
     exitToOpacity: 0
     playSpecialAnimation: 1
-    specialAnimation: {fileID: 7400000, guid: 84ef4a4bd64349746bb4e0ea11b8e5c6, type: 2}
-    specialAnimSpeed: 1
+    specialAnimation: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
+    specialAnimSpeed: 0.5
     specialAnimLoop: 1
-    showTypewriterBox: 0
+    showTypewriterBox: 1
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: dea7160d-22fd-46bc-b32c-507b5149f424
+    profileId: 5ee803b5-746c-4eaa-9126-a264000c33c4
     portraitKey: idle
   edges:
   - fromNodeGUID: 7dfd1423-b0d1-4783-81c9-092cfd5b47da
