@@ -1,6 +1,7 @@
 // Editor/GraphView/DialogueNodeView.cs
 #if UNITY_EDITOR
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
@@ -11,32 +12,27 @@ using EditorObjectField = UnityEditor.UIElements.ObjectField;
 
 public class DialogueNodeView : Node
 {
+    // ------------------------------
+    // Public / Data
+    // ------------------------------
     public readonly DialogueNodeData Data;
     public readonly Vector2 MinSize = new(480, 144);
     public readonly Vector2 MaxSize = new(480, 1080);
     public Vector2 DefaultSize => new(320, 200);
 
-    // --- declara la variable para que el lambda pueda capturarla
-    TextField startIdField = null;
-
+    // ------------------------------
+    // Private UI refs
+    // ------------------------------
     private Port _input;
-    private bool _didFirstAutosize = false;
+    private bool _didFirstAutosize;
 
-    // --- NUEVO: referencias UI para alternar visibilidad ---
+    // Localization UI
     private Toggle _locToggle;
-    private TextField _textField;     // Texto literal
-    private TextField _locKeyField;   // Clave de localización
+    private TextField _textField;       // Texto literal
+    private TextField _locKeyField;     // Clave de localización
 
-    // --- TYPEWRITER UI ---
+    // Typewriter UI
     private Toggle _twEnableToggle;
-
-    // --- SPECIAL ANIMATION UI ---
-    private Toggle _specialAnimToggle;
-    private ObjectField _specialAnimClipField; // AnimationClip
-    private FloatField _specialAnimSpeedField;
-    private Toggle _specialAnimLoopToggle;
-
-    // Campos avanzados sin caja (sueltos dentro del foldout)
     private FloatField _twSecondsPerCharField;
     private FloatField _twGlobalSpeedField;
     private Toggle _twRespectRichTextToggle;
@@ -45,15 +41,66 @@ public class DialogueNodeView : Node
     private FloatField _twPeriodPauseField;
     private FloatField _twEllipsisPauseField;
 
-    private VisualElement _payloadValueContainer; // contenedor dinámico para el valor del evento
+    // Special Animation UI
+    private Toggle _specialAnimToggle;
+    private ObjectField _specialAnimClipField;
+    private FloatField _specialAnimSpeedField;
+    private Toggle _specialAnimLoopToggle;
 
+    // Events (payload dinámico)
+    private VisualElement _payloadValueContainer;
+
+    // Start node field (visible-condicional)
+    private TextField _startIdField;
+
+    // Fábrica para payloads de evento
+    private Dictionary<EventPayloadType, Func<VisualElement>> _eventFieldFactory;
+
+    // ------------------------------
+    // Ctor
+    // ------------------------------
     public DialogueNodeView(DialogueNodeData data)
     {
         Data = data;
+
+        ConfigureNodeChrome();
+        BuildHeaderButtons();
+
+        // --- NUEVO ORDEN / ESTRUCTURA ---
+        BuildBasicHeader();           // Color fondo + Perfil + Retrato
+        AddDivider("Texto y localización");
+        BuildMainContentBlock();      // Nombre + Localización + Texto/LocKey
+
+        AddDivider("Apariencia y animación");
+        BuildAppearanceAndAnimation(); // Aparición / Move / Fade / Animación especial
+
+        AddDivider("Typewriter");
+        BuildTypewriterFoldout();     // (foldout)
+
+        AddDivider("Flujo del diálogo");
+        BuildStartAndChoiceBlock();   // Start + Choice
+
+        AddDivider("Eventos");
+        BuildEventsBlock();           // Event key + payload + probar
+
+        BuildInputPort();             // Puertos
+        RebuildOutputs();
+
+        RegisterCallback<GeometryChangedEvent>(OnGeometryChangedOnce);
+        SetPosition(Data.nodeRect);
+        tooltip = $"GUID: {Data.GUID}";
+    }
+
+    // ------------------------------
+    // Chrome / Layout
+    // ------------------------------
+    private void ConfigureNodeChrome()
+    {
         title = "Diálogo";
         titleContainer.Q("collapse-button")?.RemoveFromHierarchy();
         viewDataKey = Data.GUID;
 
+        // Caja principal
         mainContainer.style.paddingLeft = 6;
         mainContainer.style.paddingRight = 6;
         mainContainer.style.paddingBottom = 6;
@@ -63,9 +110,9 @@ public class DialogueNodeView : Node
         style.minWidth = MinSize.x;
         style.minHeight = MinSize.y;
         style.maxWidth = MaxSize.x;
-        style.maxHeight = MaxSize.y;
+        //style.maxHeight = MaxSize.y;
 
-       
+        // Fondo y borde
         var bg = Data.bgColor;
         mainContainer.style.backgroundColor = new StyleColor(bg);
         mainContainer.style.borderTopLeftRadius = 8;
@@ -83,14 +130,56 @@ public class DialogueNodeView : Node
         mainContainer.style.borderTopColor = border;
         mainContainer.style.borderBottomColor = border;
 
-        // === Selector fijo (dropdown) con la paleta de DialogueNodeData ===
-        var paletteNames = DialogueNodeData.NodePalette.Select(p => p.name).ToList();
-        int safeIndex = Mathf.Clamp(Data.bgColorIndex, 0, paletteNames.Count - 1);
+        // Clases para estilado por USS (opcional)
+        mainContainer.AddToClassList("dlg-node");
+    }
 
-        // Sincroniza por si el asset viene con índice fuera de rango
+    private void BuildHeaderButtons()
+    {
+        var delBtn = new Button(DeleteSelf) { text = "Eliminar nodo" };
+        titleButtonContainer.Add(delBtn);
+    }
+
+    // ---------- Helpers visuales ----------
+    private void AddDivider(string title = null)
+    {
+        if (!string.IsNullOrEmpty(title))
+        {
+            var label = new Label(title);
+            label.style.unityFontStyleAndWeight = FontStyle.Bold;
+            label.style.marginTop = 6;
+            label.style.marginBottom = 4;
+            mainContainer.Add(label);
+        }
+
+        var line = new VisualElement();
+        line.style.height = 1;
+        line.style.marginBottom = 6;
+        line.style.backgroundColor = new Color(0, 0, 0, 0.10f);
+        mainContainer.Add(line);
+    }
+
+    // ------------------------------
+    // Header básico: paleta, perfil, retrato
+    // ------------------------------
+    private void BuildBasicHeader()
+    {
+        BuildPalettePicker();
+        BuildProfileSection();
+        BuildPortraitKey();
+    }
+
+    private void BuildPalettePicker()
+    {
+        var paletteNames = DialogueNodeData.NodePalette.Select(p => p.name).ToList();
+        int safeIndex = Mathf.Clamp(Data.bgColorIndex, 0, Mathf.Max(0, paletteNames.Count - 1));
+
         Data.bgColorIndex = safeIndex;
-        Data.bgColor = DialogueNodeData.NodePalette[safeIndex].color;
-        mainContainer.style.backgroundColor = new StyleColor(Data.bgColor);
+        if (paletteNames.Count > 0)
+        {
+            Data.bgColor = DialogueNodeData.NodePalette[safeIndex].color;
+            mainContainer.style.backgroundColor = new StyleColor(Data.bgColor);
+        }
 
         var paletteDropdown = new DropdownField("Color de fondo", paletteNames, safeIndex);
         paletteDropdown.RegisterValueChangedCallback(e =>
@@ -101,58 +190,55 @@ public class DialogueNodeView : Node
             Data.bgColorIndex = idx;
             Data.bgColor = DialogueNodeData.NodePalette[idx].color;
             mainContainer.style.backgroundColor = new StyleColor(Data.bgColor);
+            ScheduleAutoSize();
         });
 
         mainContainer.Add(paletteDropdown);
+    }
 
-        // ---------- PERFIL (SO) ----------
+    private void BuildProfileSection()
+    {
         var profileField = new EditorObjectField("Perfil (SO)")
         {
             objectType = typeof(CharacterProfile),
-            allowSceneObjects = false // ahora sí compila
+            allowSceneObjects = false
         };
-        // Prioriza la referencia directa si existe; si no, intenta por ID.
+
+        // Prioriza referencia directa; si no existe, intenta localizar por profileId
         profileField.value = Data.profileRef != null ? Data.profileRef : FindProfileById(Data.profileId);
+
         profileField.RegisterValueChangedCallback(e =>
         {
             var so = e.newValue as CharacterProfile;
 
 #if UNITY_EDITOR
+            // Garantiza que el SO tiene un ID persistente
             if (so != null && string.IsNullOrEmpty(so.ProfileId))
             {
-                // Autogenera un ID persistente y lo guarda en el asset del perfil
                 var soObj = new SerializedObject(so);
-                var idProp = soObj.FindProperty("profileId"); // campo privado del SO
-                idProp.stringValue = System.Guid.NewGuid().ToString();
+                var idProp = soObj.FindProperty("profileId");
+                idProp.stringValue = Guid.NewGuid().ToString();
                 soObj.ApplyModifiedPropertiesWithoutUndo();
                 EditorUtility.SetDirty(so);
                 AssetDatabase.SaveAssets();
             }
 #endif
-
-            // Ahora sí: el nodo guarda un ID válido y persistente
             Data.profileRef = so;
             Data.profileId = so ? so.ProfileId : null;
             DGLog.Info($"NodeView('{Data.GUID}') perfil cambiado → ref='{(so ? so.name : "NULL")}' id='{Data.profileId}'");
         });
 
-        mainContainer.Add(profileField);
-        // ---------- END PERFIL (SO) ----------
-
 #if UNITY_EDITOR
-        // Si profileRef está vacío pero tenemos profileId, intenta rehidratarlo (editor) para que el ObjectField se muestre correcto
+        // Rehidratación del ObjectField en editor si solo tenemos el ID
         if (Data.profileRef == null && !string.IsNullOrEmpty(Data.profileId))
         {
-            var guid = Data.profileId;
-            // Nota: profileId lo generas con Guid.NewGuid(), NO es el GUID del asset de Unity.
-            // Para rehidratar por editor aquí, necesitas la base de datos:
             DGLog.Info($"NodeView('{Data.GUID}') intenta rehidratar profileRef desde profileId='{Data.profileId}'");
             var guids = AssetDatabase.FindAssets("t:CharacterProfile");
             foreach (var g in guids)
             {
                 var path = AssetDatabase.GUIDToAssetPath(g);
                 var so = AssetDatabase.LoadAssetAtPath<CharacterProfile>(path);
-                if (so != null && so.ProfileId == guid)
+                if (so != null && so.ProfileId == Data.profileId)
                 {
                     Data.profileRef = so;
                     DGLog.Info($"NodeView('{Data.GUID}') rehidratado: {so.name} ({so.ProfileId})");
@@ -163,15 +249,84 @@ public class DialogueNodeView : Node
         profileField.value = Data.profileRef;
 #endif
 
-        // ---------- PORTRAIT KEY ----------
+        mainContainer.Add(profileField);
+    }
+
+    private CharacterProfile FindProfileById(string id)
+    {
+#if UNITY_EDITOR
+        if (string.IsNullOrEmpty(id)) return null;
+        var guids = AssetDatabase.FindAssets("t:CharacterProfile");
+        foreach (var g in guids)
+        {
+            var path = AssetDatabase.GUIDToAssetPath(g);
+            var so = AssetDatabase.LoadAssetAtPath<CharacterProfile>(path);
+            if (so != null && so.ProfileId == id)
+                return so;
+        }
+#endif
+        return null;
+    }
+
+    private void BuildPortraitKey()
+    {
         var portraitKeyField = new TextField("Retrato (key)") { value = Data.portraitKey };
         portraitKeyField.RegisterValueChangedCallback(e => Data.portraitKey = e.newValue);
         mainContainer.Add(portraitKeyField);
+    }
 
-        // ---------- EXTRAS / ANIMACIÓN (PLEGABLE) ----------
-        var extrasFold = new Foldout { text = "Extras / Animación" };
+    // ------------------------------
+    // Contenido (Texto y Localización)
+    // ------------------------------
+    private void BuildMainContentBlock()
+    {
+        // Nombre del hablante
+        mainContainer.Add(new TextField().BindText("Nombre", Data.speakerName, v => Data.speakerName = v));
+
+        // Toggle Localización
+        _locToggle = new Toggle("Localización")
+        {
+            tooltip = "Activa para usar una clave de localización en vez de texto literal.",
+            value = Data.localization
+        };
+        _locToggle.RegisterValueChangedCallback(e =>
+        {
+            Data.localization = e.newValue;
+            UpdateLocalizationVisibility();
+            ScheduleAutoSize();
+        });
+        mainContainer.Add(_locToggle);
+
+        // Texto literal
+        _textField = new TextField("Texto") { multiline = true, value = Data.lineText };
+        _textField.RegisterValueChangedCallback(e => Data.lineText = e.newValue);
+        mainContainer.Add(_textField);
+
+        // Clave de localización
+        _locKeyField = new TextField("Clave de localización") { value = Data.locKey };
+        _locKeyField.RegisterValueChangedCallback(e => Data.locKey = e.newValue);
+        mainContainer.Add(_locKeyField);
+
+        UpdateLocalizationVisibility();
+    }
+
+    private void UpdateLocalizationVisibility()
+    {
+        if (_textField != null)
+            _textField.style.display = Data.localization ? DisplayStyle.None : DisplayStyle.Flex;
+
+        if (_locKeyField != null)
+            _locKeyField.style.display = Data.localization ? DisplayStyle.Flex : DisplayStyle.None;
+    }
+
+    // ------------------------------
+    // Apariencia y Animación (foldout)
+    // ------------------------------
+    private void BuildAppearanceAndAnimation()
+    {
+        var extrasFold = new Foldout { text = "Apariencia y animación" };
         extrasFold.viewDataKey = Data.GUID + "_EXTRAS";
-        extrasFold.value = Data.showExtrasBox; // estado inicial
+        extrasFold.value = Data.showExtrasBox;
         extrasFold.RegisterValueChangedCallback(e => { Data.showExtrasBox = e.newValue; });
         mainContainer.Add(extrasFold);
 
@@ -181,13 +336,12 @@ public class DialogueNodeView : Node
         appearanceField.RegisterValueChangedCallback(e => Data.appearance = (AppearanceMode)e.newValue);
         extrasFold.Add(appearanceField);
 
-        // Origin (Spot)
+        // Origin (Spot) / Target (Spot)
         var originField = new EnumField("Origin", Data.origin);
         originField.Init(Data.origin);
         originField.RegisterValueChangedCallback(e => Data.origin = (Spot)e.newValue);
         extrasFold.Add(originField);
 
-        // Target (Spot)
         var targetField = new EnumField("Target", Data.target);
         targetField.Init(Data.target);
         targetField.RegisterValueChangedCallback(e => Data.target = (Spot)e.newValue);
@@ -198,18 +352,17 @@ public class DialogueNodeView : Node
         moveSpeedField.RegisterValueChangedCallback(e => Data.moveSpeed = Mathf.Max(0f, e.newValue));
         extrasFold.Add(moveSpeedField);
 
-        // Cuándo empieza el texto
+        // Inicio del texto
         var textStartField = new EnumField("Inicio del texto", Data.textStart);
         textStartField.Init(Data.textStart);
         textStartField.RegisterValueChangedCallback(e => Data.textStart = (TextStartTiming)e.newValue);
         extrasFold.Add(textStartField);
 
-        // Fade
+        // Fade + opacidades
         var useFadeToggle = new Toggle("Usar desvanecido") { value = Data.useFade };
         useFadeToggle.RegisterValueChangedCallback(e => Data.useFade = e.newValue);
         extrasFold.Add(useFadeToggle);
 
-        // Opacidades (en %)
         var enterFrom = new IntegerField("Enter From %") { value = Data.enterFromOpacity };
         enterFrom.RegisterValueChangedCallback(e => Data.enterFromOpacity = Mathf.Clamp(e.newValue, 0, 100));
         extrasFold.Add(enterFrom);
@@ -225,12 +378,14 @@ public class DialogueNodeView : Node
         var exitTo = new IntegerField("Exit To %") { value = Data.exitToOpacity };
         exitTo.RegisterValueChangedCallback(e => Data.exitToOpacity = Mathf.Clamp(e.newValue, 0, 100));
         extrasFold.Add(exitTo);
-        // ---------- END EXTRAS / ANIMACIÓN (PLEGABLE) ----------
 
-        // ---------- SPECIAL ANIMATION ----------
-        var saHeader = new Label("Special Animation");
+        // Mini separador y título “Animación especial”
+        var saHeader = new Label("Animación especial");
         saHeader.style.unityFontStyleAndWeight = FontStyle.Bold;
+        saHeader.style.marginTop = 6;
         extrasFold.Add(saHeader);
+        var line = new VisualElement { style = { height = 1, backgroundColor = new Color(0, 0, 0, 0.08f), marginBottom = 6 } };
+        extrasFold.Add(line);
 
         _specialAnimToggle = new Toggle("Usar animación especial") { value = Data.playSpecialAnimation };
         _specialAnimToggle.RegisterValueChangedCallback(e => Data.playSpecialAnimation = e.newValue);
@@ -258,47 +413,20 @@ public class DialogueNodeView : Node
         _specialAnimLoopToggle = new Toggle("Loop") { value = Data.specialAnimLoop };
         _specialAnimLoopToggle.RegisterValueChangedCallback(e => Data.specialAnimLoop = e.newValue);
         extrasFold.Add(_specialAnimLoopToggle);
-        // ---------- END SPECIAL ANIMATION ----------
+    }
 
-        // ---------- Resto de tu UI ----------
-        _input = PortUtils.CreatePort(this, Direction.Input, Port.Capacity.Multi, "In");
-        inputContainer.Add(_input);
-
-        mainContainer.Add(new TextField().BindText("Nombre", Data.speakerName, v => Data.speakerName = v));
-
-        // ---------- NUEVO: TOGGLE Localización sobre el bloque de texto ----------
-        _locToggle = new Toggle("Localización") { tooltip = "Activa para usar una clave de localización en vez de texto literal." };
-        _locToggle.value = Data.localization;
-        _locToggle.RegisterValueChangedCallback(e =>
-        {
-            Data.localization = e.newValue;
-            UpdateLocalizationVisibility();
-            ScheduleAutoSize();
-        });
-        mainContainer.Add(_locToggle);
-
-        // ---------- Campo de texto literal ----------
-        _textField = new TextField("Texto") { multiline = true, value = Data.lineText };
-        _textField.RegisterValueChangedCallback(e => Data.lineText = e.newValue);
-        mainContainer.Add(_textField);
-
-        // ---------- Campo de clave de localización ----------
-        _locKeyField = new TextField("Clave de localización") { value = Data.locKey };
-        _locKeyField.RegisterValueChangedCallback(e => Data.locKey = e.newValue);
-        mainContainer.Add(_locKeyField);
-
-        UpdateLocalizationVisibility();
-
-        // ---------- TYPEWRITER (PLEGABLE) ----------
+    // ------------------------------
+    // Typewriter (foldout)
+    // ------------------------------
+    private void BuildTypewriterFoldout()
+    {
         var typewriterFold = new Foldout { text = "Typewriter" };
         typewriterFold.viewDataKey = Data.GUID + "_TW";
-        typewriterFold.value = Data.showTypewriterBox; // estado inicial
+        typewriterFold.value = Data.showTypewriterBox;
         typewriterFold.RegisterValueChangedCallback(e => { Data.showTypewriterBox = e.newValue; });
         mainContainer.Add(typewriterFold);
 
-        // Toggle principal (usar typewriter)
-        _twEnableToggle = new Toggle("Typewriter") { tooltip = "Activar escritura progresiva en este nodo." };
-        _twEnableToggle.value = Data.useTypewriter;
+        _twEnableToggle = new Toggle("Typewriter") { tooltip = "Activar escritura progresiva en este nodo.", value = Data.useTypewriter };
         _twEnableToggle.RegisterValueChangedCallback(e =>
         {
             Data.useTypewriter = e.newValue;
@@ -306,19 +434,12 @@ public class DialogueNodeView : Node
         });
         typewriterFold.Add(_twEnableToggle);
 
-        // === CAMPOS AVANZADOS (sueltos, sin caja) ===
         _twSecondsPerCharField = new FloatField("Segundos/char") { value = Mathf.Clamp(Data.tw.secondsPerChar, 0.001f, 0.2f) };
-        _twSecondsPerCharField.RegisterValueChangedCallback(e =>
-        {
-            Data.tw.secondsPerChar = Mathf.Clamp(e.newValue, 0.001f, 0.2f);
-        });
+        _twSecondsPerCharField.RegisterValueChangedCallback(e => Data.tw.secondsPerChar = Mathf.Clamp(e.newValue, 0.001f, 0.2f));
         typewriterFold.Add(_twSecondsPerCharField);
 
         _twGlobalSpeedField = new FloatField("Velocidad global (x)") { value = Mathf.Clamp(Data.tw.globalSpeed, 0.1f, 3f) };
-        _twGlobalSpeedField.RegisterValueChangedCallback(e =>
-        {
-            Data.tw.globalSpeed = Mathf.Clamp(e.newValue, 0.1f, 3f);
-        });
+        _twGlobalSpeedField.RegisterValueChangedCallback(e => Data.tw.globalSpeed = Mathf.Clamp(e.newValue, 0.1f, 3f));
         typewriterFold.Add(_twGlobalSpeedField);
 
         _twRespectRichTextToggle = new Toggle("Respetar RichText") { value = Data.tw.respectRichText };
@@ -337,206 +458,158 @@ public class DialogueNodeView : Node
         _twPeriodPauseField.RegisterValueChangedCallback(e => Data.tw.periodPct = Mathf.Max(0f, e.newValue));
         typewriterFold.Add(_twPeriodPauseField);
 
-        _twEllipsisPauseField = new FloatField("Pausa '...' (x)") { value = Data.tw.ellipsisPct };
+        _twEllipsisPauseField = new FloatField("Pausa '.' (x)") { value = Data.tw.ellipsisPct };
         _twEllipsisPauseField.RegisterValueChangedCallback(e => Data.tw.ellipsisPct = Mathf.Max(0f, e.newValue));
         typewriterFold.Add(_twEllipsisPauseField);
-        // ---------- END TYPEWRITER (PLEGABLE) ----------
+    }
 
-        // --- NODOS DE INICIO Y ELECCIÓN ---
-        // Toggle: es nodo de inicio
-        var isStartToggle = new Toggle("Es nodo inicio");
-        isStartToggle.value = Data.isStart;
+    // ------------------------------
+    // Start & Choice (flujo)
+    // ------------------------------
+    private void BuildStartAndChoiceBlock()
+    {
+        // Toggle: es nodo inicio
+        var isStartToggle = new Toggle("Es nodo inicio") { value = Data.isStart };
         isStartToggle.RegisterValueChangedCallback(evt =>
         {
             Data.isStart = evt.newValue;
             RebuildOutputs();
-            if (startIdField != null)
-                startIdField.style.display = evt.newValue ? DisplayStyle.Flex : DisplayStyle.None;
+            if (_startIdField != null)
+                _startIdField.style.display = evt.newValue ? DisplayStyle.Flex : DisplayStyle.None;
         });
         mainContainer.Add(isStartToggle);
 
-        // Campo: Start Id (solo visible si es nodo de inicio)
-        startIdField = new TextField("Start Id");
-        startIdField.value = Data.startId ?? string.Empty;
-        startIdField.RegisterValueChangedCallback(e => Data.startId = e.newValue);
-        startIdField.style.display = Data.isStart ? DisplayStyle.Flex : DisplayStyle.None;
-        mainContainer.Add(startIdField);
-        // --- END NODOS DE INICIO Y ELECCIÓN ---
+        // Start Id (visible solo si es nodo inicio)
+        _startIdField = new TextField("Start Id")
+        {
+            value = Data.startId ?? string.Empty,
+            style = { display = Data.isStart ? DisplayStyle.Flex : DisplayStyle.None }
+        };
+        _startIdField.RegisterValueChangedCallback(e => Data.startId = e.newValue);
+        mainContainer.Add(_startIdField);
 
-        mainContainer.Add(new Toggle().BindToggle("Es nodo de elección", Data.isChoiceNode, v => { Data.isChoiceNode = v; RebuildOutputs(); }));
-        //mainContainer.Add(new TextField().BindText("Event Key", Data.eventKey, v => Data.eventKey = v));
+        // Nodo de elección
+        mainContainer.Add(new Toggle().BindToggle("Es nodo de elección", Data.isChoiceNode, v =>
+        {
+            Data.isChoiceNode = v;
+            RebuildOutputs();
+        }));
+    }
 
-        // --- EVENTOS ---
+    // ------------------------------
+    // Eventos
+    // ------------------------------
+    private void BuildEventsBlock()
+    {
         // Event Key
-        var eventKeyField = new TextField("Event Key");
-        eventKeyField.value = Data.eventKey;
-        eventKeyField.RegisterValueChangedCallback(evt => {
+        var eventKeyField = new TextField("Event Key") { value = Data.eventKey };
+        eventKeyField.RegisterValueChangedCallback(evt =>
+        {
             Data.eventKey = evt.newValue;
-            ScheduleAutoSize(); // (opcional, para recalcular altura)
+            ScheduleAutoSize();
         });
-        // contentContainer.Add(eventKeyField);
         mainContainer.Add(eventKeyField);
 
         // Selector de tipo
         var typeField = new EnumField("Payload Type", Data.eventPayloadType);
         typeField.Init(Data.eventPayloadType);
-        typeField.RegisterValueChangedCallback(evt => {
+        typeField.RegisterValueChangedCallback(evt =>
+        {
             Data.eventPayloadType = (EventPayloadType)evt.newValue;
             RebuildEventValueField();
-            ScheduleAutoSize(); // (opcional)
+            ScheduleAutoSize();
         });
-        // contentContainer.Add(typeField);
         mainContainer.Add(typeField);
 
-        // Contenedor dinámico para el valor
+        // Contenedor dinámico
         _payloadValueContainer = new VisualElement { name = "payload-value-container" };
         mainContainer.Add(_payloadValueContainer);
 
-        // Construye el campo según el tipo actual
+        // Fábrica para el campo de valor
+        InitEventFieldFactory();
         RebuildEventValueField();
-        // --- END EVENTOS ---
 
+        // Botón de prueba
         var testBtn = new Button(() =>
         {
             if (!string.IsNullOrEmpty(Data.eventKey))
             {
                 var payload = Data.BuildEventPayload();
                 GlobalDialogueEvents.Fire(payload);
-                UnityEngine.Debug.Log($"[DialogueNodeView] Probar evento -> {payload}");
+                Debug.Log($"[DialogueNodeView] Probar evento -> {payload}");
             }
         })
         { text = "Probar evento" };
-        // contentContainer.Add(testBtn);
         mainContainer.Add(testBtn);
-
-        var delBtn = new Button(DeleteSelf) { text = "Eliminar nodo" };
-        titleButtonContainer.Add(delBtn);
-
-        RebuildOutputs();
-        RegisterCallback<GeometryChangedEvent>(OnGeometryChangedOnce);
-        SetPosition(Data.nodeRect);
-        tooltip = $"GUID: {Data.GUID}";
     }
 
-    void RebuildEventValueField()
+    private void InitEventFieldFactory()
     {
-        _payloadValueContainer.Clear();
-        switch (Data.eventPayloadType)
+        _eventFieldFactory = new Dictionary<EventPayloadType, Func<VisualElement>>
         {
-            case EventPayloadType.Int:
-                var intField = new IntegerField("Value (int)") { value = Data.eventInt };
-                intField.RegisterValueChangedCallback(e => { Data.eventInt = e.newValue; });
-                _payloadValueContainer.Add(intField);
-                break;
-
-            case EventPayloadType.Float:
-                var floatField = new FloatField("Value (float)") { value = Data.eventFloat };
-                floatField.RegisterValueChangedCallback(e => { Data.eventFloat = e.newValue; });
-                _payloadValueContainer.Add(floatField);
-                break;
-
-            case EventPayloadType.String:
-                var strField = new TextField("Value (string)") { value = Data.eventString };
-                strField.RegisterValueChangedCallback(e => { Data.eventString = e.newValue; });
-                _payloadValueContainer.Add(strField);
-                break;
-
-            case EventPayloadType.Bool:
-                var boolField = new Toggle("Value (bool)") { value = Data.eventBool };
-                boolField.RegisterValueChangedCallback(e => { Data.eventBool = e.newValue; });
-                _payloadValueContainer.Add(boolField);
-                break;
-
-            case EventPayloadType.Char:
-                var charField = new TextField("Value (char)") { value = Data.eventString, maxLength = 1 };
-                charField.RegisterValueChangedCallback(e => {
+            [EventPayloadType.None] = () => null,
+            [EventPayloadType.Int] = () =>
+            {
+                var f = new IntegerField("Value (int)") { value = Data.eventInt };
+                f.RegisterValueChangedCallback(e => Data.eventInt = e.newValue);
+                return f;
+            },
+            [EventPayloadType.Float] = () =>
+            {
+                var f = new FloatField("Value (float)") { value = Data.eventFloat };
+                f.RegisterValueChangedCallback(e => Data.eventFloat = e.newValue);
+                return f;
+            },
+            [EventPayloadType.String] = () =>
+            {
+                var f = new TextField("Value (string)") { value = Data.eventString };
+                f.RegisterValueChangedCallback(e => Data.eventString = e.newValue);
+                return f;
+            },
+            [EventPayloadType.Bool] = () =>
+            {
+                var f = new Toggle("Value (bool)") { value = Data.eventBool };
+                f.RegisterValueChangedCallback(e => Data.eventBool = e.newValue);
+                return f;
+            },
+            [EventPayloadType.Char] = () =>
+            {
+                var initial = string.IsNullOrEmpty(Data.eventString) ? "" : Data.eventString.Substring(0, 1);
+                var f = new TextField("Value (char)") { maxLength = 1, value = initial };
+                f.RegisterValueChangedCallback(e =>
+                {
                     Data.eventString = string.IsNullOrEmpty(e.newValue) ? "" : e.newValue.Substring(0, 1);
                 });
-                _payloadValueContainer.Add(charField);
-                break;
-
-            case EventPayloadType.None:
-            default:
-                // No value UI
-                break;
-        }
-        ScheduleAutoSize(); // recalcula tamaño tras reconstruir UI
+                return f;
+            },
+        };
     }
 
-    // --- Helper para resolver el asset desde el ID guardado en el nodo ---
-    private CharacterProfile FindProfileById(string id)
+    private void RebuildEventValueField()
     {
-        if (string.IsNullOrEmpty(id)) return null;
-        var guids = AssetDatabase.FindAssets("t:CharacterProfile");
-        foreach (var g in guids)
-        {
-            var path = AssetDatabase.GUIDToAssetPath(g);
-            var p = AssetDatabase.LoadAssetAtPath<CharacterProfile>(path);
-            if (p != null && p.ProfileId == id)
-                return p;
-        }
-        return null;
-    }
+        _payloadValueContainer.Clear();
+        if (_eventFieldFactory == null) InitEventFieldFactory();
 
-    private void OnGeometryChangedOnce(GeometryChangedEvent evt)
-    {
-        // Solo la primera vez que se genera el layout inicial
-        if (_didFirstAutosize) return;
-        _didFirstAutosize = true;
+        if (_eventFieldFactory.TryGetValue(Data.eventPayloadType, out var maker))
+            _payloadValueContainer.Add(maker());
+
         ScheduleAutoSize();
     }
 
-    private void ScheduleAutoSize()
+    // ------------------------------
+    // Puertos
+    // ------------------------------
+    private void BuildInputPort()
     {
-        // Espera un frame para que UI Toolkit tenga medidas correctas
-        this.schedule.Execute(() => AutoSizeToContent()).ExecuteLater(0);
+        _input = PortUtils.CreatePort(this, Direction.Input, Port.Capacity.Multi, "In");
+        inputContainer.Add(_input);
     }
-
-    private void AutoSizeToContent()
-    {
-        // Calculamos tamaño preferido a partir del contenido real
-        var r = GetPosition();
-
-        // Altura: suma de contenedores internos ya medidos
-        float inH = inputContainer.contentRect.height;
-        float main = mainContainer.contentRect.height;
-        float outH = outputContainer.contentRect.height;
-
-        // Margen extra para borde/título
-        float extra = 30f;
-
-        float targetH = Mathf.Clamp(inH + main + outH + extra, MinSize.y, MaxSize.y);
-
-        // Ancho: al menos el mínimo y lo necesario para el contenido
-        float contentW = Mathf.Max(
-            mainContainer.contentRect.width,
-            inputContainer.contentRect.width,
-            outputContainer.contentRect.width
-        );
-
-        float padding = 24f; // margen para scrollbars y bordes
-        float targetW = Mathf.Clamp(Mathf.Max(r.width, contentW + padding, MinSize.x), MinSize.x, MaxSize.x);
-
-        SetPosition(new Rect(r.x, r.y, targetW, targetH));
-    }
-
-    private void DeleteSelf() => RemoveFromHierarchy();
 
     private void ClearOutputs()
     {
-        var children = new System.Collections.Generic.List<VisualElement>(outputContainer.Children());
+        var children = new List<VisualElement>(outputContainer.Children());
         foreach (var c in children) outputContainer.Remove(c);
         outputContainer.Clear();
-    }
-
-    private void UpdateLocalizationVisibility()
-    {
-        // Si 'localizacion' está activa -> mostrar clave, ocultar texto literal
-        if (_textField != null)
-            _textField.style.display = Data.localization ? DisplayStyle.None : DisplayStyle.Flex;
-
-        if (_locKeyField != null)
-            _locKeyField.style.display = Data.localization ? DisplayStyle.Flex : DisplayStyle.None;
     }
 
     private void RebuildOutputs()
@@ -545,24 +618,44 @@ public class DialogueNodeView : Node
 
         if (!Data.isChoiceNode)
         {
+            // Nodo normal: un único "Next"
             var next = PortUtils.CreatePort(this, Direction.Output, Port.Capacity.Single, "Next");
             outputContainer.Add(next);
         }
         else
         {
+            // Nodo de elección: contador + filas (TextField + Port)
             Data.choiceCount = Mathf.Clamp(Data.choiceCount, 2, 4);
+
             while (Data.choices.Count < Data.choiceCount)
-                Data.choices.Add(new ChoiceData { choiceText = "Opción", portName = Guid.NewGuid().ToString("N").Substring(0, 6) });
+                Data.choices.Add(new DialogueNodeData.ChoiceData
+                {
+                    choiceText = "Opción",
+                    portName = Guid.NewGuid().ToString("N").Substring(0, 6)
+                });
+
             while (Data.choices.Count > Data.choiceCount)
                 Data.choices.RemoveAt(Data.choices.Count - 1);
 
             var countField = new IntegerField("Número de opciones") { value = Data.choiceCount };
-            countField.RegisterValueChangedCallback(e => { Data.choiceCount = Mathf.Clamp(e.newValue, 2, 4); RebuildOutputs(); });
+            countField.RegisterValueChangedCallback(e =>
+            {
+                Data.choiceCount = Mathf.Clamp(e.newValue, 2, 4);
+                RebuildOutputs();
+            });
             outputContainer.Add(countField);
 
             for (int i = 0; i < Data.choiceCount; i++)
             {
-                var row = new VisualElement { style = { flexDirection = FlexDirection.Row, alignItems = Align.Center } };
+                var row = new VisualElement
+                {
+                    style =
+                    {
+                        flexDirection = FlexDirection.Row,
+                        alignItems = Align.Center
+                    }
+                };
+
                 var optField = new TextField($"Opción {i + 1}") { value = Data.choices[i].choiceText };
                 optField.style.flexGrow = 1;
                 int idx = i;
@@ -582,6 +675,43 @@ public class DialogueNodeView : Node
         ScheduleAutoSize();
     }
 
+    // ------------------------------
+    // Autosize / Geometry
+    // ------------------------------
+    private void OnGeometryChangedOnce(GeometryChangedEvent evt)
+    {
+        if (_didFirstAutosize) return;
+        _didFirstAutosize = true;
+
+        // Primer ajuste al construirse
+        ScheduleAutoSize();
+    }
+
+    private void ScheduleAutoSize()
+    {
+        // Un pequeño debounce visual para no recalcular varias veces en el mismo frame
+        schedule.Execute(() =>
+        {
+            var r = GetPosition();
+
+            // Altura: usa el contenido y añade margen
+            float contentH = mainContainer.layout.height + inputContainer.layout.height + outputContainer.layout.height;
+            float targetH = Mathf.Clamp(contentH + 20f, MinSize.y, MaxSize.y);
+
+            // Anchura: calcula la mayor anchura de los contenedores (contentRect) + padding
+            float contentW = Mathf.Max(
+                mainContainer.contentRect.width,
+                inputContainer.contentRect.width,
+                outputContainer.contentRect.width
+            );
+
+            float padding = 24f;
+            float targetW = Mathf.Clamp(Mathf.Max(r.width, contentW + padding, MinSize.x), MinSize.x, MaxSize.x);
+
+            SetPosition(new Rect(r.x, r.y, targetW, targetH));
+        }).ExecuteLater(0);
+    }
+
     public override void SetPosition(Rect newPos)
     {
         newPos.width = Mathf.Clamp(newPos.width, MinSize.x, MaxSize.x);
@@ -589,5 +719,7 @@ public class DialogueNodeView : Node
         base.SetPosition(newPos);
         Data.nodeRect = newPos;
     }
+
+    private void DeleteSelf() => RemoveFromHierarchy();
 }
 #endif

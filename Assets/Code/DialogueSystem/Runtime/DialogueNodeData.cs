@@ -1,229 +1,185 @@
-// Runtime/LegacySoModel/DialogueNodeData.cs
+// Runtime/Dialogue/DialogueNodeData.cs
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
-public enum EventPayloadType { None, Int, Float, String, Bool, Char } // Char = string len 1
-
-// === Anim / Placement enums (usados por el nodo) ===
-public enum AppearanceMode { Preplaced, SlideIn }
-public enum TextStartTiming { BeforeAnimation, AfterAnimation }
-public enum Spot
-{
-    Auto,     // hereda última posición conocida del perfil
-    Keep,     // no mover (solo posible fade)
-    Left,
-    Center,
-    Right,
-    OffLeft,  // fuera de pantalla por la izquierda
-    OffRight  // fuera de pantalla por la derecha
-}
-
-/// <summary>
-/// Datos serializables de un nodo de diálogo dentro del asset DialogueGraph.
-/// Define la información básica que el diseñador edita en el GraphView.
-/// </summary>
 [Serializable]
-public class DialogueNodeData : ISerializationCallbackReceiver
+public class DialogueNodeData
 {
-    // Flag maestro: este nodo usa efecto typewriter al mostrarse
-    public bool useTypewriter = false;
+    // ---------- Identidad / Layout ----------
+    public string GUID = Guid.NewGuid().ToString();
+    public Rect nodeRect = new Rect(100, 100, 480, 200);
 
-    // Solo para editor/UI (puede no serializarse si no quieres)
-    public bool twShowAdvanced = false;
-
-    // Overrides locales del nodo (subconjunto mínimo)
-    public TypewriterOverrides tw = TypewriterOverrides.Default();
-
-    [SerializeField, HideInInspector] private string guid;   // <- ¡serializado no tocar!
-    public string GUID => guid;
-
-    // noop: forzar recompilación sin cambiar la lógica
-
-    [Header("Apariencia (Editor)")]
-    public int bgColorIndex = 0; // índice en la paleta
-    public Color bgColor = new Color(0.16f, 0.16f, 0.20f, 1f); // se mantiene para retrocompat
-
-    // Paleta fija (puedes cambiar/añadir)
-    public static readonly (string name, Color color)[] NodePalette = new (string, Color)[]
+    // ---------- Apariencia del nodo (Editor) ----------
+    [Serializable]
+    public struct PaletteEntry { public string name; public Color color; }
+    // Personaliza esta paleta en tu proyecto si quieres más opciones
+    public static readonly List<PaletteEntry> NodePalette = new()
     {
-        ("Gris",    new Color(0.16f, 0.16f, 0.20f, 1f)),
-        ("Azul",    new Color(0.18f, 0.24f, 0.32f, 1f)),
-        ("Morado",  new Color(0.22f, 0.18f, 0.30f, 1f)),
-        ("Verde",   new Color(0.20f, 0.26f, 0.20f, 1f)),
-        ("Ambar",   new Color(0.30f, 0.25f, 0.12f, 1f)),
-        ("Cian",    new Color(0.16f, 0.28f, 0.30f, 1f)),
+        new PaletteEntry { name = "Graphite",       color = new Color(0.15f, 0.17f, 0.19f, 1f) },
+        new PaletteEntry { name = "Ash Gray",       color = new Color(0.25f, 0.27f, 0.30f, 1f) },
+        new PaletteEntry { name = "Deep Coffee",    color = new Color(0.32f, 0.24f, 0.20f, 1f) },
+        new PaletteEntry { name = "Rust Brown",     color = new Color(0.48f, 0.28f, 0.22f, 1f) },
+        new PaletteEntry { name = "Faded Clay",     color = new Color(0.52f, 0.33f, 0.30f, 1f) },
+        new PaletteEntry { name = "Forest Olive",   color = new Color(0.30f, 0.40f, 0.28f, 1f) },
+        new PaletteEntry { name = "Deep Moss",      color = new Color(0.26f, 0.35f, 0.30f, 1f) },
+        new PaletteEntry { name = "Muted Teal",     color = new Color(0.25f, 0.43f, 0.45f, 1f) },
+        new PaletteEntry { name = "Storm Blue",     color = new Color(0.25f, 0.35f, 0.48f, 1f) },
+        new PaletteEntry { name = "Indigo Night",   color = new Color(0.23f, 0.30f, 0.46f, 1f) },
+        new PaletteEntry { name = "Royal Plum",     color = new Color(0.32f, 0.24f, 0.40f, 1f) },
+        new PaletteEntry { name = "Deep Lavender",  color = new Color(0.38f, 0.29f, 0.44f, 1f) },
+        new PaletteEntry { name = "Midnight Cyan",  color = new Color(0.20f, 0.35f, 0.40f, 1f) },
+        new PaletteEntry { name = "Dusty Burgundy", color = new Color(0.40f, 0.25f, 0.30f, 1f) },
+        new PaletteEntry { name = "Smoky Navy",     color = new Color(0.18f, 0.25f, 0.36f, 1f) },
+        new PaletteEntry { name = "Obsidian Green", color = new Color(0.18f, 0.28f, 0.23f, 1f) }
     };
 
-    [Header("Contenido del diálogo")]
-    public string speakerName;
+    [Range(0, 99)] public int bgColorIndex = 0;
+    public Color bgColor = new Color(0.22f, 0.22f, 0.22f, 1f);
 
-    [TextArea(3, 8)] 
-    public string lineText;
+    // ---------- Perfil / Retrato ----------
+    public CharacterProfile profileRef;            // Referencia directa (Editor)
+    public string profileId;             // Id persistente (Runtime/rehidratación)
+    public string portraitKey;           // Clave de sprite dentro del perfil
 
-    // --- NUEVO: Soporte de localización ---
-    [Header("Localización")]
-    [Tooltip("Si está activo, el nodo usará una clave de localización en lugar de texto literal.")]
-    public bool localization = false;
+    // ---------- Texto / Localización ----------
+    public string speakerName = "";
+    public bool localization = false;            // Si true: usar locKey
+    [TextArea(2, 6)]
+    public string lineText = "";
+    public string locKey = "";
 
-    [Tooltip("Clave de localización (por ejemplo: dialogue.intro.hello)")]
-    public string locKey;
+    // ---------- Aparición / Movimiento ----------
+    public AppearanceMode appearance = AppearanceMode.Cut;
+    public Spot origin = Spot.LeftOffscreen;
+    public Spot target = Spot.Left;
+    public float moveSpeed = 600f;
 
-    [Header("Posición del personaje")]
-    public CharacterAnchor anchor = CharacterAnchor.Left;
-    public Vector2 customAnchor;
+    public TextStartTiming textStart = TextStartTiming.OnEnterComplete;
 
-    [Header("Configuración de elección")]
-    public bool isChoiceNode;
-    [Range(2, 4)] public int choiceCount = 2;
-    public List<ChoiceData> choices = new();
-
-    [Header("Eventos del nodo")]
-    public string eventKey;
-    public UnityEvent onEnter;
-
-    public EventPayloadType eventPayloadType = EventPayloadType.None;
-    // Valores posibles según el tipo seleccionado
-    public int eventInt;
-    public float eventFloat;
-    public string eventString; // usado también para Char (longitud 1)
-    public bool eventBool;
-
-    /// <summary>
-    /// Construye el payload final a partir de la configuración del nodo.
-    /// </summary>
-    public DialogueEventPayload BuildEventPayload()
-    {
-        return new DialogueEventPayload
-        {
-            key = eventKey,
-            payloadType = eventPayloadType,
-            intValue = eventInt,
-            floatValue = eventFloat,
-            stringValue = eventString,
-            boolValue = eventBool,
-        };
-    }
-
-    [Tooltip("Si está activo, este nodo se usará como punto de inicio del diálogo.")]
-    public bool isStart = false;
-
-    [Tooltip("Etiqueta opcional para distinguir entre múltiples nodos de inicio.")]
-    public string startId;   // p.ej. "prologo", "capitulo2", "finalA"
-
-    [Header("Posición en el editor")]
-    public Rect nodeRect = new Rect(100, 100, 320, 180);
-
-    // ========== EXTRAS / ANIMACIÓN ==========
-    [Header("Extras / Animación (plegable)")]
-    [Tooltip("Muestra/Oculta los campos extra en el editor")]
-    public bool showExtrasBox = false; // Punto 2 (toggle de UI editor)
-
-    [Header("Aparición / Colocación")]
-    [Tooltip("Si 'Preplaced' el personaje ya está en pantalla sin animación; si 'SlideIn' se mueve al destino")]
-    public AppearanceMode appearance = AppearanceMode.Preplaced;
-
-    [Tooltip("Desde dónde empieza este nodo (Auto = hereda última posición conocida)")]
-    public Spot origin = Spot.Auto;
-
-    [Tooltip("Destino del personaje (OffLeft/OffRight = salida por ese lateral)")]
-    public Spot target = Spot.Center;
-
-    [Tooltip("Velocidad de desplazamiento (px/seg)")]
-    public float moveSpeed = 600f; // Punto 7
-
-    [Tooltip("Cuándo empieza el texto del typewriter")]
-    public TextStartTiming textStart = TextStartTiming.AfterAnimation; // Punto 8
-
-    [Header("Fade (entrada/salida)")]
-    [Tooltip("Activar desvanecidos al entrar/salir")]
-    public bool useFade = true; // Punto 9 (toggle maestro de fade)
-
-    [Range(0, 100)] public int enterFromOpacity = 0;   // 0 = 0%, 100 = 100%
+    // ---------- Fade ----------
+    public bool useFade = false;
+    [Range(0, 100)] public int enterFromOpacity = 0;
     [Range(0, 100)] public int enterToOpacity = 100;
-
     [Range(0, 100)] public int exitFromOpacity = 100;
     [Range(0, 100)] public int exitToOpacity = 0;
-    // ========== END EXTRAS / ANIMACIÓN ==========
 
-    // ========== SPECIAL ANIMATION (OPCIONAL) ==========
-    [Header("Special Animation (opcional)")]
-    [Tooltip("Si está activo, el retrato del personaje reproducirá una AnimationClip especial en este nodo.")]
+    // ---------- Animación especial ----------
     public bool playSpecialAnimation = false;
-
-    [Tooltip("AnimationClip a reproducir (puede animar RectTransform: anchoredPosition, localScale, etc.).")]
     public AnimationClip specialAnimation;
-
-    [Tooltip("Velocidad con la que reproducir la animación (1 = normal).")]
     public float specialAnimSpeed = 1f;
+    public bool specialAnimLoop = false;
 
-    [Tooltip("Intentar que la animación sea cíclica. Ideal si el clip tiene loop activado en Import Settings.")]
-    public bool specialAnimLoop = true;
-    // ========== END SPECIAL ANIMATION ==========
-
-    // ========== TYPEWRITER ==========
-    [Header("Typewriter (plegable)")]
-    [Tooltip("Muestra/Oculta los campos del typewriter en el editor")]
-    public bool showTypewriterBox = false;
-    // ========== END TYPEWRITER ==========
-
-    // --- NUEVO: referencia lógica a un perfil ---
-    [Header("Perfil (opcional)")]
-    [Tooltip("Referencia directa (editor/runtime) al perfil. Si está, tiene prioridad en el editor.")]
-    public CharacterProfile profileRef;   // <--- NUEVO
-    [Tooltip("ID del CharacterProfile almacenado en la base de datos")]
-    public string profileId;     // string llano: sin referencia directa al asset
-    [Tooltip("Clave del retrato a usar dentro del perfil (PortraitEntry.key)")]
-    public string portraitKey;
-
-    public DialogueNodeData()
+    // ---------- Typewriter ----------
+    [Serializable]
+    public struct TypewriterSettings
     {
-        if (string.IsNullOrEmpty(guid))
-            guid = Guid.NewGuid().ToString();
-        onEnter = new UnityEvent();
+        [Range(0.001f, 0.2f)] public float secondsPerChar;
+        [Range(0.1f, 3f)] public float globalSpeed;
+        public bool respectRichText;
+        public bool minimalWhitespaceDelay;
+        public float commaPct;     // multiplicadores de pausa
+        public float periodPct;
+        public float ellipsisPct;
     }
 
-    public void OnBeforeSerialize()
-    {
-        if (string.IsNullOrEmpty(guid))
-            guid = Guid.NewGuid().ToString();
-
-        DGLog.Info($"NodeData.OnBeforeSerialize GUID={GUID} profileId='{profileId}'");
-    }
-
-    public void OnAfterDeserialize()
-    {
-        if (string.IsNullOrEmpty(guid))
-            guid = Guid.NewGuid().ToString();
-
-        DGLog.Info($"NodeData.OnAfterDeserialize GUID={GUID} profileId='{profileId}'");
-    }
-}
-
-// En DialogueNodeData.cs (o donde declares el modelo del nodo)
-[System.Serializable]
-public struct TypewriterOverrides
-{
-    // Subconjunto mínimo y útil (puedes ampliar fácilmente)
-    public float secondsPerChar;      // 0.001–0.2
-    public float globalSpeed;         // 0.1–3
-    public bool respectRichText;      // true/false
-    public bool minimalWhitespaceDelay; // true/false
-
-    public float commaPct;            // x multiplicador
-    public float periodPct;
-    public float ellipsisPct;
-
-    // Fábrica de valores por defecto sensatos (alineados al Profile por defecto)
-    public static TypewriterOverrides Default() => new TypewriterOverrides
+    public bool showTypewriterBox = false; // plegable (Editor)
+    public bool useTypewriter = false;
+    public TypewriterSettings tw = new TypewriterSettings
     {
         secondsPerChar = 0.03f,
         globalSpeed = 1f,
         respectRichText = true,
         minimalWhitespaceDelay = true,
-        commaPct = 2.0f,
-        periodPct = 3.0f,
-        ellipsisPct = 5.0f,
+        commaPct = 1.25f,
+        periodPct = 1.6f,
+        ellipsisPct = 2.0f
     };
+
+    // ---------- Pliegues UI (Editor) ----------
+    public bool showExtrasBox = false;
+
+    // ---------- Inicio / Elecciones ----------
+    public bool isStart = false;
+    public string startId = "";        // identificador externo cuando es nodo de inicio
+
+    public bool isChoiceNode = false;
+    [Range(2, 4)] public int choiceCount = 2;
+
+    [Serializable]
+    public class ChoiceData
+    {
+        public string choiceText = "Opción";
+        public string portName = "out";
+    }
+    public List<ChoiceData> choices = new();
+
+    // ---------- Eventos ----------
+    public string eventKey = "";
+    public EventPayloadType eventPayloadType = EventPayloadType.None;
+    public int eventInt = 0;
+    public float eventFloat = 0f;
+    public string eventString = "";  // también se usa para 'Char' (longitud 0..1)
+    public bool eventBool = false;
+
+    // ---------- Utilidad ----------
+    public DialogueEventPayload BuildEventPayload()
+    {
+        var payload = new DialogueEventPayload
+        {
+            key = eventKey,
+            type = eventPayloadType
+        };
+
+        switch (eventPayloadType)
+        {
+            case EventPayloadType.None:
+                // no payload
+                break;
+            case EventPayloadType.Int: payload.intValue = eventInt; break;
+            case EventPayloadType.Float: payload.floatValue = eventFloat; break;
+            case EventPayloadType.String: payload.stringValue = eventString ?? string.Empty; break;
+            case EventPayloadType.Bool: payload.boolValue = eventBool; break;
+            case EventPayloadType.Char:
+                payload.charValue = !string.IsNullOrEmpty(eventString) ? eventString[0] : '\0';
+                break;
+        }
+        return payload;
+    }
+
+    // ---------- Saneo mínimo ----------
+    public void OnValidate()
+    {
+        // Paleta
+        if (NodePalette != null && NodePalette.Count > 0)
+        {
+            bgColorIndex = Mathf.Clamp(bgColorIndex, 0, NodePalette.Count - 1);
+            bgColor = NodePalette[bgColorIndex].color;
+        }
+
+        // Clamp básicos
+        moveSpeed = Mathf.Max(0f, moveSpeed);
+
+        enterFromOpacity = Mathf.Clamp(enterFromOpacity, 0, 100);
+        enterToOpacity = Mathf.Clamp(enterToOpacity, 0, 100);
+        exitFromOpacity = Mathf.Clamp(exitFromOpacity, 0, 100);
+        exitToOpacity = Mathf.Clamp(exitToOpacity, 0, 100);
+
+        specialAnimSpeed = Mathf.Max(0f, specialAnimSpeed);
+
+        choiceCount = Mathf.Clamp(choiceCount, 2, 4);
+        // Garantiza que eventString no exceda 1 char cuando el tipo es Char
+        if (eventPayloadType == EventPayloadType.Char && !string.IsNullOrEmpty(eventString) && eventString.Length > 1)
+            eventString = eventString.Substring(0, 1);
+    }
 }
+
+// ========================= Enums usadas por la vista =========================
+public enum AppearanceMode { Cut, Slide, Fade, None }
+public enum Spot
+{
+    LeftOffscreen, Left, CenterLeft, Center, CenterRight, Right, RightOffscreen
+}
+public enum TextStartTiming { OnEnterStart, OnEnterMid, OnEnterComplete, Immediate }
+
+public enum EventPayloadType { None, Int, Float, String, Bool, Char }

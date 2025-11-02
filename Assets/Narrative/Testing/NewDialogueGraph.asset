@@ -13,46 +13,22 @@ MonoBehaviour:
   m_Name: NewDialogueGraph
   m_EditorClassIdentifier: 
   nodes:
-  - useTypewriter: 0
-    twShowAdvanced: 0
-    tw:
-      secondsPerChar: 0.03
-      globalSpeed: 1
-      respectRichText: 1
-      minimalWhitespaceDelay: 1
-      commaPct: 2
-      periodPct: 3
-      ellipsisPct: 5
-    guid: d291fc58-8b26-4537-b980-e93ed0c60ec2
-    bgColorIndex: 0
-    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
-    speakerName: Lu
-    lineText: Soy negrosa
-    localization: 0
-    locKey: 
-    anchor: 0
-    customAnchor: {x: 0, y: 0}
-    isChoiceNode: 0
-    choiceCount: 2
-    choices: []
-    eventKey: 
-    onEnter:
-      m_PersistentCalls:
-        m_Calls: []
-    eventPayloadType: 0
-    eventInt: 0
-    eventFloat: 0
-    eventString: 
-    eventBool: 0
-    isStart: 0
-    startId: 
+  - GUID: 15ce3799-2ec7-426b-818d-523b43d315df
     nodeRect:
       serializedVersion: 2
       x: 707
       y: 235
       width: 480
-      height: 617
-    showExtrasBox: 1
+      height: 785
+    bgColorIndex: 0
+    bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
+    profileRef: {fileID: 11400000, guid: 8d53569ffc0d98942b7f0baf25aac63f, type: 2}
+    profileId: 9ed2fe52-5422-4eb0-964f-c8097798a1d7
+    portraitKey: idle
+    speakerName: Lu
+    localization: 0
+    lineText: Soy negrosa
+    locKey: 
     appearance: 1
     origin: 5
     target: 4
@@ -68,11 +44,7 @@ MonoBehaviour:
     specialAnimSpeed: 1
     specialAnimLoop: 1
     showTypewriterBox: 0
-    profileRef: {fileID: 11400000, guid: 8d53569ffc0d98942b7f0baf25aac63f, type: 2}
-    profileId: 9ed2fe52-5422-4eb0-964f-c8097798a1d7
-    portraitKey: idle
-  - useTypewriter: 0
-    twShowAdvanced: 0
+    useTypewriter: 0
     tw:
       secondsPerChar: 0.03
       globalSpeed: 1
@@ -81,36 +53,34 @@ MonoBehaviour:
       commaPct: 2
       periodPct: 3
       ellipsisPct: 5
-    guid: a4bf3031-97d9-49cd-8ad2-7c32b0f7b665
-    bgColorIndex: 0
-    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
-    speakerName: Sora
-    lineText: Me gusta el pollo frito
-    localization: 0
-    locKey: 
-    anchor: 0
-    customAnchor: {x: 0, y: 0}
+    showExtrasBox: 1
+    isStart: 0
+    startId: 
     isChoiceNode: 0
     choiceCount: 2
     choices: []
     eventKey: 
-    onEnter:
-      m_PersistentCalls:
-        m_Calls: []
     eventPayloadType: 0
     eventInt: 0
     eventFloat: 0
     eventString: 
     eventBool: 0
-    isStart: 0
-    startId: 
+  - GUID: 6b8adce9-351b-439d-b9e3-addf2232577a
     nodeRect:
       serializedVersion: 2
       x: 1248
       y: 180
       width: 480
-      height: 617
-    showExtrasBox: 1
+      height: 785
+    bgColorIndex: 0
+    bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
+    profileRef: {fileID: 11400000, guid: 61f6d4e73b2c6e94285723ad575d568a, type: 2}
+    profileId: b6e6aa5d-84f9-4b24-80e8-ad9f8526f46b
+    portraitKey: idle
+    speakerName: Sora
+    localization: 0
+    lineText: Me gusta el pollo frito
+    locKey: 
     appearance: 1
     origin: 6
     target: 2
@@ -126,11 +96,7 @@ MonoBehaviour:
     specialAnimSpeed: 1
     specialAnimLoop: 1
     showTypewriterBox: 0
-    profileRef: {fileID: 11400000, guid: 61f6d4e73b2c6e94285723ad575d568a, type: 2}
-    profileId: b6e6aa5d-84f9-4b24-80e8-ad9f8526f46b
-    portraitKey: idle
-  - useTypewriter: 0
-    twShowAdvanced: 0
+    useTypewriter: 0
     tw:
       secondsPerChar: 0.03
       globalSpeed: 1
@@ -139,36 +105,34 @@ MonoBehaviour:
       commaPct: 2
       periodPct: 3
       ellipsisPct: 5
-    guid: 645d006c-c18f-4842-9d82-e8da3a612784
-    bgColorIndex: 0
-    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
-    speakerName: 
-    lineText: 
-    localization: 0
-    locKey: 
-    anchor: 0
-    customAnchor: {x: 0, y: 0}
+    showExtrasBox: 1
+    isStart: 0
+    startId: 
     isChoiceNode: 0
     choiceCount: 2
     choices: []
     eventKey: 
-    onEnter:
-      m_PersistentCalls:
-        m_Calls: []
     eventPayloadType: 0
     eventInt: 0
     eventFloat: 0
     eventString: 
     eventBool: 0
-    isStart: 0
-    startId: 
+  - GUID: 23b25977-cd05-48c2-a428-dc727d842fbe
     nodeRect:
       serializedVersion: 2
       x: 1780
       y: 198
       width: 480
-      height: 617
-    showExtrasBox: 0
+      height: 490
+    bgColorIndex: 0
+    bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
+    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+    profileId: cfabe95b-c7b6-4a7f-a584-d2e194a42046
+    portraitKey: idle
+    speakerName: 
+    localization: 0
+    lineText: 
+    locKey: 
     appearance: 1
     origin: 0
     target: 2
@@ -184,11 +148,7 @@ MonoBehaviour:
     specialAnimSpeed: 1
     specialAnimLoop: 1
     showTypewriterBox: 0
-    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: cfabe95b-c7b6-4a7f-a584-d2e194a42046
-    portraitKey: idle
-  - useTypewriter: 1
-    twShowAdvanced: 1
+    useTypewriter: 0
     tw:
       secondsPerChar: 0.03
       globalSpeed: 1
@@ -197,39 +157,37 @@ MonoBehaviour:
       commaPct: 2
       periodPct: 3
       ellipsisPct: 5
-    guid: 7dfd1423-b0d1-4783-81c9-092cfd5b47da
-    bgColorIndex: 4
-    bgColor: {r: 0.3, g: 0.25, b: 0.12, a: 1}
+    showExtrasBox: 0
+    isStart: 0
+    startId: 
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: 
+    eventPayloadType: 0
+    eventInt: 0
+    eventFloat: 0
+    eventString: 
+    eventBool: 0
+  - GUID: 09fdf76d-e66a-4944-9ac0-2cfa75ea6620
+    nodeRect:
+      serializedVersion: 2
+      x: 117
+      y: 180
+      width: 480
+      height: 972
+    bgColorIndex: 12
+    bgColor: {r: 0.2, g: 0.35, b: 0.4, a: 1}
+    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+    profileId: cfabe95b-c7b6-4a7f-a584-d2e194a42046
+    portraitKey: idle
     speakerName: Guille
+    localization: 0
     lineText: Lorem Ipsum is simply dummy text of the printing and typesetting industry.
       Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
       when an unknown printer took a galley of type and scrambled it to make a type
       specimen book.
-    localization: 0
     locKey: 
-    anchor: 0
-    customAnchor: {x: 0, y: 0}
-    isChoiceNode: 0
-    choiceCount: 2
-    choices: []
-    eventKey: OpenDoor
-    onEnter:
-      m_PersistentCalls:
-        m_Calls: []
-    eventPayloadType: 1
-    eventInt: 5
-    eventFloat: 0
-    eventString: 
-    eventBool: 0
-    isStart: 1
-    startId: START02
-    nodeRect:
-      serializedVersion: 2
-      x: 148
-      y: 166
-      width: 480
-      height: 804
-    showExtrasBox: 1
     appearance: 1
     origin: 5
     target: 3
@@ -245,11 +203,7 @@ MonoBehaviour:
     specialAnimSpeed: 0.5
     specialAnimLoop: 1
     showTypewriterBox: 1
-    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: cfabe95b-c7b6-4a7f-a584-d2e194a42046
-    portraitKey: idle
-  - useTypewriter: 0
-    twShowAdvanced: 0
+    useTypewriter: 1
     tw:
       secondsPerChar: 0.03
       globalSpeed: 1
@@ -258,36 +212,34 @@ MonoBehaviour:
       commaPct: 2
       periodPct: 3
       ellipsisPct: 5
-    guid: ba8e69d4-1ec7-4713-9872-2e1a5827ad98
-    bgColorIndex: 0
-    bgColor: {r: 0.16, g: 0.16, b: 0.2, a: 1}
-    speakerName: Guille
-    lineText: HOLIIIII GUAPA
-    localization: 0
-    locKey: 
-    anchor: 0
-    customAnchor: {x: 0, y: 0}
+    showExtrasBox: 1
+    isStart: 1
+    startId: START02
     isChoiceNode: 0
     choiceCount: 2
     choices: []
-    eventKey: 
-    onEnter:
-      m_PersistentCalls:
-        m_Calls: []
-    eventPayloadType: 0
-    eventInt: 0
+    eventKey: OpenDoor
+    eventPayloadType: 1
+    eventInt: 5
     eventFloat: 0
     eventString: 
     eventBool: 0
-    isStart: 1
-    startId: START01
+  - GUID: e63d5428-29b6-4eb6-9d12-0c476d3737e9
     nodeRect:
       serializedVersion: 2
-      x: 148
-      y: -282
+      x: 117
+      y: -463
       width: 480
-      height: 354
-    showExtrasBox: 0
+      height: 804
+    bgColorIndex: 11
+    bgColor: {r: 0.38, g: 0.29, b: 0.44, a: 1}
+    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+    profileId: cfabe95b-c7b6-4a7f-a584-d2e194a42046
+    portraitKey: idle
+    speakerName: Guille
+    localization: 0
+    lineText: HOLIIIII GUAPA
+    locKey: 
     appearance: 0
     origin: 6
     target: 3
@@ -303,19 +255,37 @@ MonoBehaviour:
     specialAnimSpeed: 1
     specialAnimLoop: 1
     showTypewriterBox: 0
-    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: cfabe95b-c7b6-4a7f-a584-d2e194a42046
-    portraitKey: idle
+    useTypewriter: 0
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    showExtrasBox: 1
+    isStart: 1
+    startId: START01
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: 
+    eventPayloadType: 0
+    eventInt: 0
+    eventFloat: 0
+    eventString: 
+    eventBool: 0
   edges:
-  - fromNodeGUID: 7dfd1423-b0d1-4783-81c9-092cfd5b47da
+  - fromNodeGUID: 09fdf76d-e66a-4944-9ac0-2cfa75ea6620
     fromPortName: Next
-    toNodeGUID: d291fc58-8b26-4537-b980-e93ed0c60ec2
-  - fromNodeGUID: d291fc58-8b26-4537-b980-e93ed0c60ec2
+    toNodeGUID: 15ce3799-2ec7-426b-818d-523b43d315df
+  - fromNodeGUID: 15ce3799-2ec7-426b-818d-523b43d315df
     fromPortName: Next
-    toNodeGUID: a4bf3031-97d9-49cd-8ad2-7c32b0f7b665
-  - fromNodeGUID: a4bf3031-97d9-49cd-8ad2-7c32b0f7b665
+    toNodeGUID: 6b8adce9-351b-439d-b9e3-addf2232577a
+  - fromNodeGUID: 6b8adce9-351b-439d-b9e3-addf2232577a
     fromPortName: Next
-    toNodeGUID: 645d006c-c18f-4842-9d82-e8da3a612784
-  - fromNodeGUID: ba8e69d4-1ec7-4713-9872-2e1a5827ad98
+    toNodeGUID: 23b25977-cd05-48c2-a428-dc727d842fbe
+  - fromNodeGUID: e63d5428-29b6-4eb6-9d12-0c476d3737e9
     fromPortName: Next
-    toNodeGUID: d291fc58-8b26-4537-b980-e93ed0c60ec2
+    toNodeGUID: 15ce3799-2ec7-426b-818d-523b43d315df
