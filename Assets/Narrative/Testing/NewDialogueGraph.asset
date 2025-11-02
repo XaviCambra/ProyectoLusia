@@ -13,131 +13,27 @@ MonoBehaviour:
   m_Name: NewDialogueGraph
   m_EditorClassIdentifier: 
   nodes:
-  - GUID: 15ce3799-2ec7-426b-818d-523b43d315df
+  - GUID: e8933d2f-52be-4a35-b3e8-96f2422a2310
     nodeRect:
       serializedVersion: 2
-      x: 707
-      y: 235
-      width: 480
-      height: 785
-    bgColorIndex: 0
-    bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
-    profileRef: {fileID: 11400000, guid: 8d53569ffc0d98942b7f0baf25aac63f, type: 2}
-    profileId: 9ed2fe52-5422-4eb0-964f-c8097798a1d7
-    portraitKey: idle
-    speakerName: Lu
-    localization: 0
-    lineText: Soy negrosa
-    locKey: 
-    appearance: 1
-    origin: 5
-    target: 4
-    moveSpeed: 600
-    textStart: 1
-    useFade: 1
-    enterFromOpacity: 0
-    enterToOpacity: 100
-    exitFromOpacity: 100
-    exitToOpacity: 0
-    playSpecialAnimation: 0
-    specialAnimation: {fileID: 0}
-    specialAnimSpeed: 1
-    specialAnimLoop: 1
-    showTypewriterBox: 0
-    useTypewriter: 0
-    tw:
-      secondsPerChar: 0.03
-      globalSpeed: 1
-      respectRichText: 1
-      minimalWhitespaceDelay: 1
-      commaPct: 2
-      periodPct: 3
-      ellipsisPct: 5
-    showExtrasBox: 1
-    isStart: 0
-    startId: 
-    isChoiceNode: 0
-    choiceCount: 2
-    choices: []
-    eventKey: 
-    eventPayloadType: 0
-    eventInt: 0
-    eventFloat: 0
-    eventString: 
-    eventBool: 0
-  - GUID: 6b8adce9-351b-439d-b9e3-addf2232577a
-    nodeRect:
-      serializedVersion: 2
-      x: 1248
-      y: 180
-      width: 480
-      height: 785
-    bgColorIndex: 0
-    bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
-    profileRef: {fileID: 11400000, guid: 61f6d4e73b2c6e94285723ad575d568a, type: 2}
-    profileId: b6e6aa5d-84f9-4b24-80e8-ad9f8526f46b
-    portraitKey: idle
-    speakerName: Sora
-    localization: 0
-    lineText: Me gusta el pollo frito
-    locKey: 
-    appearance: 1
-    origin: 6
-    target: 2
-    moveSpeed: 600
-    textStart: 1
-    useFade: 1
-    enterFromOpacity: 0
-    enterToOpacity: 100
-    exitFromOpacity: 100
-    exitToOpacity: 0
-    playSpecialAnimation: 0
-    specialAnimation: {fileID: 0}
-    specialAnimSpeed: 1
-    specialAnimLoop: 1
-    showTypewriterBox: 0
-    useTypewriter: 0
-    tw:
-      secondsPerChar: 0.03
-      globalSpeed: 1
-      respectRichText: 1
-      minimalWhitespaceDelay: 1
-      commaPct: 2
-      periodPct: 3
-      ellipsisPct: 5
-    showExtrasBox: 1
-    isStart: 0
-    startId: 
-    isChoiceNode: 0
-    choiceCount: 2
-    choices: []
-    eventKey: 
-    eventPayloadType: 0
-    eventInt: 0
-    eventFloat: 0
-    eventString: 
-    eventBool: 0
-  - GUID: 23b25977-cd05-48c2-a428-dc727d842fbe
-    nodeRect:
-      serializedVersion: 2
-      x: 1780
-      y: 198
+      x: 1254
+      y: -429
       width: 480
       height: 490
     bgColorIndex: 0
     bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
-    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: cfabe95b-c7b6-4a7f-a584-d2e194a42046
-    portraitKey: idle
+    profileRef: {fileID: 0}
+    profileId: 
+    portraitKey: 
     speakerName: 
     localization: 0
     lineText: 
     locKey: 
-    appearance: 1
+    appearance: 0
     origin: 0
-    target: 2
+    target: 1
     moveSpeed: 600
-    textStart: 1
+    textStart: 2
     useFade: 0
     enterFromOpacity: 0
     enterToOpacity: 100
@@ -146,7 +42,7 @@ MonoBehaviour:
     playSpecialAnimation: 0
     specialAnimation: {fileID: 0}
     specialAnimSpeed: 1
-    specialAnimLoop: 1
+    specialAnimLoop: 0
     showTypewriterBox: 0
     useTypewriter: 0
     tw:
@@ -154,9 +50,9 @@ MonoBehaviour:
       globalSpeed: 1
       respectRichText: 1
       minimalWhitespaceDelay: 1
-      commaPct: 2
-      periodPct: 3
-      ellipsisPct: 5
+      commaPct: 1.25
+      periodPct: 1.6
+      ellipsisPct: 2
     showExtrasBox: 0
     isStart: 0
     startId: 
@@ -169,17 +65,191 @@ MonoBehaviour:
     eventFloat: 0
     eventString: 
     eventBool: 0
+  - GUID: 28a3408d-8b81-4417-85da-8635a8d71a6f
+    nodeRect:
+      serializedVersion: 2
+      x: 1254
+      y: 92
+      width: 480
+      height: 490
+    bgColorIndex: 0
+    bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
+    profileRef: {fileID: 0}
+    profileId: 
+    portraitKey: 
+    speakerName: 
+    localization: 0
+    lineText: 
+    locKey: 
+    appearance: 0
+    origin: 0
+    target: 1
+    moveSpeed: 600
+    textStart: 2
+    useFade: 0
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    playSpecialAnimation: 0
+    specialAnimation: {fileID: 0}
+    specialAnimSpeed: 1
+    specialAnimLoop: 0
+    showTypewriterBox: 0
+    useTypewriter: 0
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 1.25
+      periodPct: 1.6
+      ellipsisPct: 2
+    showExtrasBox: 0
+    isStart: 0
+    startId: 
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: 
+    eventPayloadType: 0
+    eventInt: 0
+    eventFloat: 0
+    eventString: 
+    eventBool: 0
+  - GUID: cf71b309-4c3e-4c6e-8010-00dc8aca007d
+    nodeRect:
+      serializedVersion: 2
+      x: 1254
+      y: 662
+      width: 480
+      height: 490
+    bgColorIndex: 0
+    bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
+    profileRef: {fileID: 0}
+    profileId: 
+    portraitKey: 
+    speakerName: 
+    localization: 0
+    lineText: 
+    locKey: 
+    appearance: 0
+    origin: 0
+    target: 1
+    moveSpeed: 600
+    textStart: 2
+    useFade: 0
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    playSpecialAnimation: 0
+    specialAnimation: {fileID: 0}
+    specialAnimSpeed: 1
+    specialAnimLoop: 0
+    showTypewriterBox: 0
+    useTypewriter: 0
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 1.25
+      periodPct: 1.6
+      ellipsisPct: 2
+    showExtrasBox: 0
+    isStart: 0
+    startId: 
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: 
+    eventPayloadType: 0
+    eventInt: 0
+    eventFloat: 0
+    eventString: 
+    eventBool: 0
+  - GUID: 15ce3799-2ec7-426b-818d-523b43d315df
+    nodeRect:
+      serializedVersion: 2
+      x: 677
+      y: -85
+      width: 480
+      height: 1014
+    bgColorIndex: 0
+    bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
+    profileRef: {fileID: 11400000, guid: 8d53569ffc0d98942b7f0baf25aac63f, type: 2}
+    profileId: 9ed2fe52-5422-4eb0-964f-c8097798a1d7
+    portraitKey: idle
+    speakerName: Lu
+    localization: 0
+    lineText: Soy negrosa
+    locKey: 
+    appearance: 0
+    origin: 5
+    target: 4
+    moveSpeed: 600
+    textStart: 3
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    playSpecialAnimation: 0
+    specialAnimation: {fileID: 0}
+    specialAnimSpeed: 1
+    specialAnimLoop: 1
+    showTypewriterBox: 0
+    useTypewriter: 0
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    showExtrasBox: 1
+    isStart: 0
+    startId: 
+    isChoiceNode: 1
+    choiceCount: 3
+    choices:
+    - choiceText: Hola
+      portName: 6c743e
+      requiresAffinity: 1
+      affinityKey: Sora
+      requiredAffinity: 5
+      invertRequirement: 0
+    - choiceText: Hola Jefe
+      portName: fc905f
+      requiresAffinity: 1
+      affinityKey: Sora
+      requiredAffinity: 15
+      invertRequirement: 0
+    - choiceText: "Hola Rati\xF1a"
+      portName: 82acee
+      requiresAffinity: 1
+      affinityKey: Sora
+      requiredAffinity: 30
+      invertRequirement: 1
+    eventKey: 
+    eventPayloadType: 0
+    eventInt: 0
+    eventFloat: 0
+    eventString: 
+    eventBool: 0
   - GUID: 09fdf76d-e66a-4944-9ac0-2cfa75ea6620
     nodeRect:
       serializedVersion: 2
-      x: 117
-      y: 180
+      x: 136
+      y: 51
       width: 480
       height: 972
     bgColorIndex: 12
     bgColor: {r: 0.2, g: 0.35, b: 0.4, a: 1}
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: cfabe95b-c7b6-4a7f-a584-d2e194a42046
+    profileId: e3d27a34-b7fb-4fbd-943c-cc315578415d
     portraitKey: idle
     speakerName: Guille
     localization: 0
@@ -188,10 +258,10 @@ MonoBehaviour:
       when an unknown printer took a galley of type and scrambled it to make a type
       specimen book.
     locKey: 
-    appearance: 1
-    origin: 5
+    appearance: 0
+    origin: 3
     target: 3
-    moveSpeed: 600
+    moveSpeed: 3000
     textStart: 1
     useFade: 1
     enterFromOpacity: 0
@@ -202,8 +272,8 @@ MonoBehaviour:
     specialAnimation: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
     specialAnimSpeed: 0.5
     specialAnimLoop: 1
-    showTypewriterBox: 1
-    useTypewriter: 1
+    showTypewriterBox: 0
+    useTypewriter: 0
     tw:
       secondsPerChar: 0.03
       globalSpeed: 1
@@ -227,10 +297,10 @@ MonoBehaviour:
   - GUID: e63d5428-29b6-4eb6-9d12-0c476d3737e9
     nodeRect:
       serializedVersion: 2
-      x: 117
-      y: -463
+      x: -397
+      y: -85
       width: 480
-      height: 804
+      height: 953
     bgColorIndex: 11
     bgColor: {r: 0.38, g: 0.29, b: 0.44, a: 1}
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
@@ -254,7 +324,7 @@ MonoBehaviour:
     specialAnimation: {fileID: 0}
     specialAnimSpeed: 1
     specialAnimLoop: 1
-    showTypewriterBox: 0
+    showTypewriterBox: 1
     useTypewriter: 0
     tw:
       secondsPerChar: 0.03
@@ -280,12 +350,15 @@ MonoBehaviour:
   - fromNodeGUID: 09fdf76d-e66a-4944-9ac0-2cfa75ea6620
     fromPortName: Next
     toNodeGUID: 15ce3799-2ec7-426b-818d-523b43d315df
-  - fromNodeGUID: 15ce3799-2ec7-426b-818d-523b43d315df
-    fromPortName: Next
-    toNodeGUID: 6b8adce9-351b-439d-b9e3-addf2232577a
-  - fromNodeGUID: 6b8adce9-351b-439d-b9e3-addf2232577a
-    fromPortName: Next
-    toNodeGUID: 23b25977-cd05-48c2-a428-dc727d842fbe
   - fromNodeGUID: e63d5428-29b6-4eb6-9d12-0c476d3737e9
     fromPortName: Next
     toNodeGUID: 15ce3799-2ec7-426b-818d-523b43d315df
+  - fromNodeGUID: 15ce3799-2ec7-426b-818d-523b43d315df
+    fromPortName: 6c743e
+    toNodeGUID: e8933d2f-52be-4a35-b3e8-96f2422a2310
+  - fromNodeGUID: 15ce3799-2ec7-426b-818d-523b43d315df
+    fromPortName: fc905f
+    toNodeGUID: 28a3408d-8b81-4417-85da-8635a8d71a6f
+  - fromNodeGUID: 15ce3799-2ec7-426b-818d-523b43d315df
+    fromPortName: 82acee
+    toNodeGUID: cf71b309-4c3e-4c6e-8010-00dc8aca007d

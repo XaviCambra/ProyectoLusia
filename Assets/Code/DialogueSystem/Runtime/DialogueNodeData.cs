@@ -111,6 +111,12 @@ public class DialogueNodeData
     {
         public string choiceText = "Opción";
         public string portName = "out";
+
+        // --- Afinidad (requisitos por opción) ---
+        public bool requiresAffinity = false;
+        public string affinityKey = "";            // (nombre/personaje/clave en ParamService)
+        public float requiredAffinity = 0f;        // (umbral)
+        public bool invertRequirement = false;     // (comparación inversa: menor que)
     }
     public List<ChoiceData> choices = new();
 

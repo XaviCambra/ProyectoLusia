@@ -159,6 +159,18 @@ public class DialogueNodeView : Node
         mainContainer.Add(line);
     }
 
+    // Línea fina reutilizable para cualquier contenedor (p.ej., outputContainer)
+    private static void AddThinDividerTo(VisualElement container, float alpha = 0.10f)
+    {
+        var line = new VisualElement();
+        line.style.height = 1;
+        line.style.marginTop = 4;
+        line.style.marginBottom = 4;
+        line.style.backgroundColor = new Color(0, 0, 0, alpha);
+        line.style.flexGrow = 1;
+        container.Add(line);
+    }
+
     // ------------------------------
     // Header básico: paleta, perfil, retrato
     // ------------------------------
@@ -647,6 +659,9 @@ public class DialogueNodeView : Node
 
             for (int i = 0; i < Data.choiceCount; i++)
             {
+                // --- Separador antes de cada opción (incluida la primera) ---
+                AddThinDividerTo(outputContainer, 0.12f);
+
                 var row = new VisualElement
                 {
                     style =
@@ -666,6 +681,101 @@ public class DialogueNodeView : Node
 
                 row.Add(optField);
                 row.Add(port);
+
+                // --- UI de Afinidad por opción (apilado, vertical, sin 'gap') ---
+                var affinityColumn = new VisualElement
+                {
+                    style =
+    {
+        flexDirection = FlexDirection.Column,
+        marginTop = 2,
+        marginBottom = 6
+    }
+                };
+
+                // 1) Fila superior: SOLO el toggle "Req. afinidad"
+                var headerRow = new VisualElement
+                {
+                    style =
+    {
+        flexDirection = FlexDirection.Row,
+        alignItems = Align.Center
+    }
+                };
+                var reqToggle = new Toggle("Req. afinidad")
+                {
+                    value = Data.choices[idx].requiresAffinity
+                };
+                reqToggle.style.minWidth = 0; // no fuerces ancho
+                headerRow.Add(reqToggle);
+                affinityColumn.Add(headerRow);
+
+                // 2) Fila de parámetros: Clave + Valor + < que
+                var paramsRow = new VisualElement
+                {
+                    style =
+                    {
+                        flexDirection = FlexDirection.Row,
+                        alignItems = Align.Center
+                    }
+                };
+
+                // Declaramos referencias ANTES de callbacks
+                TextField affinityKeyField;
+                FloatField affinityValueField;
+                Toggle invertToggle;
+
+                // Clave (string)
+                affinityKeyField = new TextField("Clave")
+                {
+                    value = Data.choices[idx].affinityKey
+                };
+                // Compactar label y dar aire con marginRight
+                affinityKeyField.labelElement.style.minWidth = 48;
+                affinityKeyField.style.flexGrow = 1;
+                affinityKeyField.style.marginRight = 6;
+                paramsRow.Add(affinityKeyField);
+                affinityKeyField.RegisterValueChangedCallback(e => Data.choices[idx].affinityKey = e.newValue);
+
+                // Valor (float)
+                affinityValueField = new FloatField("Valor")
+                {
+                    value = Data.choices[idx].requiredAffinity
+                };
+                affinityValueField.labelElement.style.minWidth = 44;
+                affinityValueField.style.width = 110;
+                affinityValueField.style.marginRight = 6;
+                paramsRow.Add(affinityValueField);
+                affinityValueField.RegisterValueChangedCallback(e => Data.choices[idx].requiredAffinity = e.newValue);
+
+                // Invertir (< que)
+                invertToggle = new Toggle("Bajo afinidad")
+                {
+                    value = Data.choices[idx].invertRequirement
+                };
+                paramsRow.Add(invertToggle);
+                invertToggle.RegisterValueChangedCallback(e => Data.choices[idx].invertRequirement = e.newValue);
+
+                // Helper: mostrar/ocultar la fila de parámetros
+                void SetParamsVisible(bool on)
+                {
+                    paramsRow.style.display = on ? DisplayStyle.Flex : DisplayStyle.None;
+                }
+
+                // Estado inicial
+                SetParamsVisible(Data.choices[idx].requiresAffinity);
+
+                // Callback del toggle principal
+                reqToggle.RegisterValueChangedCallback(e =>
+                {
+                    Data.choices[idx].requiresAffinity = e.newValue;
+                    SetParamsVisible(e.newValue);
+                });
+
+                // Montaje final
+                affinityColumn.Add(paramsRow);
+                outputContainer.Add(affinityColumn);
+
                 outputContainer.Add(row);
             }
         }

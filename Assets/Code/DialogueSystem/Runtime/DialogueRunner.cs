@@ -71,6 +71,10 @@ public class DialogueRunner : MonoBehaviour
     private DialogueNodeData _current;
     private bool _waitingChoice;
 
+    // Estado interno de animación/texto
+    private bool _animDoneForCurrentNode;
+    private bool _textDoneForCurrentNode;
+
     // Profile character service
     private ICharacterProfileService _profiles;
 
@@ -266,6 +270,10 @@ public class DialogueRunner : MonoBehaviour
         _waitingChoice = false;
         HideChoices();
 
+        // Reseteo estado animación/texto
+        _animDoneForCurrentNode = false;
+        _textDoneForCurrentNode = false;
+
         if (speakerText) speakerText.text = GetSpeakerName(_current);
 
         // ¿Cuándo empieza el texto?
@@ -281,14 +289,15 @@ public class DialogueRunner : MonoBehaviour
         UpdatePortraitHighlight(_current?.profileId);
         UpdatePortraitScale(_current?.profileId);
 
-        // Colocación/animación
+        // Animación de entrada / salida del retrato
         RunCharacterPlacement(_current, onAnimDone: () =>
         {
+            _animDoneForCurrentNode = true;
+
             if (_current != null && _current.textStart == TextStartTiming.OnEnterComplete)
                 DisplayNodeBodyAsync(_current);
 
-            if (_current != null && _current.isChoiceNode)
-                ShowChoices(_current);
+            TryShowChoicesWhenReady(_current);
         });
 
         // Immediate / OnEnterStart → texto ya
@@ -712,6 +721,8 @@ public class DialogueRunner : MonoBehaviour
         if (node == null || !node.useTypewriter)
         {
             bodyText.SetText(nodeText);
+            _textDoneForCurrentNode = true;          // << NUEVO
+            TryShowChoicesWhenReady(node);           // << NUEVO
             return;
         }
 
@@ -731,10 +742,27 @@ public class DialogueRunner : MonoBehaviour
         try
         {
             await _typewriter.RunAsync(nodeText, p, bodyText, null, _twCts.Token);
-            if (_current == node && node.isChoiceNode)
-                ShowChoices(node);
+            _textDoneForCurrentNode = true;
+            TryShowChoicesWhenReady(node);
         }
         catch (OperationCanceledException) { /* cancelado */ }
+    }
+
+    // --- Afinidad: comprobación centralizada ---
+    private bool IsChoiceAllowedByAffinity(DialogueNodeData.ChoiceData choice)
+    {
+        if (choice == null) return true;
+        if (!choice.requiresAffinity) return true;
+
+        // Obtenemos el valor actual desde ParamService por clave
+        var key = choice.affinityKey ?? string.Empty;
+        float current = ParamService.GetFloat(key, 0f); // si no existe la clave, 0 por defecto
+
+        // Comparación directa o invertida
+        if (!choice.invertRequirement)
+            return current >= choice.requiredAffinity;   // normal: debe ser >= requerido
+        else
+            return current < choice.requiredAffinity;    // invertida: debe ser < requerido
     }
 
     private string ResolveBodyText(DialogueNodeData node)
@@ -763,6 +791,15 @@ public class DialogueRunner : MonoBehaviour
             if (node.choices != null && i < node.choices.Count)
             {
                 var choice = node.choices[i];
+
+                // --- FILTRO DE AFINIDAD ---
+                bool allowed = IsChoiceAllowedByAffinity(choice);
+                if (!allowed)
+                {
+                    btn.gameObject.SetActive(false);
+                    continue; // no configurar nada más para esta opción
+                }
+
                 var txt = btn.GetComponentInChildren<TextMeshProUGUI>();
                 if (txt) txt.text = string.IsNullOrEmpty(choice.choiceText) ? $"Opción {i + 1}" : choice.choiceText;
 
@@ -918,5 +955,13 @@ public class DialogueRunner : MonoBehaviour
             case Spot.RightOffscreen: return LogicalPos.OffRight;
             default: return LogicalPos.None;
         }
+    }
+    private void TryShowChoicesWhenReady(DialogueNodeData node)
+    {
+        if (node == null || !node.isChoiceNode) return;
+
+        // Mostrar opciones únicamente cuando han acabado animación y texto
+        if (_animDoneForCurrentNode && _textDoneForCurrentNode)
+            ShowChoices(node);
     }
 }
