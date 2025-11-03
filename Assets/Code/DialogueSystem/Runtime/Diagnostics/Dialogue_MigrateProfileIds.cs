@@ -34,7 +34,6 @@ public static class Dialogue_MigrateProfileIds
                     var newId = data.profileRef.ProfileId;
                     if (string.IsNullOrEmpty(data.profileId) || data.profileId != newId)
                     {
-                        DGLog.Info($"[Repair] {graph.name}:{data.GUID} → set profileId '{newId}' from ref '{data.profileRef.name}'");
                         data.profileId = newId;
                         EditorUtility.SetDirty(graph);
                         fixedIds++;
@@ -48,7 +47,6 @@ public static class Dialogue_MigrateProfileIds
                     var exists = db != null && db.FindById(data.profileId) != null;
                     if (!exists)
                     {
-                        DGLog.Warn($"[Repair] {graph.name}:{data.GUID} id '{data.profileId}' no existe en DB → clear");
                         data.profileId = null;
                         EditorUtility.SetDirty(graph);
                         cleared++;

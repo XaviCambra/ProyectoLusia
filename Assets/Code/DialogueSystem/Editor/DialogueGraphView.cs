@@ -55,6 +55,8 @@ public class DialogueGraphView : GraphView
         var nodeView = new DialogueNodeView(data);
         AddElement(nodeView);
 
+        nodeView.OnDataChanged = () => EditorWindow.MarkAssetDirtyAndSave();
+
         var worldCenter = new Vector2(
             layout.width > 0 ? layout.width * 0.5f : 400f,
             layout.height > 0 ? layout.height * 0.5f : 250f

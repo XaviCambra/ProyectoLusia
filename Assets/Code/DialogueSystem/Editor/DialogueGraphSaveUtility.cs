@@ -93,6 +93,9 @@ public static class DialogueGraphSaveUtility
             var nodeView = new DialogueNodeView(n);
             view.AddElement(nodeView);
 
+            // Conecta el callback también para nodos cargados desde el asset
+            nodeView.OnDataChanged = () => view.EditorWindow.MarkAssetDirtyAndSave();
+
             var r = n.nodeRect;
             if (r.width <= 1f || r.height <= 1f)
                 r = new Rect(r.x, r.y, 320f, 180f);

@@ -22,12 +22,12 @@ MonoBehaviour:
       height: 490
     bgColorIndex: 0
     bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
-    profileRef: {fileID: 0}
-    profileId: 
+    profileRef: {fileID: 11400000, guid: 61f6d4e73b2c6e94285723ad575d568a, type: 2}
+    profileId: dffa52ce-3c0e-4b8e-947e-2a51dae674dc
     portraitKey: 
-    speakerName: 
+    speakerName: Sora
     localization: 0
-    lineText: 
+    lineText: Pues hola
     locKey: 
     appearance: 0
     origin: 0
@@ -74,12 +74,12 @@ MonoBehaviour:
       height: 490
     bgColorIndex: 0
     bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
-    profileRef: {fileID: 0}
-    profileId: 
+    profileRef: {fileID: 11400000, guid: 61f6d4e73b2c6e94285723ad575d568a, type: 2}
+    profileId: dffa52ce-3c0e-4b8e-947e-2a51dae674dc
     portraitKey: 
-    speakerName: 
+    speakerName: Sora
     localization: 0
-    lineText: 
+    lineText: Que pasa bro
     locKey: 
     appearance: 0
     origin: 0
@@ -126,12 +126,12 @@ MonoBehaviour:
       height: 490
     bgColorIndex: 0
     bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
-    profileRef: {fileID: 0}
-    profileId: 
+    profileRef: {fileID: 11400000, guid: 61f6d4e73b2c6e94285723ad575d568a, type: 2}
+    profileId: dffa52ce-3c0e-4b8e-947e-2a51dae674dc
     portraitKey: 
-    speakerName: 
+    speakerName: Sora
     localization: 0
-    lineText: 
+    lineText: Te parto las piernas
     locKey: 
     appearance: 0
     origin: 0
@@ -178,8 +178,8 @@ MonoBehaviour:
       height: 1014
     bgColorIndex: 0
     bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
-    profileRef: {fileID: 11400000, guid: 8d53569ffc0d98942b7f0baf25aac63f, type: 2}
-    profileId: 9ed2fe52-5422-4eb0-964f-c8097798a1d7
+    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+    profileId: bc17ed2360684d68b5e7a55be922310b
     portraitKey: idle
     speakerName: Lu
     localization: 0
@@ -248,7 +248,7 @@ MonoBehaviour:
       height: 972
     bgColorIndex: 12
     bgColor: {r: 0.2, g: 0.35, b: 0.4, a: 1}
-    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+    profileRef: {fileID: 0}
     profileId: e3d27a34-b7fb-4fbd-943c-cc315578415d
     portraitKey: idle
     speakerName: Guille
@@ -304,7 +304,7 @@ MonoBehaviour:
     bgColorIndex: 11
     bgColor: {r: 0.38, g: 0.29, b: 0.44, a: 1}
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: cfabe95b-c7b6-4a7f-a584-d2e194a42046
+    profileId: bc17ed2360684d68b5e7a55be922310b
     portraitKey: idle
     speakerName: Guille
     localization: 0

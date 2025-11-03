@@ -56,6 +56,9 @@ public class DialogueNodeView : Node
     // Fábrica para payloads de evento
     private Dictionary<EventPayloadType, Func<VisualElement>> _eventFieldFactory;
 
+    // Notificación al exterior cuando cambian datos persistentes del nodo
+    public Action OnDataChanged;
+
     // ------------------------------
     // Ctor
     // ------------------------------
@@ -223,28 +226,17 @@ public class DialogueNodeView : Node
         {
             var so = e.newValue as CharacterProfile;
 
-#if UNITY_EDITOR
-            // Garantiza que el SO tiene un ID persistente
-            if (so != null && string.IsNullOrEmpty(so.ProfileId))
-            {
-                var soObj = new SerializedObject(so);
-                var idProp = soObj.FindProperty("profileId");
-                idProp.stringValue = Guid.NewGuid().ToString();
-                soObj.ApplyModifiedPropertiesWithoutUndo();
-                EditorUtility.SetDirty(so);
-                AssetDatabase.SaveAssets();
-            }
-#endif
             Data.profileRef = so;
             Data.profileId = so ? so.ProfileId : null;
-            DGLog.Info($"NodeView('{Data.GUID}') perfil cambiado → ref='{(so ? so.name : "NULL")}' id='{Data.profileId}'");
+
+            // 🔔 Notificar: se han cambiado datos persistentes del nodo
+            OnDataChanged?.Invoke();
         });
 
 #if UNITY_EDITOR
         // Rehidratación del ObjectField en editor si solo tenemos el ID
         if (Data.profileRef == null && !string.IsNullOrEmpty(Data.profileId))
         {
-            DGLog.Info($"NodeView('{Data.GUID}') intenta rehidratar profileRef desde profileId='{Data.profileId}'");
             var guids = AssetDatabase.FindAssets("t:CharacterProfile");
             foreach (var g in guids)
             {
@@ -253,7 +245,6 @@ public class DialogueNodeView : Node
                 if (so != null && so.ProfileId == Data.profileId)
                 {
                     Data.profileRef = so;
-                    DGLog.Info($"NodeView('{Data.GUID}') rehidratado: {so.name} ({so.ProfileId})");
                     break;
                 }
             }

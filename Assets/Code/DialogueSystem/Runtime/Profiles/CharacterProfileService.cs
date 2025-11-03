@@ -7,53 +7,71 @@ public class CharacterProfileService : MonoBehaviour, ICharacterProfileService
     [Tooltip("Base de datos con todos los perfiles de personaje. Si no se asigna, se intentará resolver automáticamente.")]
     public CharacterProfileDatabase database;
 
-    private static CharacterProfileDatabase _cached;
+    private CharacterProfileDatabase _db;                 // instancia efectiva en runtime
+    private readonly System.Collections.Generic.Dictionary<string, CharacterProfile> _byId
+        = new System.Collections.Generic.Dictionary<string, CharacterProfile>(128);
 
-    private void Awake()
+
+    private void OnEnable()
     {
-        // 1) Si está asignada en el inspector, úsala
+        ResolveDatabase();
+        RebuildIndex();
+    }
+
+    private void ResolveDatabase()
+    {
+        // 1) Inspector
         if (database != null)
         {
-            DGLog.Info($"ProfileService: usando DB asignada en Inspector: {database.name}", this);
-            _cached = database;
+            _db = database;
             return;
         }
 
-        // 2) Intentar cargar desde Resources (ruta recomendada)
-        //    Crea un asset en: Assets/Resources/Dialogue/CharacterProfiles.asset
-        database = Resources.Load<CharacterProfileDatabase>("Dialogue/CharacterProfiles");
-        DGLog.Info($"ProfileService: Resources.Load → {(database ? database.name : "NULL")}", this);
-        if (database != null) { _cached = database; return; }
+        // 2) Resources
+        _db = Resources.Load<CharacterProfileDatabase>("Dialogue/CharacterProfiles");
+        if (_db != null) return;
 
 #if UNITY_EDITOR
-        // 3) En editor: intentar localizar cualquier asset en el proyecto
-        //    (para evitar “me funciona en editor si me olvido del paso 2”)
+        // 3) Fallback editor
         var guids = UnityEditor.AssetDatabase.FindAssets("t:CharacterProfileDatabase");
-        DGLog.Info($"ProfileService: Editor fallback. DB encontradas={guids.Length}");
         if (guids != null && guids.Length > 0)
         {
             var path = UnityEditor.AssetDatabase.GUIDToAssetPath(guids[0]);
-            database = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterProfileDatabase>(path);
-            DGLog.Info($"ProfileService: Editor cargó DB en {path} → {(database ? database.name : "NULL")}");
-            if (database != null) { _cached = database; return; }
+            _db = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterProfileDatabase>(path);
+            if (_db != null) return;
         }
 #endif
+    }
 
-        // 4) Si nada de lo anterior funcionó, deja _cached = null (fallará con error claro en GetById)
-        DGLog.Err("ProfileService: no se pudo resolver ninguna DB (Inspector/Resources/Editor).");
-        _cached = null;
+    private void RebuildIndex()
+    {
+        _byId.Clear();
+
+        if (_db == null || _db.profiles == null || _db.profiles.Count == 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < _db.profiles.Count; i++)
+        {
+            var p = _db.profiles[i];
+            if (p == null) continue;
+
+            var id = p.ProfileId;
+            if (string.IsNullOrEmpty(id))
+            {
+                continue;
+            }
+
+            _byId[id] = p;
+        }
     }
 
     public CharacterProfile GetById(string profileId)
     {
-        DGLog.Info($"ProfileService.GetById('{profileId}')");
-        if (_cached == null)
-        {
-            DGLog.Err("ProfileService no tiene DB (_cached null).");
-            return null;
-        }
-        var result = _cached.FindById(profileId);
-        if (result == null) DGLog.Err($"ProfileService.GetById: id='{profileId}' → NULL");
-        return result;
+        if (string.IsNullOrEmpty(profileId)) return null;
+        if (_db == null) return null;
+        if (_byId.Count == 0) RebuildIndex();
+        return _byId.TryGetValue(profileId, out var p) ? p : null;
     }
 }

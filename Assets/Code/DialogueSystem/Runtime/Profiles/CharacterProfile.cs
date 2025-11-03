@@ -22,21 +22,10 @@ public class CharacterProfile : ScriptableObject
 #if UNITY_EDITOR
     private void OnValidate()
     {
-        // Si el asset aún no tiene ID, crear uno persistente
         if (string.IsNullOrEmpty(profileId))
         {
-            profileId = System.Guid.NewGuid().ToString();
+            profileId = System.Guid.NewGuid().ToString("N"); // formato sin guiones
             UnityEditor.EditorUtility.SetDirty(this);
-        }
-
-        if (string.IsNullOrEmpty(profileId))
-        {
-            profileId = System.Guid.NewGuid().ToString("N");
-            DGLog.Warn($"CharacterProfile '{name}' no tenía profileId. Generado nuevo: {profileId}", this);
-        }
-        else
-        {
-            DGLog.Info($"CharacterProfile '{name}' validate OK. id={profileId}", this);
         }
     }
 #endif

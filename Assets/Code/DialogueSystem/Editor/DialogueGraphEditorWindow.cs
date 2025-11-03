@@ -35,6 +35,17 @@ public class DialogueGraphEditorWindow : EditorWindow
         rootVisualElement.Add(_graphView);
     }
 
+    public void MarkAssetDirtyAndSave()
+    {
+#if UNITY_EDITOR
+        if (_asset != null)
+        {
+            EditorUtility.SetDirty(_asset);
+            AssetDatabase.SaveAssets();
+        }
+#endif
+    }
+
     private void GenerateToolbar()
     {
         var toolbar = new Toolbar();

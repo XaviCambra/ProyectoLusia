@@ -105,15 +105,12 @@ public class DialogueRunner : MonoBehaviour
 
     private void Awake()
     {
-        DGLog.Info($"DialogueRunner.Awake scene='{UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}' isPlaying={Application.isPlaying}");
-
         _profiles = (ICharacterProfileService)FindAnyObjectByType<CharacterProfileService>();
         if (_profiles == null)
         {
             var go = new GameObject("_Auto_CharacterProfileService");
             DontDestroyOnLoad(go);
             _profiles = go.AddComponent<CharacterProfileService>();
-            DGLog.Warn("Se auto-creó CharacterProfileService en runtime.", go);
         }
 
         _loc = (localizationServiceRef as ILocalizationService) ?? FindAnyObjectByType<CsvLocalizationService>();
@@ -122,6 +119,30 @@ public class DialogueRunner : MonoBehaviour
         BuildLookups();
         BuildPortraitPool();
         StartDialogue();
+
+        // --- SANITY CHECK: comprueba que TODOS los profileId del grafo existen en la DB ---
+        if (_profiles == null)
+        {
+            _profiles = FindObjectOfType<CharacterProfileService>();
+        }
+        if (_profiles != null && graph != null && graph.Nodes != null)
+        {
+            foreach (var n in graph.Nodes)
+            {
+                if (string.IsNullOrEmpty(n.profileId))
+                {
+                    Debug.LogWarning($"[Runner] sanity: node {n.GUID} sin profileId");
+                    continue;
+                }
+                bool ok = _profiles.GetById(n.profileId) != null;
+                Debug.Log($"[Runner] sanity: node {n.GUID} id={n.profileId} inDB={ok}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[Runner] sanity: sin _profiles o sin graph");
+        }
+
     }
 
     private void OnDestroy()
@@ -334,8 +355,6 @@ public class DialogueRunner : MonoBehaviour
 
     private void ApplyNodeToUI(DialogueNodeData node)
     {
-        DGLog.Info($"ApplyNodeToUI[enter]: node={(node != null)} guid='{node?.GUID}' profileId='{node?.profileId}' portraitKey='{node?.portraitKey}'");
-
         bool hasLegacy = portraitImage != null;
         bool hasPool = _portraitByProfile != null && _portraitByProfile.Count > 0;
 
