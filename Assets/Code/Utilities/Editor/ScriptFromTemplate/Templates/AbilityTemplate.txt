@@ -1,0 +1,14 @@
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "Scriptable Objects/New Ability")]
+public class #SCRIPTNAME# : _CombatAbility
+{
+    [Header("Estadisticas")]
+    public float m_Base = 0;
+
+    protected override void PlayAbility()
+    {
+        base.PlayAbility();
+
+    }
+}

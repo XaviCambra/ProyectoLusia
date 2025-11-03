@@ -4,7 +4,8 @@ using UnityEngine;
 public class _CombatAbility : ScriptableObject
 {
     [SerializeField] protected string m_NombreHabilidad;
-    [SerializeField] protected ECombatTarget _target;
 
-    protected virtual void ApplyEffect() { }
+    protected virtual void PlayAbility() { }
 }
+
+

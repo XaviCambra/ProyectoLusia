@@ -13,14 +13,10 @@ MonoBehaviour:
   m_Name: CombatAbrahel
   m_EditorClassIdentifier: 
   m_CharacterProfile: {fileID: 11400000, guid: b18658f0d860be847945d3af4af40229, type: 2}
-  m_Vitalidad: 0
-  m_Fuerza: 0
-  m_Resistencia: 0
-  m_Velocidad: 0
-  m_Suerte: 0
-  m_VitalidadPorNivel: 0
-  m_FuerzaPorNivel: 0
-  m_ResistenciaPorNivel: 0
-  m_VelocidadPorNivel: 0
-  m_SuertePorNivel: 0
-  m_CombatAbilities: []
+  m_BaseVitalidad: 0
+  m_BaseFuerza: 0
+  m_BaseResistencia: 0
+  m_BaseVelocidad: 0
+  m_BaseSuerte: 0
+  m_CombatAbilities:
+  - {fileID: 11400000, guid: 9cd3137ac2c6aa644ac559343151762c, type: 2}
