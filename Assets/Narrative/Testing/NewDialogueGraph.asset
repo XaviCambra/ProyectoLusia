@@ -282,7 +282,7 @@ MonoBehaviour:
       x: 677
       y: -85
       width: 480
-      height: 1163
+      height: 1127
     bgColorIndex: 0
     bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}

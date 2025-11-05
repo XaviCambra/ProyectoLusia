@@ -70,7 +70,9 @@ public class DialogueNodeView : Node
         BuildHeaderButtons();
 
         // --- NUEVO ORDEN / ESTRUCTURA ---
+        AddDivider("Perfil y color de fondo");
         BuildBasicHeader();           // Color fondo + Perfil + Retrato
+        
         AddDivider("Texto y localización");
         BuildMainContentBlock();      // Nombre + Localización + Texto/LocKey
 
@@ -107,6 +109,7 @@ public class DialogueNodeView : Node
         mainContainer.style.paddingLeft = 6;
         mainContainer.style.paddingRight = 6;
         mainContainer.style.paddingBottom = 6;
+
         mainContainer.style.overflow = Overflow.Visible;
 
         style.flexDirection = FlexDirection.Column;
@@ -118,16 +121,16 @@ public class DialogueNodeView : Node
         // Fondo y borde
         var bg = Data.bgColor;
         mainContainer.style.backgroundColor = new StyleColor(bg);
-        mainContainer.style.borderTopLeftRadius = 8;
-        mainContainer.style.borderTopRightRadius = 8;
-        mainContainer.style.borderBottomLeftRadius = 8;
-        mainContainer.style.borderBottomRightRadius = 8;
+        mainContainer.style.borderTopLeftRadius = 4;
+        mainContainer.style.borderTopRightRadius = 4;
+        mainContainer.style.borderBottomLeftRadius = 4;
+        mainContainer.style.borderBottomRightRadius = 4;
 
-        var border = new Color(0, 0, 0, 0.35f);
-        mainContainer.style.borderLeftWidth = 1;
-        mainContainer.style.borderRightWidth = 1;
-        mainContainer.style.borderTopWidth = 1;
-        mainContainer.style.borderBottomWidth = 1;
+        var border = new Color(0, 0, 0, 0.25f);
+        mainContainer.style.borderLeftWidth = 0;
+        mainContainer.style.borderRightWidth = 0;
+        mainContainer.style.borderTopWidth = 0;
+        mainContainer.style.borderBottomWidth = 4;
         mainContainer.style.borderLeftColor = border;
         mainContainer.style.borderRightColor = border;
         mainContainer.style.borderTopColor = border;
@@ -150,7 +153,7 @@ public class DialogueNodeView : Node
         {
             var label = new Label(title);
             label.style.unityFontStyleAndWeight = FontStyle.Bold;
-            label.style.marginTop = 6;
+            label.style.marginTop = 8;
             label.style.marginBottom = 4;
             mainContainer.Add(label);
         }
@@ -197,6 +200,7 @@ public class DialogueNodeView : Node
         }
 
         var paletteDropdown = new DropdownField("Color de fondo", paletteNames, safeIndex);
+        paletteDropdown.style.marginBottom = 3;
         paletteDropdown.RegisterValueChangedCallback(e =>
         {
             int idx = paletteNames.IndexOf(e.newValue);
@@ -221,6 +225,8 @@ public class DialogueNodeView : Node
 
         // Prioriza referencia directa; si no existe, intenta localizar por profileId
         profileField.value = Data.profileRef != null ? Data.profileRef : FindProfileById(Data.profileId);
+
+        profileField.style.marginBottom = 3;
 
         profileField.RegisterValueChangedCallback(e =>
         {
@@ -292,6 +298,10 @@ public class DialogueNodeView : Node
             tooltip = "Activa para usar una clave de localización en vez de texto literal.",
             value = Data.localization
         };
+
+        _locToggle.style.marginTop = 3;
+        _locToggle.style.marginBottom = 3;
+
         _locToggle.RegisterValueChangedCallback(e =>
         {
             Data.localization = e.newValue;
@@ -330,33 +340,40 @@ public class DialogueNodeView : Node
         var extrasFold = new Foldout { text = "Apariencia y animación" };
         extrasFold.viewDataKey = Data.GUID + "_EXTRAS";
         extrasFold.value = Data.showExtrasBox;
+        extrasFold.style.unityFontStyleAndWeight = FontStyle.Italic;
+        extrasFold.style.marginBottom = 3;
         extrasFold.RegisterValueChangedCallback(e => { Data.showExtrasBox = e.newValue; });
         mainContainer.Add(extrasFold);
 
         // Aparición
         var appearanceField = new EnumField("Aparición", Data.appearance);
+        appearanceField.style.marginBottom = 3;
         appearanceField.Init(Data.appearance);
         appearanceField.RegisterValueChangedCallback(e => Data.appearance = (AppearanceMode)e.newValue);
         extrasFold.Add(appearanceField);
 
         // Origin (Spot) / Target (Spot)
         var originField = new EnumField("Origin", Data.origin);
+        originField.style.marginBottom = 3;
         originField.Init(Data.origin);
         originField.RegisterValueChangedCallback(e => Data.origin = (Spot)e.newValue);
         extrasFold.Add(originField);
 
         var targetField = new EnumField("Target", Data.target);
+        targetField.style.marginBottom = 3;
         targetField.Init(Data.target);
         targetField.RegisterValueChangedCallback(e => Data.target = (Spot)e.newValue);
         extrasFold.Add(targetField);
 
         // Move speed
         var moveSpeedField = new FloatField("Move Speed (px/s)") { value = Data.moveSpeed };
+        moveSpeedField.style.marginBottom = 3;
         moveSpeedField.RegisterValueChangedCallback(e => Data.moveSpeed = Mathf.Max(0f, e.newValue));
         extrasFold.Add(moveSpeedField);
 
         // Inicio del texto
         var textStartField = new EnumField("Inicio del texto", Data.textStart);
+        textStartField.style.marginBottom = 3;
         textStartField.Init(Data.textStart);
         textStartField.RegisterValueChangedCallback(e => Data.textStart = (TextStartTiming)e.newValue);
         extrasFold.Add(textStartField);
@@ -367,18 +384,22 @@ public class DialogueNodeView : Node
         extrasFold.Add(useFadeToggle);
 
         var enterFrom = new IntegerField("Enter From %") { value = Data.enterFromOpacity };
+        enterFrom.style.marginBottom = 3;
         enterFrom.RegisterValueChangedCallback(e => Data.enterFromOpacity = Mathf.Clamp(e.newValue, 0, 100));
         extrasFold.Add(enterFrom);
 
         var enterTo = new IntegerField("Enter To %") { value = Data.enterToOpacity };
+        enterTo.style.marginBottom = 3;
         enterTo.RegisterValueChangedCallback(e => Data.enterToOpacity = Mathf.Clamp(e.newValue, 0, 100));
         extrasFold.Add(enterTo);
 
         var exitFrom = new IntegerField("Exit From %") { value = Data.exitFromOpacity };
+        exitFrom.style.marginBottom = 3;
         exitFrom.RegisterValueChangedCallback(e => Data.exitFromOpacity = Mathf.Clamp(e.newValue, 0, 100));
         extrasFold.Add(exitFrom);
 
         var exitTo = new IntegerField("Exit To %") { value = Data.exitToOpacity };
+        exitTo.style.marginBottom = 3;
         exitTo.RegisterValueChangedCallback(e => Data.exitToOpacity = Mathf.Clamp(e.newValue, 0, 100));
         extrasFold.Add(exitTo);
 
@@ -400,6 +421,7 @@ public class DialogueNodeView : Node
             objectType = typeof(AnimationClip),
             value = Data.specialAnimation
         };
+        _specialAnimClipField.style.marginBottom = 3;
         _specialAnimClipField.RegisterValueChangedCallback(e =>
         {
             Data.specialAnimation = e.newValue as AnimationClip;
@@ -407,6 +429,7 @@ public class DialogueNodeView : Node
         extrasFold.Add(_specialAnimClipField);
 
         _specialAnimSpeedField = new FloatField("Velocidad") { value = Data.specialAnimSpeed };
+        _specialAnimSpeedField.style.marginBottom = 3;
         _specialAnimSpeedField.RegisterValueChangedCallback(e =>
         {
             Data.specialAnimSpeed = Mathf.Max(0f, e.newValue);
@@ -426,6 +449,8 @@ public class DialogueNodeView : Node
         var typewriterFold = new Foldout { text = "Typewriter" };
         typewriterFold.viewDataKey = Data.GUID + "_TW";
         typewriterFold.value = Data.showTypewriterBox;
+        typewriterFold.style.unityFontStyleAndWeight = FontStyle.Italic;
+        typewriterFold.style.marginBottom = 3;
         typewriterFold.RegisterValueChangedCallback(e => { Data.showTypewriterBox = e.newValue; });
         mainContainer.Add(typewriterFold);
 
@@ -438,10 +463,12 @@ public class DialogueNodeView : Node
         typewriterFold.Add(_twEnableToggle);
 
         _twSecondsPerCharField = new FloatField("Segundos/char") { value = Mathf.Clamp(Data.tw.secondsPerChar, 0.001f, 0.2f) };
+        _twSecondsPerCharField.style.marginBottom = 3;
         _twSecondsPerCharField.RegisterValueChangedCallback(e => Data.tw.secondsPerChar = Mathf.Clamp(e.newValue, 0.001f, 0.2f));
         typewriterFold.Add(_twSecondsPerCharField);
 
         _twGlobalSpeedField = new FloatField("Velocidad global (x)") { value = Mathf.Clamp(Data.tw.globalSpeed, 0.1f, 3f) };
+        _twGlobalSpeedField.style.marginBottom = 3;
         _twGlobalSpeedField.RegisterValueChangedCallback(e => Data.tw.globalSpeed = Mathf.Clamp(e.newValue, 0.1f, 3f));
         typewriterFold.Add(_twGlobalSpeedField);
 
@@ -454,14 +481,17 @@ public class DialogueNodeView : Node
         typewriterFold.Add(_twWhitespaceDelayToggle);
 
         _twCommaPauseField = new FloatField("Pausa coma (x)") { value = Data.tw.commaPct };
+        _twCommaPauseField.style.marginBottom = 3;
         _twCommaPauseField.RegisterValueChangedCallback(e => Data.tw.commaPct = Mathf.Max(0f, e.newValue));
         typewriterFold.Add(_twCommaPauseField);
 
         _twPeriodPauseField = new FloatField("Pausa punto (x)") { value = Data.tw.periodPct };
+        _twPeriodPauseField.style.marginBottom = 3;
         _twPeriodPauseField.RegisterValueChangedCallback(e => Data.tw.periodPct = Mathf.Max(0f, e.newValue));
         typewriterFold.Add(_twPeriodPauseField);
 
         _twEllipsisPauseField = new FloatField("Pausa '.' (x)") { value = Data.tw.ellipsisPct };
+        _twEllipsisPauseField.style.marginBottom = 3;
         _twEllipsisPauseField.RegisterValueChangedCallback(e => Data.tw.ellipsisPct = Mathf.Max(0f, e.newValue));
         typewriterFold.Add(_twEllipsisPauseField);
     }
@@ -488,6 +518,7 @@ public class DialogueNodeView : Node
             value = Data.startId ?? string.Empty,
             style = { display = Data.isStart ? DisplayStyle.Flex : DisplayStyle.None }
         };
+        _startIdField.style.marginBottom = 3;
         _startIdField.RegisterValueChangedCallback(e => Data.startId = e.newValue);
         mainContainer.Add(_startIdField);
 
@@ -506,6 +537,7 @@ public class DialogueNodeView : Node
     {
         // Event Key
         var eventKeyField = new TextField("Event Key") { value = Data.eventKey };
+        eventKeyField.style.marginBottom = 3;
         eventKeyField.RegisterValueChangedCallback(evt =>
         {
             Data.eventKey = evt.newValue;
@@ -515,6 +547,7 @@ public class DialogueNodeView : Node
 
         // Selector de tipo
         var typeField = new EnumField("Payload Type", Data.eventPayloadType);
+        typeField.style.marginBottom = 3;
         typeField.Init(Data.eventPayloadType);
         typeField.RegisterValueChangedCallback(evt =>
         {
@@ -543,6 +576,8 @@ public class DialogueNodeView : Node
             }
         })
         { text = "Probar evento" };
+        testBtn.style.marginRight = 2.5f;
+        testBtn.style.marginLeft = 4;
         mainContainer.Add(testBtn);
     }
 
@@ -554,24 +589,28 @@ public class DialogueNodeView : Node
             [EventPayloadType.Int] = () =>
             {
                 var f = new IntegerField("Value (int)") { value = Data.eventInt };
+                f.style.marginBottom = 3;
                 f.RegisterValueChangedCallback(e => Data.eventInt = e.newValue);
                 return f;
             },
             [EventPayloadType.Float] = () =>
             {
                 var f = new FloatField("Value (float)") { value = Data.eventFloat };
+                f.style.marginBottom = 3;
                 f.RegisterValueChangedCallback(e => Data.eventFloat = e.newValue);
                 return f;
             },
             [EventPayloadType.String] = () =>
             {
                 var f = new TextField("Value (string)") { value = Data.eventString };
+                f.style.marginBottom = 3;
                 f.RegisterValueChangedCallback(e => Data.eventString = e.newValue);
                 return f;
             },
             [EventPayloadType.Bool] = () =>
             {
                 var f = new Toggle("Value (bool)") { value = Data.eventBool };
+                f.style.marginBottom = 3;
                 f.RegisterValueChangedCallback(e => Data.eventBool = e.newValue);
                 return f;
             },
@@ -579,6 +618,7 @@ public class DialogueNodeView : Node
             {
                 var initial = string.IsNullOrEmpty(Data.eventString) ? "" : Data.eventString.Substring(0, 1);
                 var f = new TextField("Value (char)") { maxLength = 1, value = initial };
+                f.style.marginBottom = 3;
                 f.RegisterValueChangedCallback(e =>
                 {
                     Data.eventString = string.IsNullOrEmpty(e.newValue) ? "" : e.newValue.Substring(0, 1);
@@ -658,7 +698,9 @@ public class DialogueNodeView : Node
                     style =
                     {
                         flexDirection = FlexDirection.Row,
-                        alignItems = Align.Center
+                        alignItems = Align.Center,
+                        marginTop = -8,
+                        marginBottom = -2
                     }
                 };
 
@@ -677,21 +719,21 @@ public class DialogueNodeView : Node
                 var affinityColumn = new VisualElement
                 {
                     style =
-    {
-        flexDirection = FlexDirection.Column,
-        marginTop = 2,
-        marginBottom = 6
-    }
+                    {
+                        flexDirection = FlexDirection.Column,
+                        marginTop = 0,
+                        marginBottom = 0
+                    }
                 };
 
                 // 1) Fila superior: SOLO el toggle "Req. afinidad"
                 var headerRow = new VisualElement
                 {
                     style =
-    {
-        flexDirection = FlexDirection.Row,
-        alignItems = Align.Center
-    }
+                    {
+                        flexDirection = FlexDirection.Row,
+                        alignItems = Align.Center
+                    }
                 };
                 var reqToggle = new Toggle("Req. afinidad")
                 {
@@ -707,7 +749,7 @@ public class DialogueNodeView : Node
                     style =
                     {
                         flexDirection = FlexDirection.Row,
-                        alignItems = Align.Center
+                        alignItems = Align.Center,
                     }
                 };
 
@@ -722,7 +764,7 @@ public class DialogueNodeView : Node
                     value = Data.choices[idx].affinityKey
                 };
                 // Compactar label y dar aire con marginRight
-                affinityKeyField.labelElement.style.minWidth = 48;
+                //affinityKeyField.labelElement.style.minWidth = 48;
                 affinityKeyField.style.flexGrow = 1;
                 affinityKeyField.style.marginRight = 6;
                 paramsRow.Add(affinityKeyField);
