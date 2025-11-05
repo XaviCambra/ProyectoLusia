@@ -22,7 +22,7 @@ MonoBehaviour:
       height: 490
     bgColorIndex: 0
     bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
-    profileRef: {fileID: 11400000, guid: 61f6d4e73b2c6e94285723ad575d568a, type: 2}
+    profileRef: {fileID: 0}
     profileId: dffa52ce-3c0e-4b8e-947e-2a51dae674dc
     portraitKey: 
     speakerName: Sora
@@ -74,7 +74,7 @@ MonoBehaviour:
       height: 490
     bgColorIndex: 0
     bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
-    profileRef: {fileID: 11400000, guid: 61f6d4e73b2c6e94285723ad575d568a, type: 2}
+    profileRef: {fileID: 0}
     profileId: dffa52ce-3c0e-4b8e-947e-2a51dae674dc
     portraitKey: 
     speakerName: Sora
@@ -126,7 +126,7 @@ MonoBehaviour:
       height: 490
     bgColorIndex: 0
     bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
-    profileRef: {fileID: 11400000, guid: 61f6d4e73b2c6e94285723ad575d568a, type: 2}
+    profileRef: {fileID: 0}
     profileId: dffa52ce-3c0e-4b8e-947e-2a51dae674dc
     portraitKey: 
     speakerName: Sora
@@ -169,76 +169,6 @@ MonoBehaviour:
     eventFloat: 0
     eventString: 
     eventBool: 0
-  - GUID: 15ce3799-2ec7-426b-818d-523b43d315df
-    nodeRect:
-      serializedVersion: 2
-      x: 677
-      y: -85
-      width: 480
-      height: 1014
-    bgColorIndex: 0
-    bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
-    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: bc17ed2360684d68b5e7a55be922310b
-    portraitKey: idle
-    speakerName: Lu
-    localization: 0
-    lineText: Soy negrosa
-    locKey: 
-    appearance: 0
-    origin: 5
-    target: 4
-    moveSpeed: 600
-    textStart: 3
-    useFade: 1
-    enterFromOpacity: 0
-    enterToOpacity: 100
-    exitFromOpacity: 100
-    exitToOpacity: 0
-    playSpecialAnimation: 0
-    specialAnimation: {fileID: 0}
-    specialAnimSpeed: 1
-    specialAnimLoop: 1
-    showTypewriterBox: 0
-    useTypewriter: 0
-    tw:
-      secondsPerChar: 0.03
-      globalSpeed: 1
-      respectRichText: 1
-      minimalWhitespaceDelay: 1
-      commaPct: 2
-      periodPct: 3
-      ellipsisPct: 5
-    showExtrasBox: 1
-    isStart: 0
-    startId: 
-    isChoiceNode: 1
-    choiceCount: 3
-    choices:
-    - choiceText: Hola
-      portName: 6c743e
-      requiresAffinity: 1
-      affinityKey: Sora
-      requiredAffinity: 5
-      invertRequirement: 0
-    - choiceText: Hola Jefe
-      portName: fc905f
-      requiresAffinity: 1
-      affinityKey: Sora
-      requiredAffinity: 15
-      invertRequirement: 0
-    - choiceText: "Hola Rati\xF1a"
-      portName: 82acee
-      requiresAffinity: 1
-      affinityKey: Sora
-      requiredAffinity: 30
-      invertRequirement: 1
-    eventKey: 
-    eventPayloadType: 0
-    eventInt: 0
-    eventFloat: 0
-    eventString: 
-    eventBool: 0
   - GUID: 09fdf76d-e66a-4944-9ac0-2cfa75ea6620
     nodeRect:
       serializedVersion: 2
@@ -251,7 +181,7 @@ MonoBehaviour:
     profileRef: {fileID: 0}
     profileId: e3d27a34-b7fb-4fbd-943c-cc315578415d
     portraitKey: idle
-    speakerName: Guille
+    speakerName: Guille 2
     localization: 0
     lineText: Lorem Ipsum is simply dummy text of the printing and typesetting industry.
       Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
@@ -306,26 +236,26 @@ MonoBehaviour:
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
     profileId: bc17ed2360684d68b5e7a55be922310b
     portraitKey: idle
-    speakerName: Guille
+    speakerName: Guille 1
     localization: 0
-    lineText: HOLIIIII GUAPA
+    lineText: Lorem.
     locKey: 
-    appearance: 0
+    appearance: 1
     origin: 6
     target: 3
-    moveSpeed: 600
+    moveSpeed: 300
     textStart: 1
     useFade: 1
     enterFromOpacity: 0
     enterToOpacity: 100
     exitFromOpacity: 100
     exitToOpacity: 0
-    playSpecialAnimation: 0
-    specialAnimation: {fileID: 0}
-    specialAnimSpeed: 1
+    playSpecialAnimation: 1
+    specialAnimation: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
+    specialAnimSpeed: 0.5
     specialAnimLoop: 1
     showTypewriterBox: 1
-    useTypewriter: 0
+    useTypewriter: 1
     tw:
       secondsPerChar: 0.03
       globalSpeed: 1
@@ -340,6 +270,78 @@ MonoBehaviour:
     isChoiceNode: 0
     choiceCount: 2
     choices: []
+    eventKey: 
+    eventPayloadType: 0
+    eventInt: 0
+    eventFloat: 0
+    eventString: 
+    eventBool: 0
+  - GUID: 15ce3799-2ec7-426b-818d-523b43d315df
+    nodeRect:
+      serializedVersion: 2
+      x: 677
+      y: -85
+      width: 480
+      height: 1163
+    bgColorIndex: 0
+    bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
+    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+    profileId: bc17ed2360684d68b5e7a55be922310b
+    portraitKey: idle
+    speakerName: Lu
+    localization: 0
+    lineText: Donec vitae commodo magna. Lorem ipsum dolor sit amet, consectetur
+      adipiscing elit. Morbi mattis aliquet ante hendrerit tincidunt. Mauris lacinia
+      et ante tempus imperdiet.
+    locKey: 
+    appearance: 1
+    origin: 3
+    target: 1
+    moveSpeed: 600
+    textStart: 3
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    playSpecialAnimation: 0
+    specialAnimation: {fileID: 0}
+    specialAnimSpeed: 1
+    specialAnimLoop: 1
+    showTypewriterBox: 1
+    useTypewriter: 1
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    showExtrasBox: 1
+    isStart: 0
+    startId: 
+    isChoiceNode: 1
+    choiceCount: 3
+    choices:
+    - choiceText: Hola
+      portName: 6c743e
+      requiresAffinity: 1
+      affinityKey: Sora
+      requiredAffinity: 5
+      invertRequirement: 0
+    - choiceText: Hola Jefe
+      portName: fc905f
+      requiresAffinity: 1
+      affinityKey: Sora
+      requiredAffinity: 15
+      invertRequirement: 0
+    - choiceText: "Hola Rati\xF1a"
+      portName: 82acee
+      requiresAffinity: 1
+      affinityKey: Sora
+      requiredAffinity: 30
+      invertRequirement: 1
     eventKey: 
     eventPayloadType: 0
     eventInt: 0

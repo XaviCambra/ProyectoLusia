@@ -68,6 +68,10 @@ public class DialogueRunner : MonoBehaviour
     private readonly TypewriterService _typewriter = new();
     private CancellationTokenSource _twCts;
 
+    // --- Typewriter state
+    private string _currentNodeFullText;
+    private bool _isTypewriting;
+
     private DialogueNodeData _current;
     private bool _waitingChoice;
 
@@ -93,6 +97,9 @@ public class DialogueRunner : MonoBehaviour
     private readonly Dictionary<string, RectTransform> _portraitRootByProfile = new();
     private readonly Dictionary<Image, PlayableGraph> _specialAnimGraphs = new();
     private readonly Dictionary<RectTransform, Coroutine> _scaleTweens = new();
+
+    // Tweens de movimiento/fade de colocación por retrato (para poder cancelarlos/fast-forward)
+    private readonly Dictionary<RectTransform, Coroutine> _moveTweens = new();
 
     [Header("Anchors de posición")]
     [SerializeField] private RectTransform leftAnchor;
@@ -164,8 +171,26 @@ public class DialogueRunner : MonoBehaviour
 
         if (_waitingChoice) return;
 
-        if (!_current.isChoiceNode && Input.GetKeyDown(advanceKey))
-            GoNext();
+        if (Input.GetKeyDown(advanceKey))
+        {
+            if (!_animDoneForCurrentNode)
+            {
+                FastForwardPlacement();
+                return;
+            }
+
+            if (!_textDoneForCurrentNode)
+            {
+                if (_isTypewriting)
+                    FastForwardTypewriter();
+                return;
+            }
+
+            if (!_current.isChoiceNode)
+            {
+                GoNext();
+            }
+        }
     }
 
     private bool ValidateGraph()
@@ -294,6 +319,7 @@ public class DialogueRunner : MonoBehaviour
         // Reseteo estado animación/texto
         _animDoneForCurrentNode = false;
         _textDoneForCurrentNode = false;
+        _isTypewriting = false;
 
         if (speakerText) speakerText.text = GetSpeakerName(_current);
 
@@ -454,12 +480,20 @@ public class DialogueRunner : MonoBehaviour
                 rootRt.position = endPos;
                 cg.alpha = to;
                 PersistPortraitState(node.profileId, rootRt.position, node.target);
+                if (_moveTweens.ContainsKey(rootRt)) _moveTweens.Remove(rootRt);
                 onAnimDone?.Invoke();
                 break;
 
             case AppearanceMode.Fade:
-                StartCoroutine(SoloFade(cg, to, onAnimDone, node.profileId, rootRt.position, node.target));
-                break;
+                {
+                    // Cancelar si había uno en curso
+                    if (_moveTweens.TryGetValue(rootRt, out var runningFade) && runningFade != null)
+                        StopCoroutine(runningFade);
+
+                    var coFade = StartCoroutine(SoloFade(rootRt, cg, to, onAnimDone, node.profileId, node.target));
+                    _moveTweens[rootRt] = coFade;
+                    break;
+                }
 
             case AppearanceMode.Slide:
                 {
@@ -468,11 +502,17 @@ public class DialogueRunner : MonoBehaviour
                         rootRt.position = endPos;
                         cg.alpha = to;
                         PersistPortraitState(node.profileId, rootRt.position, node.target);
+                        if (_moveTweens.ContainsKey(rootRt)) _moveTweens.Remove(rootRt);
                         onAnimDone?.Invoke();
                     }
                     else
                     {
-                        StartCoroutine(SlideAndFade(rootRt, cg, endPos, to, node.moveSpeed, onAnimDone, node.profileId, node.target));
+                        // Cancelar si había uno en curso
+                        if (_moveTweens.TryGetValue(rootRt, out var runningSlide) && runningSlide != null)
+                            StopCoroutine(runningSlide);
+
+                        var coSlide = StartCoroutine(SlideAndFade(rootRt, cg, endPos, to, node.moveSpeed, onAnimDone, node.profileId, node.target));
+                        _moveTweens[rootRt] = coSlide;
                     }
                     break;
                 }
@@ -480,6 +520,7 @@ public class DialogueRunner : MonoBehaviour
             case AppearanceMode.None:
             default:
                 PersistPortraitState(node.profileId, rootRt.position, node.target);
+                if (_moveTweens.ContainsKey(rootRt)) _moveTweens.Remove(rootRt);
                 onAnimDone?.Invoke();
                 break;
         }
@@ -494,7 +535,21 @@ public class DialogueRunner : MonoBehaviour
         };
     }
 
-    private System.Collections.IEnumerator SoloFade(CanvasGroup cg, float endAlpha, Action onDone, string profileId, Vector3 pos, Spot target)
+    //private System.Collections.IEnumerator SoloFade(CanvasGroup cg, float endAlpha, Action onDone, string profileId, Vector3 pos, Spot target)
+    //{
+    //    float startAlpha = cg.alpha;
+    //    float t = 0f;
+    //    while (t < 1f)
+    //    {
+    //        t += Time.deltaTime;
+    //        cg.alpha = Mathf.Lerp(startAlpha, endAlpha, t);
+    //        yield return null;
+    //    }
+    //    PersistPortraitState(profileId, pos, target);
+    //    onDone?.Invoke();
+    //}
+
+    private System.Collections.IEnumerator SoloFade(RectTransform rootRt, CanvasGroup cg, float endAlpha, Action onDone, string profileId, Spot target)
     {
         float startAlpha = cg.alpha;
         float t = 0f;
@@ -504,9 +559,17 @@ public class DialogueRunner : MonoBehaviour
             cg.alpha = Mathf.Lerp(startAlpha, endAlpha, t);
             yield return null;
         }
-        PersistPortraitState(profileId, pos, target);
+
+        if (rootRt != null)
+        {
+            // Persistimos la posición final y limpiamos el registro del tween
+            PersistPortraitState(profileId, rootRt.position, target);
+            if (_moveTweens.ContainsKey(rootRt)) _moveTweens.Remove(rootRt);
+        }
+
         onDone?.Invoke();
     }
+
 
     private System.Collections.IEnumerator SlideAndFade(
         RectTransform rt, CanvasGroup cg, Vector3 endPos, float endAlpha, float speed, Action onDone,
@@ -526,6 +589,7 @@ public class DialogueRunner : MonoBehaviour
                 yield return null;
             }
             PersistPortraitState(profileId, rt.position, target);
+            if (_moveTweens.ContainsKey(rt)) _moveTweens.Remove(rt);
             onDone?.Invoke();
             yield break;
         }
@@ -549,12 +613,25 @@ public class DialogueRunner : MonoBehaviour
         rt.position = endPos;
         cg.alpha = endAlpha;
         PersistPortraitState(profileId, rt.position, target);
+        if (_moveTweens.ContainsKey(rt)) _moveTweens.Remove(rt);
         onDone?.Invoke();
     }
 
     private void BuildPortraitPool()
     {
         if (portraitsRoot == null || portraitPrefab == null) return;
+
+        // Parar y limpiar tweens de colocación pendientes
+        foreach (var kv in _moveTweens)
+            if (kv.Value != null) StopCoroutine(kv.Value);
+        _moveTweens.Clear();
+
+        // Destruir animaciones especiales activas para estas imágenes antes de borrarlas
+        foreach (var kv in _specialAnimGraphs)
+        {
+            if (kv.Value.IsValid()) kv.Value.Destroy();
+        }
+        _specialAnimGraphs.Clear();
 
         foreach (var kv in _portraitByProfile)
             if (kv.Value) Destroy(kv.Value.gameObject);
@@ -736,12 +813,13 @@ public class DialogueRunner : MonoBehaviour
         if (bodyText == null) return;
 
         string nodeText = ResolveBodyText(node);
+        _currentNodeFullText = nodeText;
 
         if (node == null || !node.useTypewriter)
         {
             bodyText.SetText(nodeText);
-            _textDoneForCurrentNode = true;          // << NUEVO
-            TryShowChoicesWhenReady(node);           // << NUEVO
+            _textDoneForCurrentNode = true;
+            TryShowChoicesWhenReady(node);
             return;
         }
 
@@ -749,7 +827,23 @@ public class DialogueRunner : MonoBehaviour
         _twCts?.Dispose();
         _twCts = new CancellationTokenSource();
 
+        //// Parar tweens y graphs si el objeto se destruye en medio
+        //foreach (var kv in _moveTweens)
+        //    if (kv.Value != null) StopCoroutine(kv.Value);
+        //_moveTweens.Clear();
+
+        //foreach (var kv in _scaleTweens)
+        //    if (kv.Value != null) StopCoroutine(kv.Value);
+        //_scaleTweens.Clear();
+
+        //foreach (var kv in _specialAnimGraphs)
+        //{
+        //    if (kv.Value.IsValid()) kv.Value.Destroy();
+        //}
+        //_specialAnimGraphs.Clear();
+
         var p = ScriptableObject.CreateInstance<TypewriterProfile>();
+        _isTypewriting = true;
         p.secondsPerChar = node.tw.secondsPerChar;
         p.globalSpeed = node.tw.globalSpeed;
         p.respectRichText = node.tw.respectRichText;
@@ -761,10 +855,20 @@ public class DialogueRunner : MonoBehaviour
         try
         {
             await _typewriter.RunAsync(nodeText, p, bodyText, null, _twCts.Token);
+            _isTypewriting = false;
             _textDoneForCurrentNode = true;
             TryShowChoicesWhenReady(node);
         }
-        catch (OperationCanceledException) { /* cancelado */ }
+        catch (OperationCanceledException)
+        {
+            // Si hemos cancelado porque hicimos fast-forward, el método FastForwardTypewriter()
+            // ya dejó el texto y flags en buen estado. Solo aseguramos el flag:
+            _isTypewriting = false;
+        }
+        finally
+        {
+            if (p != null) Destroy(p);
+        }
     }
 
     // --- Afinidad: comprobación centralizada ---
@@ -875,6 +979,37 @@ public class DialogueRunner : MonoBehaviour
     private void EndDialogue()
     {
         HideChoices();
+
+        // Cancelar typewriter en curso (si lo hay)
+        _twCts?.Cancel();
+        _twCts?.Dispose();
+        _twCts = null;
+
+        foreach (var kv in _moveTweens) if (kv.Value != null) StopCoroutine(kv.Value);
+        _moveTweens.Clear();
+
+        foreach (var kv in _scaleTweens) if (kv.Value != null) StopCoroutine(kv.Value);
+        _scaleTweens.Clear();
+
+        foreach (var kv in _specialAnimGraphs) if (kv.Value.IsValid()) kv.Value.Destroy();
+        _specialAnimGraphs.Clear();
+
+        // Destruir animaciones especiales (por si hay loops vivos)
+        foreach (var kv in _specialAnimGraphs)
+        {
+            if (kv.Value.IsValid()) kv.Value.Destroy();
+        }
+        _specialAnimGraphs.Clear();
+
+        // Parar tweens activos (colocación y escala) y limpiar registros
+        foreach (var kv in _moveTweens)
+            if (kv.Value != null) StopCoroutine(kv.Value);
+        _moveTweens.Clear();
+
+        foreach (var kv in _scaleTweens)
+            if (kv.Value != null) StopCoroutine(kv.Value);
+        _scaleTweens.Clear();
+
         if (speakerText) speakerText.text = "";
         if (bodyText) bodyText.text = "<i>(Fin del diálogo)</i>";
 
@@ -983,4 +1118,71 @@ public class DialogueRunner : MonoBehaviour
         if (_animDoneForCurrentNode && _textDoneForCurrentNode)
             ShowChoices(node);
     }
+
+    // Completa inmediatamente el texto del nodo actual si el typewriter está en curso
+    private void FastForwardTypewriter()
+    {
+        if (!_isTypewriting) return;
+
+        // Cancelamos la tarea asíncrona actual del typewriter
+        _twCts?.Cancel();
+        _twCts?.Dispose();
+        _twCts = null;
+
+        // Pintamos el texto completo y establecemos estado "texto terminado"
+        if (bodyText != null)
+            bodyText.SetText(_currentNodeFullText ?? string.Empty);
+
+        _isTypewriting = false;
+        _textDoneForCurrentNode = true;
+
+        // Si este nodo es de elección, puede que ya estén listas las opciones
+        TryShowChoicesWhenReady(_current);
+    }
+
+    // Completa inmediatamente la animación básica de colocación del portrait del nodo actual
+    private void FastForwardPlacement()
+    {
+        if (_animDoneForCurrentNode) return;
+        if (_current == null || string.IsNullOrEmpty(_current.profileId)) { _animDoneForCurrentNode = true; return; }
+
+        if (!_portraitRootByProfile.TryGetValue(_current.profileId, out var rootRt) || rootRt == null)
+        {
+            _animDoneForCurrentNode = true;
+            TryShowChoicesWhenReady(_current);
+            return;
+        }
+
+        // Parar tween en curso si lo hubiera
+        if (_moveTweens.TryGetValue(rootRt, out var running) && running != null)
+        {
+            StopCoroutine(running);
+            _moveTweens.Remove(rootRt);
+        }
+
+        var cg = rootRt.GetComponent<CanvasGroup>();
+        if (cg == null) cg = rootRt.gameObject.AddComponent<CanvasGroup>();
+
+        bool exiting = (_current.target == Spot.LeftOffscreen || _current.target == Spot.RightOffscreen);
+        float toAlpha = 1f;
+        if (_current.useFade)
+        {
+            toAlpha = exiting ? _current.exitToOpacity / 100f : _current.enterToOpacity / 100f;
+        }
+
+        // Estado final inmediato
+        Vector3 endPos = ResolveSpot(_current.target, rootRt);
+        rootRt.position = endPos;
+        cg.alpha = toAlpha;
+
+        PersistPortraitState(_current.profileId, rootRt.position, _current.target);
+        _animDoneForCurrentNode = true;
+
+        // Si el texto estaba configurado para arrancar al completar la entrada, lánzalo
+        if (_current.textStart == TextStartTiming.OnEnterComplete)
+            DisplayNodeBodyAsync(_current);
+
+        TryShowChoicesWhenReady(_current);
+    }
+
 }
