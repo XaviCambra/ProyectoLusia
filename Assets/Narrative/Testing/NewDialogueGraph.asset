@@ -19,7 +19,7 @@ MonoBehaviour:
       x: 1254
       y: -429
       width: 480
-      height: 490
+      height: 551
     bgColorIndex: 0
     bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
     profileRef: {fileID: 0}
@@ -71,7 +71,7 @@ MonoBehaviour:
       x: 1254
       y: 92
       width: 480
-      height: 490
+      height: 551
     bgColorIndex: 0
     bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
     profileRef: {fileID: 0}
@@ -123,7 +123,7 @@ MonoBehaviour:
       x: 1254
       y: 662
       width: 480
-      height: 490
+      height: 551
     bgColorIndex: 0
     bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
     profileRef: {fileID: 0}
@@ -169,68 +169,13 @@ MonoBehaviour:
     eventFloat: 0
     eventString: 
     eventBool: 0
-  - GUID: 09fdf76d-e66a-4944-9ac0-2cfa75ea6620
-    nodeRect:
-      serializedVersion: 2
-      x: 136
-      y: 51
-      width: 480
-      height: 972
-    bgColorIndex: 12
-    bgColor: {r: 0.2, g: 0.35, b: 0.4, a: 1}
-    profileRef: {fileID: 0}
-    profileId: e3d27a34-b7fb-4fbd-943c-cc315578415d
-    portraitKey: idle
-    speakerName: Guille 2
-    localization: 0
-    lineText: Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-      Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-      when an unknown printer took a galley of type and scrambled it to make a type
-      specimen book.
-    locKey: 
-    appearance: 0
-    origin: 3
-    target: 3
-    moveSpeed: 3000
-    textStart: 1
-    useFade: 1
-    enterFromOpacity: 0
-    enterToOpacity: 100
-    exitFromOpacity: 100
-    exitToOpacity: 0
-    playSpecialAnimation: 1
-    specialAnimation: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
-    specialAnimSpeed: 0.5
-    specialAnimLoop: 1
-    showTypewriterBox: 0
-    useTypewriter: 0
-    tw:
-      secondsPerChar: 0.03
-      globalSpeed: 1
-      respectRichText: 1
-      minimalWhitespaceDelay: 1
-      commaPct: 2
-      periodPct: 3
-      ellipsisPct: 5
-    showExtrasBox: 1
-    isStart: 1
-    startId: START02
-    isChoiceNode: 0
-    choiceCount: 2
-    choices: []
-    eventKey: OpenDoor
-    eventPayloadType: 1
-    eventInt: 5
-    eventFloat: 0
-    eventString: 
-    eventBool: 0
   - GUID: e63d5428-29b6-4eb6-9d12-0c476d3737e9
     nodeRect:
       serializedVersion: 2
       x: -397
       y: -85
       width: 480
-      height: 953
+      height: 1048
     bgColorIndex: 11
     bgColor: {r: 0.38, g: 0.29, b: 0.44, a: 1}
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
@@ -241,11 +186,11 @@ MonoBehaviour:
     lineText: Lorem.
     locKey: 
     appearance: 1
-    origin: 6
-    target: 3
+    origin: 0
+    target: 2
     moveSpeed: 300
-    textStart: 1
-    useFade: 1
+    textStart: 2
+    useFade: 0
     enterFromOpacity: 0
     enterToOpacity: 100
     exitFromOpacity: 100
@@ -264,7 +209,7 @@ MonoBehaviour:
       commaPct: 2
       periodPct: 3
       ellipsisPct: 5
-    showExtrasBox: 1
+    showExtrasBox: 0
     isStart: 1
     startId: START01
     isChoiceNode: 0
@@ -282,7 +227,7 @@ MonoBehaviour:
       x: 677
       y: -85
       width: 480
-      height: 1127
+      height: 1202
     bgColorIndex: 0
     bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
@@ -345,6 +290,61 @@ MonoBehaviour:
     eventKey: 
     eventPayloadType: 0
     eventInt: 0
+    eventFloat: 0
+    eventString: 
+    eventBool: 0
+  - GUID: 09fdf76d-e66a-4944-9ac0-2cfa75ea6620
+    nodeRect:
+      serializedVersion: 2
+      x: 134
+      y: 54
+      width: 480
+      height: 910
+    bgColorIndex: 8
+    bgColor: {r: 0.25, g: 0.35, b: 0.48, a: 1}
+    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+    profileId: bc17ed2360684d68b5e7a55be922310b
+    portraitKey: idle
+    speakerName: Guille 2
+    localization: 0
+    lineText: Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+      Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
+      when an unknown printer took a galley of type and scrambled it to make a type
+      specimen book.
+    locKey: 
+    appearance: 0
+    origin: 3
+    target: 3
+    moveSpeed: 3000
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    playSpecialAnimation: 1
+    specialAnimation: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
+    specialAnimSpeed: 0.5
+    specialAnimLoop: 1
+    showTypewriterBox: 0
+    useTypewriter: 0
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    showExtrasBox: 1
+    isStart: 1
+    startId: START02
+    isChoiceNode: 0
+    choiceCount: 2
+    choices: []
+    eventKey: OpenDoor
+    eventPayloadType: 1
+    eventInt: 5
     eventFloat: 0
     eventString: 
     eventBool: 0
