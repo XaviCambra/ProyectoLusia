@@ -89,6 +89,29 @@ public class DialogueRunner : MonoBehaviour
     [Header("UI (opcional)")]
     [SerializeField] private Image portraitImage;  // soporte legacy (un retrato)
 
+    // --- CACHE LOCAL PARA ELECCIONES (evita GetComponentInChildren por frame) ---
+    [Serializable]
+    private sealed class ChoiceButtonCache
+    {
+        public Button button;
+        public TextMeshProUGUI label;
+    }
+
+    [SerializeField] private ChoiceButtonCache[] _choiceCache; // debe ser del mismo tamaño que choiceButtons
+
+    // Estados del nodo actual
+    private void CancelAndDisposeTypewriter()
+    {
+        try { _twCts?.Cancel(); }
+        catch { /* swallow */ }
+        finally
+        {
+            _twCts?.Dispose();
+            _twCts = null;
+        }
+    }
+    private static string SafeText(string s) => s ?? string.Empty;
+
     // --- Retratos por perfil (pool dinámico) ---
     [Header("Portraits (pool)")]
     [SerializeField] private RectTransform portraitsRoot;
@@ -119,6 +142,7 @@ public class DialogueRunner : MonoBehaviour
 
     private void Awake()
     {
+        // 1) Resolver servicios (igual que ahora)
         _profiles = (ICharacterProfileService)FindAnyObjectByType<CharacterProfileService>();
         if (_profiles == null)
         {
@@ -129,16 +153,34 @@ public class DialogueRunner : MonoBehaviour
 
         _loc = (localizationServiceRef as ILocalizationService) ?? FindAnyObjectByType<CsvLocalizationService>();
 
+        // 2) Validación de grafo y lookups (igual que ahora)
         if (!ValidateGraph()) return;
         BuildLookups();
         BuildPortraitPool();
+
+        // 3) ***NUEVO*** Inicializar caché de botones de elección (evita GetComponentInChildren por frame)
+        //     Requiere que hayas declarado antes en el script:
+        //     [Serializable] private sealed class ChoiceButtonCache { public Button button; public TextMeshProUGUI label; }
+        //     [SerializeField] private ChoiceButtonCache[] _choiceCache;
+        if (_choiceCache == null || _choiceCache.Length != choiceButtons.Length)
+            _choiceCache = new ChoiceButtonCache[choiceButtons.Length];
+
+        for (int i = 0; i < choiceButtons.Length; i++)
+        {
+            var btn = choiceButtons[i];
+            if (btn == null)
+            {
+                _choiceCache[i] = new ChoiceButtonCache { button = null, label = null };
+                continue;
+            }
+            var label = btn.GetComponentInChildren<TextMeshProUGUI>(true);
+            _choiceCache[i] = new ChoiceButtonCache { button = btn, label = label };
+        }
+
+        // 4) Arrancar diálogo (igual que ahora)
         StartDialogue();
 
-        // --- SANITY CHECK: comprueba que TODOS los profileId del grafo existen en la DB ---
-        if (_profiles == null)
-        {
-            _profiles = FindObjectOfType<CharacterProfileService>();
-        }
+        // 5) Sanity check de perfiles (MANTENEMOS, pero sin repetir el _profiles == null de arriba)
         if (_profiles != null && graph != null && graph.Nodes != null)
         {
             foreach (var n in graph.Nodes)
@@ -156,7 +198,13 @@ public class DialogueRunner : MonoBehaviour
         {
             Debug.LogWarning("[Runner] sanity: sin _profiles o sin graph");
         }
+    }
 
+    private bool IsChoiceAvailable(DialogueNodeData.ChoiceData c)
+    {
+        if (c == null) return false;
+        // Mantiene tu lógica actual combinada:
+        return IsChoiceAllowedByAffinity(c) && IsChoiceAllowedByProgression(c);
     }
 
     private void OnDestroy()
@@ -178,14 +226,17 @@ public class DialogueRunner : MonoBehaviour
 
         if (_waitingChoice) return;
 
+        // Dentro de Update()
         if (Input.GetKeyDown(advanceKey))
         {
+            // 1) Si la animación de colocación del retrato aún no ha terminado, la completamos
             if (!_animDoneForCurrentNode)
             {
                 FastForwardPlacement();
                 return;
             }
 
+            // 2) Si el typewriter sigue escribiendo, lo completamos (vuelca todo el texto y marca flags)
             if (!_textDoneForCurrentNode)
             {
                 if (_isTypewriting)
@@ -193,6 +244,7 @@ public class DialogueRunner : MonoBehaviour
                 return;
             }
 
+            // 3) Si no es un nodo de elección, avanzamos al siguiente
             if (!_current.isChoiceNode)
             {
                 GoNext();
@@ -914,38 +966,69 @@ public class DialogueRunner : MonoBehaviour
     private void ShowChoices(DialogueNodeData node)
     {
         _waitingChoice = true;
-
-        for (int i = 0; i < choiceButtons.Length; i++)
+        if (node == null || !node.isChoiceNode)
         {
-            var btn = choiceButtons[i];
+            HideChoices();
+            return;
+        }
+
+        int n = choiceButtons.Length;
+
+        for (int i = 0; i < n; i++)
+        {
+            var cache = _choiceCache != null && i < _choiceCache.Length ? _choiceCache[i] : null;
+            var btn = cache?.button ?? (i < choiceButtons.Length ? choiceButtons[i] : null);
             if (btn == null) continue;
+
             btn.onClick.RemoveAllListeners();
 
-            if (node.choices != null && i < node.choices.Count)
+            // ¿Hay choice en este índice?
+            bool hasChoice = (node.choices != null && i < node.choices.Count && node.choices[i] != null);
+            if (!hasChoice)
             {
-                var choice = node.choices[i];
-
-                // --- FILTROS DE REQUISITOS ---
-                bool allowed = IsChoiceAllowedByAffinity(choice) && IsChoiceAllowedByProgression(choice);
-                if (!allowed)
-                {
-                    btn.gameObject.SetActive(false);
-                    continue;
-                }
-
-                var txt = btn.GetComponentInChildren<TextMeshProUGUI>();
-                if (txt) txt.text = string.IsNullOrEmpty(choice.choiceText) ? $"Opción {i + 1}" : choice.choiceText;
-
-                var port = string.IsNullOrEmpty(choice.portName) ? $"choice_{i}" : choice.portName;
-
-                var visited = _visitedChoiceKeys.Contains(MakeChoiceKey(node.GUID, port));
-                var bg = btn.image;
-                if (bg) bg.color = visited ? visitedChoiceColor : normalChoiceColor;
-
-                btn.onClick.AddListener(() => OnChoiceSelected(node.GUID, port));
-                btn.gameObject.SetActive(true);
+                btn.gameObject.SetActive(false);
+                continue;
             }
-            else btn.gameObject.SetActive(false);
+
+            var choice = node.choices[i];
+            bool allowed = IsChoiceAvailable(choice);
+
+            // Texto de la opción
+            var label = cache?.label;
+            if (label != null)
+                label.text = string.IsNullOrEmpty(choice.choiceText) ? $"Opción {i + 1}" : choice.choiceText;
+
+            // Color de "visitado" (se mantiene)
+            var port = string.IsNullOrEmpty(choice.portName) ? $"choice_{i}" : choice.portName;
+            bool visited = _visitedChoiceKeys.Contains(MakeChoiceKey(node.GUID, port));
+            var bg = btn.image;
+            if (bg) bg.color = visited ? visitedChoiceColor : normalChoiceColor;
+
+            // Mostrar u ocultar según 'showBlockedChoices'
+            if (!allowed)
+            {
+                if (node.showBlockedChoices)
+                {
+                    // Se muestra pero deshabilitada
+                    btn.interactable = false;
+                    btn.onClick.AddListener(() => { /* no hace nada al estar disabled */ });
+                    btn.gameObject.SetActive(true);
+                }
+                else
+                {
+                    // Se oculta por completo
+                    btn.gameObject.SetActive(false);
+                }
+                continue;
+            }
+
+            // Opción permitida
+            btn.interactable = true;
+            btn.onClick.AddListener(() =>
+            {
+                OnChoiceSelected(node.GUID, port);
+            });
+            btn.gameObject.SetActive(true);
         }
     }
 
@@ -988,8 +1071,15 @@ public class DialogueRunner : MonoBehaviour
 
     private void HideChoices()
     {
-        foreach (var b in choiceButtons)
-            if (b) b.gameObject.SetActive(false);
+        if (_choiceCache == null || _choiceCache.Length == 0)
+        {
+            foreach (var b in choiceButtons)
+                if (b) b.gameObject.SetActive(false);
+            return;
+        }
+
+        foreach (var c in _choiceCache)
+            if (c?.button) c.button.gameObject.SetActive(false);
     }
 
     private void OnChoiceSelected(string fromGuid, string fromPort)
@@ -1172,21 +1262,17 @@ public class DialogueRunner : MonoBehaviour
     // Completa inmediatamente el texto del nodo actual si el typewriter está en curso
     private void FastForwardTypewriter()
     {
-        if (!_isTypewriting) return;
+        // Cancela y libera
+        CancelAndDisposeTypewriter();
 
-        // Cancelamos la tarea asíncrona actual del typewriter
-        _twCts?.Cancel();
-        _twCts?.Dispose();
-        _twCts = null;
-
-        // Pintamos el texto completo y establecemos estado "texto terminado"
+        // Vuelca texto completo de este nodo
         if (bodyText != null)
-            bodyText.SetText(_currentNodeFullText ?? string.Empty);
+            bodyText.SetText(SafeText(_currentNodeFullText));
 
         _isTypewriting = false;
         _textDoneForCurrentNode = true;
 
-        // Si este nodo es de elección, puede que ya estén listas las opciones
+        // Si es nodo de elección, quizá ya podamos mostrar opciones
         TryShowChoicesWhenReady(_current);
     }
 

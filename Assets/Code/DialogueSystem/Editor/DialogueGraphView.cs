@@ -36,18 +36,18 @@ public class DialogueGraphView : GraphView
         };
     }
 
-    //public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
-    //{
-    //    var compatible = new List<Port>();
-    //    foreach (var port in ports)
-    //    {
-    //        if (port == startPort) continue;
-    //        if (port.node == startPort.node) continue;
-    //        if (port.direction == startPort.direction) continue;
-    //        compatible.Add(port);
-    //    }
-    //    return compatible;
-    //}
+    public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
+    {
+        var compatible = new List<Port>();
+        foreach (var port in ports)
+        {
+            if (port == startPort) continue;
+            if (port.node == startPort.node) continue;
+            if (port.direction == startPort.direction) continue;
+            compatible.Add(port);
+        }
+        return compatible;
+    }
 
     public DialogueNodeView CreateNodeAtCenter(DialogueNodeData data = null)
     {

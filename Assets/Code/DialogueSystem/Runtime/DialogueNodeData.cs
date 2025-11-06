@@ -106,6 +106,10 @@ public class DialogueNodeData
     public bool isChoiceNode = false;
     [Range(2, 4)] public int choiceCount = 2;
 
+    // --- UI de opciones ---
+    [Header("Opciones (UI)")]
+    public bool showBlockedChoices = false; // false = ocultar bloqueadas (por defecto). true = mostrarlas deshabilitadas.
+
     [Serializable]
     public class ChoiceData
     {

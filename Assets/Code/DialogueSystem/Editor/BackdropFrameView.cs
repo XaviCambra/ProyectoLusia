@@ -80,8 +80,8 @@ public class BackdropFrameView : GraphElement
         EnableHeaderDrag(header);
         Add(header);
 
-        // El cuerpo no bloquea clics salvo handles (mejor selección de nodos detrás)
-        pickingMode = PickingMode.Position;
+        // El cuerpo NO bloquea clics; solo el header y grips capturan
+        pickingMode = PickingMode.Ignore;
         header.pickingMode = PickingMode.Position;
 
         // Handles de resize (8)

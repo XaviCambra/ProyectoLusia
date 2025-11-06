@@ -685,12 +685,26 @@ public class DialogueNodeView : Node
                 Data.choices.RemoveAt(Data.choices.Count - 1);
 
             var countField = new IntegerField("Número de opciones") { value = Data.choiceCount };
+            countField.style.marginBottom = 3;
             countField.RegisterValueChangedCallback(e =>
             {
                 Data.choiceCount = Mathf.Clamp(e.newValue, 2, 4);
                 RebuildOutputs();
             });
             outputContainer.Add(countField);
+
+            // Toggle: Mostrar opciones bloqueadas (debajo del número de opciones)
+            var showBlockedToggle = new Toggle("Mostrar opciones")
+            {
+                tooltip = "Si está activo, las opciones que no cumplan requisitos se verán deshabilitadas en runtime. Si está desactivado, se ocultarán.",
+                value = Data.showBlockedChoices
+            };
+            showBlockedToggle.style.marginBottom = 3;
+            showBlockedToggle.RegisterValueChangedCallback(e =>
+            {
+                Data.showBlockedChoices = e.newValue;
+            });
+            outputContainer.Add(showBlockedToggle);
 
             for (int i = 0; i < Data.choiceCount; i++)
             {

@@ -19,7 +19,7 @@ MonoBehaviour:
       x: 1254
       y: 15
       width: 480
-      height: 750
+      height: 770
     bgColorIndex: 0
     bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
     profileRef: {fileID: 0}
@@ -58,6 +58,7 @@ MonoBehaviour:
     startId: 
     isChoiceNode: 1
     choiceCount: 2
+    showBlockedChoices: 0
     choices:
     - choiceText: "Opci\xF3n"
       portName: b6adbe
@@ -89,65 +90,13 @@ MonoBehaviour:
     eventFloat: 0
     eventString: 
     eventBool: 0
-  - GUID: cf71b309-4c3e-4c6e-8010-00dc8aca007d
-    nodeRect:
-      serializedVersion: 2
-      x: 1254
-      y: 916
-      width: 480
-      height: 551
-    bgColorIndex: 0
-    bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
-    profileRef: {fileID: 0}
-    profileId: dffa52ce-3c0e-4b8e-947e-2a51dae674dc
-    portraitKey: 
-    speakerName: Sora
-    localization: 0
-    lineText: Te parto las piernas
-    locKey: 
-    appearance: 0
-    origin: 0
-    target: 1
-    moveSpeed: 600
-    textStart: 2
-    useFade: 0
-    enterFromOpacity: 0
-    enterToOpacity: 100
-    exitFromOpacity: 100
-    exitToOpacity: 0
-    playSpecialAnimation: 0
-    specialAnimation: {fileID: 0}
-    specialAnimSpeed: 1
-    specialAnimLoop: 0
-    showTypewriterBox: 0
-    useTypewriter: 0
-    tw:
-      secondsPerChar: 0.03
-      globalSpeed: 1
-      respectRichText: 1
-      minimalWhitespaceDelay: 1
-      commaPct: 1.25
-      periodPct: 1.6
-      ellipsisPct: 2
-    showExtrasBox: 0
-    isStart: 0
-    startId: 
-    isChoiceNode: 0
-    choiceCount: 2
-    choices: []
-    eventKey: 
-    eventPayloadType: 0
-    eventInt: 0
-    eventFloat: 0
-    eventString: 
-    eventBool: 0
   - GUID: e63d5428-29b6-4eb6-9d12-0c476d3737e9
     nodeRect:
       serializedVersion: 2
       x: -397
       y: -85
       width: 480
-      height: 1048
+      height: 572
     bgColorIndex: 11
     bgColor: {r: 0.38, g: 0.29, b: 0.44, a: 1}
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
@@ -171,7 +120,7 @@ MonoBehaviour:
     specialAnimation: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
     specialAnimSpeed: 0.5
     specialAnimLoop: 1
-    showTypewriterBox: 1
+    showTypewriterBox: 0
     useTypewriter: 1
     tw:
       secondsPerChar: 0.03
@@ -186,6 +135,7 @@ MonoBehaviour:
     startId: START01
     isChoiceNode: 0
     choiceCount: 2
+    showBlockedChoices: 0
     choices:
     - choiceText: "Opci\xF3n"
       portName: ce1a11
@@ -214,85 +164,6 @@ MonoBehaviour:
     eventKey: 
     eventPayloadType: 0
     eventInt: 0
-    eventFloat: 0
-    eventString: 
-    eventBool: 0
-  - GUID: 09fdf76d-e66a-4944-9ac0-2cfa75ea6620
-    nodeRect:
-      serializedVersion: 2
-      x: 117
-      y: 201
-      width: 480
-      height: 910
-    bgColorIndex: 8
-    bgColor: {r: 0.25, g: 0.35, b: 0.48, a: 1}
-    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: bc17ed2360684d68b5e7a55be922310b
-    portraitKey: idle
-    speakerName: Guille 2
-    localization: 0
-    lineText: Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-      Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-      when an unknown printer took a galley of type and scrambled it to make a type
-      specimen book.
-    locKey: 
-    appearance: 0
-    origin: 3
-    target: 3
-    moveSpeed: 3000
-    textStart: 1
-    useFade: 1
-    enterFromOpacity: 0
-    enterToOpacity: 100
-    exitFromOpacity: 100
-    exitToOpacity: 0
-    playSpecialAnimation: 1
-    specialAnimation: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
-    specialAnimSpeed: 0.5
-    specialAnimLoop: 1
-    showTypewriterBox: 0
-    useTypewriter: 0
-    tw:
-      secondsPerChar: 0.03
-      globalSpeed: 1
-      respectRichText: 1
-      minimalWhitespaceDelay: 1
-      commaPct: 2
-      periodPct: 3
-      ellipsisPct: 5
-    showExtrasBox: 1
-    isStart: 1
-    startId: START02
-    isChoiceNode: 0
-    choiceCount: 2
-    choices:
-    - choiceText: "Opci\xF3n"
-      portName: c04d41
-      requiresAffinity: 0
-      affinityKey: 
-      requiredAffinity: 0
-      invertRequirement: 0
-      requiresProgress: 0
-      progressMethod: 
-      progressArgType: 0
-      progressArgInt: 0
-      progressArgFloat: 0
-      progressArgString: 
-    - choiceText: "Opci\xF3n"
-      portName: 3eda0d
-      requiresAffinity: 0
-      affinityKey: 
-      requiredAffinity: 0
-      invertRequirement: 0
-      requiresProgress: 0
-      progressMethod: 
-      progressArgType: 0
-      progressArgInt: 0
-      progressArgFloat: 0
-      progressArgString: 
-    eventKey: OpenDoor
-    eventPayloadType: 1
-    eventInt: 5
     eventFloat: 0
     eventString: 
     eventBool: 0
@@ -341,6 +212,7 @@ MonoBehaviour:
     startId: 
     isChoiceNode: 0
     choiceCount: 2
+    showBlockedChoices: 0
     choices: []
     eventKey: 
     eventPayloadType: 0
@@ -354,14 +226,14 @@ MonoBehaviour:
       x: 663
       y: -71
       width: 480
-      height: 1180
-    bgColorIndex: 6
-    bgColor: {r: 0.26, g: 0.35, b: 0.3, a: 1}
+      height: 734
+    bgColorIndex: 4
+    bgColor: {r: 0.52, g: 0.33, b: 0.3, a: 1}
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
     profileId: bc17ed2360684d68b5e7a55be922310b
     portraitKey: idle
     speakerName: Guille12
-    localization: 1
+    localization: 0
     lineText: Donec vitae commodo magna. Lorem ipsum dolor sit amet, consectetur
       adipiscing elit. Morbi mattis aliquet ante hendrerit tincidunt. Mauris lacinia
       et ante tempus imperdiet.
@@ -390,11 +262,12 @@ MonoBehaviour:
       commaPct: 2
       periodPct: 3
       ellipsisPct: 5
-    showExtrasBox: 1
+    showExtrasBox: 0
     isStart: 0
     startId: 
     isChoiceNode: 1
     choiceCount: 3
+    showBlockedChoices: 1
     choices:
     - choiceText: Hola
       portName: 6c743e
@@ -438,6 +311,139 @@ MonoBehaviour:
     eventFloat: 0
     eventString: 
     eventBool: 0
+  - GUID: 09fdf76d-e66a-4944-9ac0-2cfa75ea6620
+    nodeRect:
+      serializedVersion: 2
+      x: 125
+      y: 32
+      width: 480
+      height: 910
+    bgColorIndex: 8
+    bgColor: {r: 0.25, g: 0.35, b: 0.48, a: 1}
+    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+    profileId: bc17ed2360684d68b5e7a55be922310b
+    portraitKey: idle
+    speakerName: Guille 2
+    localization: 0
+    lineText: Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+      Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
+      when an unknown printer took a galley of type and scrambled it to make a type
+      specimen book.
+    locKey: 
+    appearance: 0
+    origin: 3
+    target: 3
+    moveSpeed: 3000
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    playSpecialAnimation: 1
+    specialAnimation: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
+    specialAnimSpeed: 0.5
+    specialAnimLoop: 1
+    showTypewriterBox: 0
+    useTypewriter: 0
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 2
+      periodPct: 3
+      ellipsisPct: 5
+    showExtrasBox: 1
+    isStart: 1
+    startId: START02
+    isChoiceNode: 0
+    choiceCount: 2
+    showBlockedChoices: 0
+    choices:
+    - choiceText: "Opci\xF3n"
+      portName: c04d41
+      requiresAffinity: 0
+      affinityKey: 
+      requiredAffinity: 0
+      invertRequirement: 0
+      requiresProgress: 0
+      progressMethod: 
+      progressArgType: 0
+      progressArgInt: 0
+      progressArgFloat: 0
+      progressArgString: 
+    - choiceText: "Opci\xF3n"
+      portName: 3eda0d
+      requiresAffinity: 0
+      affinityKey: 
+      requiredAffinity: 0
+      invertRequirement: 0
+      requiresProgress: 0
+      progressMethod: 
+      progressArgType: 0
+      progressArgInt: 0
+      progressArgFloat: 0
+      progressArgString: 
+    eventKey: OpenDoor
+    eventPayloadType: 1
+    eventInt: 5
+    eventFloat: 0
+    eventString: 
+    eventBool: 0
+  - GUID: cf71b309-4c3e-4c6e-8010-00dc8aca007d
+    nodeRect:
+      serializedVersion: 2
+      x: 1228
+      y: 942
+      width: 480
+      height: 551
+    bgColorIndex: 0
+    bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
+    profileRef: {fileID: 0}
+    profileId: dffa52ce-3c0e-4b8e-947e-2a51dae674dc
+    portraitKey: 
+    speakerName: Sora
+    localization: 0
+    lineText: Te parto las piernas
+    locKey: 
+    appearance: 0
+    origin: 0
+    target: 1
+    moveSpeed: 600
+    textStart: 2
+    useFade: 0
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    exitFromOpacity: 100
+    exitToOpacity: 0
+    playSpecialAnimation: 0
+    specialAnimation: {fileID: 0}
+    specialAnimSpeed: 1
+    specialAnimLoop: 0
+    showTypewriterBox: 0
+    useTypewriter: 0
+    tw:
+      secondsPerChar: 0.03
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 1.25
+      periodPct: 1.6
+      ellipsisPct: 2
+    showExtrasBox: 0
+    isStart: 0
+    startId: 
+    isChoiceNode: 0
+    choiceCount: 2
+    showBlockedChoices: 0
+    choices: []
+    eventKey: 
+    eventPayloadType: 0
+    eventInt: 0
+    eventFloat: 0
+    eventString: 
+    eventBool: 0
   edges:
   - fromNodeGUID: e63d5428-29b6-4eb6-9d12-0c476d3737e9
     fromPortName: Next
@@ -454,3 +460,6 @@ MonoBehaviour:
   - fromNodeGUID: 15ce3799-2ec7-426b-818d-523b43d315df
     fromPortName: 82acee
     toNodeGUID: cf71b309-4c3e-4c6e-8010-00dc8aca007d
+  - fromNodeGUID: cf71b309-4c3e-4c6e-8010-00dc8aca007d
+    fromPortName: Next
+    toNodeGUID: 15ce3799-2ec7-426b-818d-523b43d315df
