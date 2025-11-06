@@ -69,6 +69,11 @@ public class DialogueNodeView : Node
         ConfigureNodeChrome();
         BuildHeaderButtons();
 
+        Debug.LogWarning("RECUERDA ENCAPSULARLO EN UN MATODO Y HACERLO PARAMETRICO ARRIBA EN AJUSTES");
+        titleContainer.style.backgroundColor = new Color(0.0f, 0.0f, 0.0f, 0.25f);
+        inputContainer.style.backgroundColor = new Color(0.0f, 0.0f, 0.0f, 0.1f);
+        outputContainer.style.backgroundColor = new Color(0.0f, 0.0f, 0.0f, 0.15f);
+
         // --- NUEVO ORDEN / ESTRUCTURA ---
         AddDivider("Perfil y color de fondo");
         BuildBasicHeader();           // Color fondo + Perfil + Retrato
@@ -235,7 +240,6 @@ public class DialogueNodeView : Node
             Data.profileRef = so;
             Data.profileId = so ? so.ProfileId : null;
 
-            // 🔔 Notificar: se han cambiado datos persistentes del nodo
             OnDataChanged?.Invoke();
         });
 
@@ -699,8 +703,6 @@ public class DialogueNodeView : Node
                     {
                         flexDirection = FlexDirection.Row,
                         alignItems = Align.Center,
-                        marginTop = -8,
-                        marginBottom = -2
                     }
                 };
 
@@ -715,100 +717,198 @@ public class DialogueNodeView : Node
                 row.Add(optField);
                 row.Add(port);
 
-                // --- UI de Afinidad por opción (apilado, vertical, sin 'gap') ---
+                // ===================== REQUISITOS (Foldout) =====================
+                var reqFold = new Foldout
+                {
+                    text = "Requisitos"
+                };
+                // Recuerda el estado por opción
+                reqFold.viewDataKey = $"{Data.GUID}_REQ_{i}";
+                reqFold.style.unityFontStyleAndWeight = FontStyle.Italic;
+                reqFold.style.marginTop = 2;
+                reqFold.style.marginBottom = 2;
+
+                // ---------- AFINIDAD ----------
                 var affinityColumn = new VisualElement
                 {
-                    style =
-                    {
-                        flexDirection = FlexDirection.Column,
-                        marginTop = 0,
-                        marginBottom = 0
-                    }
+                    style = { flexDirection = FlexDirection.Column }
                 };
 
-                // 1) Fila superior: SOLO el toggle "Req. afinidad"
+                // 1) Cabecera Afinidad (toggle)
                 var headerRow = new VisualElement
                 {
-                    style =
-                    {
-                        flexDirection = FlexDirection.Row,
-                        alignItems = Align.Center
-                    }
+                    style = { flexDirection = FlexDirection.Row, alignItems = Align.Center }
                 };
                 var reqToggle = new Toggle("Req. afinidad")
                 {
                     value = Data.choices[idx].requiresAffinity
                 };
-                reqToggle.style.minWidth = 0; // no fuerces ancho
+                reqToggle.style.minWidth = 0;
                 headerRow.Add(reqToggle);
                 affinityColumn.Add(headerRow);
 
-                // 2) Fila de parámetros: Clave + Valor + < que
+                // 2) Parámetros Afinidad (clave + valor + bajo afinidad)
                 var paramsRow = new VisualElement
                 {
-                    style =
-                    {
-                        flexDirection = FlexDirection.Row,
-                        alignItems = Align.Center,
-                    }
+                    style = { flexDirection = FlexDirection.Column }
                 };
 
-                // Declaramos referencias ANTES de callbacks
-                TextField affinityKeyField;
-                FloatField affinityValueField;
-                Toggle invertToggle;
-
-                // Clave (string)
-                affinityKeyField = new TextField("Clave")
+                var affinityKeyField = new TextField("Clave")
                 {
                     value = Data.choices[idx].affinityKey
                 };
-                // Compactar label y dar aire con marginRight
-                //affinityKeyField.labelElement.style.minWidth = 48;
-                affinityKeyField.style.flexGrow = 1;
-                affinityKeyField.style.marginRight = 6;
+                affinityKeyField.style.marginBottom = 3;
                 paramsRow.Add(affinityKeyField);
                 affinityKeyField.RegisterValueChangedCallback(e => Data.choices[idx].affinityKey = e.newValue);
 
-                // Valor (float)
-                affinityValueField = new FloatField("Valor")
+                var affinityValueField = new FloatField("Valor")
                 {
                     value = Data.choices[idx].requiredAffinity
                 };
-                affinityValueField.labelElement.style.minWidth = 44;
-                affinityValueField.style.width = 110;
-                affinityValueField.style.marginRight = 6;
+                affinityValueField.style.marginBottom = 3;
                 paramsRow.Add(affinityValueField);
                 affinityValueField.RegisterValueChangedCallback(e => Data.choices[idx].requiredAffinity = e.newValue);
 
-                // Invertir (< que)
-                invertToggle = new Toggle("Bajo afinidad")
+                var invertToggle = new Toggle("Bajo afinidad")
                 {
                     value = Data.choices[idx].invertRequirement
                 };
+                invertToggle.style.marginBottom = 3;
                 paramsRow.Add(invertToggle);
                 invertToggle.RegisterValueChangedCallback(e => Data.choices[idx].invertRequirement = e.newValue);
 
-                // Helper: mostrar/ocultar la fila de parámetros
-                void SetParamsVisible(bool on)
+                // Mostrar/ocultar parámetros de afinidad
+                void SetAffinityParamsVisible(bool on)
                 {
                     paramsRow.style.display = on ? DisplayStyle.Flex : DisplayStyle.None;
                 }
-
-                // Estado inicial
-                SetParamsVisible(Data.choices[idx].requiresAffinity);
-
-                // Callback del toggle principal
+                SetAffinityParamsVisible(Data.choices[idx].requiresAffinity);
                 reqToggle.RegisterValueChangedCallback(e =>
                 {
                     Data.choices[idx].requiresAffinity = e.newValue;
-                    SetParamsVisible(e.newValue);
+                    SetAffinityParamsVisible(e.newValue);
                 });
 
-                // Montaje final
                 affinityColumn.Add(paramsRow);
-                outputContainer.Add(affinityColumn);
 
+                // ---------- PROGRESO ----------
+                var progressColumn = new VisualElement
+                {
+                    style = { flexDirection = FlexDirection.Column }
+                };
+
+                // 1) Cabecera Progreso (toggle)
+                var progHeaderRow = new VisualElement
+                {
+                    style = { flexDirection = FlexDirection.Row, alignItems = Align.Center }
+                };
+                var progToggle = new Toggle("Req. progreso")
+                {
+                    value = Data.choices[idx].requiresProgress
+                };
+                progHeaderRow.Add(progToggle);
+                progressColumn.Add(progHeaderRow);
+
+                // 2) Parámetros Progreso (método + tipo + valor dinámico)
+                var progParamsRow = new VisualElement
+                {
+                    style = { flexDirection = FlexDirection.Column }
+                };
+
+                // Método (string) — dejamos tu configuración de antes (sin tocar el input interno)
+                var methodField = new TextField("Método")
+                {
+                    value = Data.choices[idx].progressMethod
+                };
+                methodField.style.marginBottom = 3;
+                methodField.RegisterValueChangedCallback(e => Data.choices[idx].progressMethod = e.newValue);
+                progParamsRow.Add(methodField);
+
+                // Tipo (enum)
+                var argTypeField = new EnumField("Arg", Data.choices[idx].progressArgType);
+                argTypeField.style.marginBottom = 3;
+                argTypeField.Init(Data.choices[idx].progressArgType);
+                progParamsRow.Add(argTypeField);
+
+                // Contenedor dinámico del valor
+                var argValueContainer = new VisualElement();
+                progParamsRow.Add(argValueContainer);
+
+                // Fábrica del campo según tipo
+                void RebuildProgressArgField()
+                {
+                    argValueContainer.Clear();
+                    switch (Data.choices[idx].progressArgType)
+                    {
+                        case ProgressArgType.None:
+                            break;
+                        case ProgressArgType.Int:
+                            {
+                                var f = new IntegerField("Valor (int)") { value = Data.choices[idx].progressArgInt };
+                                f.style.marginBottom = 3;
+                                f.RegisterValueChangedCallback(v => Data.choices[idx].progressArgInt = v.newValue);
+                                argValueContainer.Add(f);
+                                break;
+                            }
+                        case ProgressArgType.Float:
+                            {
+                                var f = new FloatField("Valor (float)") { value = Data.choices[idx].progressArgFloat };
+                                f.style.marginBottom = 3;
+                                f.RegisterValueChangedCallback(v => Data.choices[idx].progressArgFloat = v.newValue);
+                                argValueContainer.Add(f);
+                                break;
+                            }
+                        case ProgressArgType.String:
+                            {
+                                var f = new TextField("Valor (string)") { value = Data.choices[idx].progressArgString };
+                                f.style.marginBottom = 3;
+                                f.RegisterValueChangedCallback(v => Data.choices[idx].progressArgString = v.newValue);
+                                argValueContainer.Add(f);
+                                break;
+                            }
+                    }
+                }
+
+                // Estado inicial
+                RebuildProgressArgField();
+
+                // Mostrar/ocultar parámetros de progreso
+                void SetProgressParamsVisible(bool on)
+                {
+                    progParamsRow.style.display = on ? DisplayStyle.Flex : DisplayStyle.None;
+                }
+                SetProgressParamsVisible(Data.choices[idx].requiresProgress);
+
+                // Callbacks Progreso
+                progToggle.RegisterValueChangedCallback(e =>
+                {
+                    Data.choices[idx].requiresProgress = e.newValue;
+                    SetProgressParamsVisible(e.newValue);
+                });
+                argTypeField.RegisterValueChangedCallback(e =>
+                {
+                    Data.choices[idx].progressArgType = (ProgressArgType)e.newValue;
+                    RebuildProgressArgField();
+                });
+
+                progressColumn.Add(progParamsRow);
+
+                // Separador entre requisitos
+                var line = new VisualElement();
+                line.style.height = 1;
+                line.style.marginTop = 3;
+                line.style.marginBottom = 6;
+                line.style.backgroundColor = new Color(0, 0, 0, 0.10f);
+
+                // ---------- Montaje dentro del Foldout ----------
+                reqFold.Add(affinityColumn);
+                reqFold.Add(line);
+                reqFold.Add(progressColumn);
+
+                // Añade el foldout al contenedor de outputs
+                outputContainer.Add(reqFold);
+
+                // === Finalmente, la fila principal (texto + puerto) ===
                 outputContainer.Add(row);
             }
         }

@@ -117,6 +117,16 @@ public class DialogueNodeData
         public string affinityKey = "";            // (nombre/personaje/clave en ParamService)
         public float requiredAffinity = 0f;        // (umbral)
         public bool invertRequirement = false;     // (comparación inversa: menor que)
+
+        // --- Progreso (requisito complementario por opción) ---
+        public bool requiresProgress = false;
+        // Nombre del “método” a invocar desde juego (debe estar registrado en runtime)
+        public string progressMethod = "";
+        public ProgressArgType progressArgType = ProgressArgType.None;
+        // Valores de argumento (se usa uno según progressArgType)
+        public int progressArgInt = 0;
+        public float progressArgFloat = 0f;
+        public string progressArgString = "";
     }
     public List<ChoiceData> choices = new();
 
@@ -189,3 +199,5 @@ public enum Spot
 public enum TextStartTiming { OnEnterStart, OnEnterMid, OnEnterComplete, Immediate }
 
 public enum EventPayloadType { None, Int, Float, String, Bool, Char }
+
+public enum ProgressArgType { None, Int, Float, String }

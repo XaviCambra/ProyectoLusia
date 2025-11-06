@@ -915,12 +915,12 @@ public class DialogueRunner : MonoBehaviour
             {
                 var choice = node.choices[i];
 
-                // --- FILTRO DE AFINIDAD ---
-                bool allowed = IsChoiceAllowedByAffinity(choice);
+                // --- FILTROS DE REQUISITOS ---
+                bool allowed = IsChoiceAllowedByAffinity(choice) && IsChoiceAllowedByProgression(choice);
                 if (!allowed)
                 {
                     btn.gameObject.SetActive(false);
-                    continue; // no configurar nada más para esta opción
+                    continue;
                 }
 
                 var txt = btn.GetComponentInChildren<TextMeshProUGUI>();
@@ -937,6 +937,43 @@ public class DialogueRunner : MonoBehaviour
             }
             else btn.gameObject.SetActive(false);
         }
+    }
+
+    // --- Progreso: comprobación centralizada ---
+    private bool IsChoiceAllowedByProgression(DialogueNodeData.ChoiceData choice)
+    {
+        if (choice == null) return true;
+        if (!choice.requiresProgress) return true;
+
+        // Debe haber un nombre de método
+        var method = choice.progressMethod ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(method))
+        {
+            Debug.LogWarning("[DialogueRunner] Opción requiere progreso pero no hay método definido.");
+            return false;
+        }
+
+        // Resolver el argumento según el tipo elegido
+        object arg = null;
+        switch (choice.progressArgType)
+        {
+            case ProgressArgType.None: arg = null; break;
+            case ProgressArgType.Int: arg = choice.progressArgInt; break;
+            case ProgressArgType.Float: arg = choice.progressArgFloat; break;
+            case ProgressArgType.String: arg = choice.progressArgString ?? string.Empty; break;
+            default: arg = null; break;
+        }
+
+        // Intentar invocar el método registrado
+        if (ProgressConditionInvoker.TryInvoke(method, arg, out bool result))
+        {
+            Debug.LogWarning("QUE ERESH: " + result);
+            return result;
+        }
+
+        // Si no hay registro, lo consideramos NO permitido y avisamos
+        Debug.LogWarning($"[DialogueRunner] Método de progreso no registrado o inválido: '{method}'.");
+        return false;
     }
 
     private void HideChoices()
@@ -1184,5 +1221,49 @@ public class DialogueRunner : MonoBehaviour
 
         TryShowChoicesWhenReady(_current);
     }
-
 }
+
+// ============================================================================
+// Registro simple para condiciones de progreso (bool) invocables por nombre.
+// En tu bootstrap del juego registra así:
+//   ProgressConditionInvoker.Register("HasClearedDungeon", (arg) => MyGameProg.HasClearedDungeon((string)arg));
+//   ProgressConditionInvoker.Register("StoryReached", (arg) => MyGameProg.StoryReached((int)arg));
+// Devuelve true/false; si no se encuentra, TryInvoke => false + result=false.
+// ============================================================================
+static class ProgressConditionInvoker
+{
+    private static readonly Dictionary<string, Func<object, bool>> _registry = new();
+
+    public static void Register(string methodName, Func<object, bool> fn)
+    {
+        if (string.IsNullOrWhiteSpace(methodName) || fn == null) return;
+        _registry[methodName] = fn;
+    }
+
+    public static void Unregister(string methodName)
+    {
+        if (string.IsNullOrWhiteSpace(methodName)) return;
+        _registry.Remove(methodName);
+    }
+
+    public static bool TryInvoke(string methodName, object arg, out bool result)
+    {
+        result = false;
+        if (string.IsNullOrWhiteSpace(methodName)) return false;
+        if (_registry.TryGetValue(methodName, out var fn))
+        {
+            try
+            {
+                result = fn.Invoke(arg);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[ProgressConditionInvoker] Excepción invocando '{methodName}': {ex.Message}");
+                return false;
+            }
+        }
+        return false;
+    }
+}
+
