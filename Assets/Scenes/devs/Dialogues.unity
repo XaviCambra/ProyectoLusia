@@ -2245,6 +2245,8 @@ MonoBehaviour:
   portraitImage: {fileID: 0}
   portraitsRoot: {fileID: 1045239993}
   portraitPrefab: {fileID: 9064292443533730603}
+  resetSpecialsWithStaticPoseOnNodeChange: 1
+  specialStaticPoseClip: {fileID: 7400000, guid: cbe870c782a219347aafa709359019c4, type: 2}
   leftAnchor: {fileID: 751734330}
   centerAnchor: {fileID: 591321225}
   rightAnchor: {fileID: 149658829}

@@ -98,6 +98,13 @@ public class DialogueRunner : MonoBehaviour
     private readonly Dictionary<Image, PlayableGraph> _specialAnimGraphs = new();
     private readonly Dictionary<RectTransform, Coroutine> _scaleTweens = new();
 
+    [Header("Reset de animación especial")]
+    [Tooltip("Si está activo, al cambiar de nodo se fuerza 'staticPose' en los retratos que tenían animación especial.")]
+    public bool resetSpecialsWithStaticPoseOnNodeChange = true;
+
+    [Tooltip("Clip con la pose neutra (un frame en 0,0,0).")]
+    public AnimationClip specialStaticPoseClip;
+
     // Tweens de movimiento/fade de colocación por retrato (para poder cancelarlos/fast-forward)
     private readonly Dictionary<RectTransform, Coroutine> _moveTweens = new();
 
@@ -299,6 +306,9 @@ public class DialogueRunner : MonoBehaviour
 
     private void SetCurrent(DialogueNodeData node)
     {
+        // 🔽 NUEVO: limpiar animaciones especiales del nodo anterior
+        ResetSpecialAnimationsToStaticPose();
+
         _current = node;
 
         if (_current != null)
@@ -1015,6 +1025,9 @@ public class DialogueRunner : MonoBehaviour
 
     private void EndDialogue()
     {
+        // 🔽 NUEVO (opcional): fuerza staticPose en lo que estuviera con animación especial
+        ResetSpecialAnimationsToStaticPose();
+
         HideChoices();
 
         // Cancelar typewriter en curso (si lo hay)
@@ -1221,6 +1234,33 @@ public class DialogueRunner : MonoBehaviour
 
         TryShowChoicesWhenReady(_current);
     }
+
+    /// <summary>
+    /// Detiene cualquier animación especial activa y aplica una pose estática (frame 0) 
+    /// a los retratos implicados, si hay clip configurado.
+    /// </summary>
+    private void ResetSpecialAnimationsToStaticPose()
+    {
+        if (!resetSpecialsWithStaticPoseOnNodeChange) return;
+        if (!specialStaticPoseClip) return;
+        if (_specialAnimGraphs == null || _specialAnimGraphs.Count == 0) return;
+
+        // Tomamos snapshot de las imágenes afectadas para evitar modificar el diccionario mientras iteramos
+        var imgs = _specialAnimGraphs.Keys.ToList();
+
+        foreach (var img in imgs)
+        {
+            if (!img) continue;
+
+            // 1) Detén y destruye el playable de la animación especial de esta imagen
+            StopSpecialAnimation(img);
+
+            // 2) Aplica la pose estática (frame 0) de forma inmediata
+            var go = img.gameObject;
+            if (go) specialStaticPoseClip.SampleAnimation(go, 0f);
+        }
+    }
+
 }
 
 // ============================================================================

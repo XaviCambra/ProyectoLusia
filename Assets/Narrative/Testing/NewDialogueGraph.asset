@@ -354,7 +354,7 @@ MonoBehaviour:
       x: 663
       y: -71
       width: 480
-      height: 803
+      height: 1180
     bgColorIndex: 6
     bgColor: {r: 0.26, g: 0.35, b: 0.3, a: 1}
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
@@ -367,19 +367,19 @@ MonoBehaviour:
       et ante tempus imperdiet.
     locKey: 
     appearance: 1
-    origin: 3
+    origin: 1
     target: 1
     moveSpeed: 600
     textStart: 3
-    useFade: 1
+    useFade: 0
     enterFromOpacity: 0
     enterToOpacity: 100
     exitFromOpacity: 100
     exitToOpacity: 0
-    playSpecialAnimation: 0
-    specialAnimation: {fileID: 0}
+    playSpecialAnimation: 1
+    specialAnimation: {fileID: 7400000, guid: cbe870c782a219347aafa709359019c4, type: 2}
     specialAnimSpeed: 1
-    specialAnimLoop: 1
+    specialAnimLoop: 0
     showTypewriterBox: 0
     useTypewriter: 1
     tw:
@@ -390,7 +390,7 @@ MonoBehaviour:
       commaPct: 2
       periodPct: 3
       ellipsisPct: 5
-    showExtrasBox: 0
+    showExtrasBox: 1
     isStart: 0
     startId: 
     isChoiceNode: 1
@@ -410,10 +410,10 @@ MonoBehaviour:
       progressArgString: AntenaRadio
     - choiceText: Hola Jefe
       portName: fc905f
-      requiresAffinity: 0
+      requiresAffinity: 1
       affinityKey: Sora
       requiredAffinity: 15
-      invertRequirement: 0
+      invertRequirement: 1
       requiresProgress: 1
       progressMethod: PreferenciasNero
       progressArgType: 0
