@@ -2161,6 +2161,11 @@ GameObject:
   m_Component:
   - component: {fileID: 2059072029}
   - component: {fileID: 2059072030}
+  - component: {fileID: 2059072035}
+  - component: {fileID: 2059072034}
+  - component: {fileID: 2059072033}
+  - component: {fileID: 2059072032}
+  - component: {fileID: 2059072031}
   m_Layer: 0
   m_Name: Dialogandoso
   m_TagString: Untagged
@@ -2196,21 +2201,80 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000, guid: 014c6783847aeca45b1a7bb69daf8364, type: 2}
+  navigatorBehaviour: {fileID: 2059072035}
+  portraitsBehaviour: {fileID: 2059072034}
+  typewriterBehaviour: {fileID: 2059072033}
+  choicesBehaviour: {fileID: 2059072032}
+  conditionsBehaviour: {fileID: 2059072031}
   advanceKey: 110
   restartKey: 114
   speakerText: {fileID: 1571192787}
   bodyText: {fileID: 991279808}
-  choiceButtons:
+--- !u!114 &2059072031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2059072028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de9453747dacf8740b711518660bae68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2059072032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2059072028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65e9f0bda5074b74893b798f989fc12d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buttons:
   - {fileID: 1231740076}
   - {fileID: 105253536}
   - {fileID: 1600962994}
-  debugMode: 1
-  debugNodeText: {fileID: 897445293}
-  normalChoiceColor: {r: 1, g: 1, b: 1, a: 1}
-  visitedChoiceColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  visitedColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+  useAlphaForDisabled: 1
+  disabledAlpha: 0.5
+--- !u!114 &2059072033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2059072028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32554f6fefef80747a0d80cac6e19b8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 991279808}
+--- !u!114 &2059072034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2059072028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 010132adca4cc6a41acfa68f75e51600, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leftAnchor: {fileID: 751734330}
+  centerAnchor: {fileID: 591321225}
+  rightAnchor: {fileID: 149658829}
+  portraitsRoot: {fileID: 2979906738319819793}
+  portraitPrefab: {fileID: 9064292443533730603}
   dimNonSpeaking: 1
-  speakingTint: {r: 1, g: 1, b: 1, a: 1}
-  nonSpeakingTint: {r: 0.39215687, g: 0.39215687, b: 0.39215687, a: 1}
+  speakingTint: {r: 0.6981132, g: 0.6981132, b: 0.6981132, a: 1}
+  nonSpeakingTint: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
   scaleNonSpeaking: 1
   speakingScale: {x: 1, y: 1, z: 1}
   nonSpeakingScale: {x: 0.95, y: 0.95, z: 0.95}
@@ -2239,17 +2303,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  preferredStartId: START01
-  preferredStartGuid: START01
-  localizationServiceRef: {fileID: 0}
-  portraitImage: {fileID: 0}
-  portraitsRoot: {fileID: 1045239993}
-  portraitPrefab: {fileID: 9064292443533730603}
-  resetSpecialsWithStaticPoseOnNodeChange: 1
-  specialStaticPoseClip: {fileID: 7400000, guid: cbe870c782a219347aafa709359019c4, type: 2}
-  leftAnchor: {fileID: 751734330}
-  centerAnchor: {fileID: 591321225}
-  rightAnchor: {fileID: 149658829}
   moveCurve:
     serializedVersion: 2
     m_Curve:
@@ -2274,6 +2327,23 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  resetSpecialsWithStaticPoseOnNodeChange: 1
+  specialStaticPoseClip: {fileID: 7400000, guid: cbe870c782a219347aafa709359019c4, type: 2}
+--- !u!114 &2059072035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2059072028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a03fd31b12677a4fae5e978e63018e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  localizationServiceRef: {fileID: 465389642}
+  preferredStartId: START01
+  preferredStartGuid: 
 --- !u!1 &2146046527
 GameObject:
   m_ObjectHideFlags: 0
