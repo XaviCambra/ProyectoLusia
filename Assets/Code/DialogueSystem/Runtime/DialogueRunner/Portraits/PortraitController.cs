@@ -56,6 +56,9 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
     private readonly Dictionary<string, RectTransform> _rootByProfile = new();
     private readonly Dictionary<Image, PlayableGraph> _specialGraphs = new();
 
+    // Specials pendientes de disparar cuando empiece el texto (profileId -> (clip,speed,loop))
+    private readonly Dictionary<string, (AnimationClip clip, float speed, bool loop)> _pendingSpecialByProfile = new();
+
     // Coroutines en curso por raíz (entrada/salida)
     private readonly Dictionary<RectTransform, Coroutine> _placementCo = new();
     private readonly Dictionary<RectTransform, Coroutine> _scaleCo = new();
@@ -103,8 +106,43 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         UpdateTint(node.profileId);
         UpdateScale(node.profileId);
 
+        // Gestionar posibles pendientes anteriores del mismo perfil
+        _pendingSpecialByProfile.Remove(node.profileId);
+
+        // Si hay animación especial, decidir si arranca YA (Immediate/WithPlacementStart) o se pospone
+        if (node.playSpecialAnimation && node.specialAnimation)
+        {
+            switch (node.specialStart)
+            {
+                case SpecialStartTiming.Immediate:
+                case SpecialStartTiming.WithPlacementStart:
+                    PlaySpecial(img, node.specialAnimation, node.specialAnimSpeed, node.specialAnimLoop);
+                    break;
+
+                case SpecialStartTiming.WithTextStart:
+                    _pendingSpecialByProfile[node.profileId] = (node.specialAnimation, node.specialAnimSpeed, node.specialAnimLoop);
+                    StopSpecial(img); // aseguramos que no quede una previa corriendo
+                    break;
+
+                case SpecialStartTiming.WithPlacementComplete:
+                    // Se lanzará tras la colocación
+                    StopSpecial(img); // garantizamos estado limpio
+                    break;
+            }
+        }
+        else
+        {
+            StopSpecial(img);
+        }
+
         // 3) Colocación (Cut/Fade/Slide) — devolver cuando termine la anim. principal
         await RunPlacementAsync(node, rootRt);
+
+        // Si el inicio elegido es "al completar la colocación", lánzalo ahora
+        if (node.playSpecialAnimation && node.specialAnimation && node.specialStart == SpecialStartTiming.WithPlacementComplete)
+        {
+            PlaySpecial(img, node.specialAnimation, node.specialAnimSpeed, node.specialAnimLoop);
+        }
 
         // 4) Animación especial (si procede)
         if (node.playSpecialAnimation && node.specialAnimation)
@@ -124,6 +162,7 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         // Destruir graphs
         foreach (var kv in _specialGraphs) if (kv.Value.IsValid()) kv.Value.Destroy();
         _specialGraphs.Clear();
+        _pendingSpecialByProfile.Clear();
 
         // Ocultar retratos
         foreach (var kv in _portraitByProfile)
@@ -132,6 +171,22 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
             kv.Value.enabled = false;
             var cg = kv.Value.GetComponentInParent<CanvasGroup>();
             if (cg) cg.alpha = 0f;
+        }
+    }
+
+    public void OnTextStart(DialogueNodeData node)
+    {
+        if (node == null || string.IsNullOrEmpty(node.profileId)) return;
+        if (!node.playSpecialAnimation) return;
+        if (node.specialStart != SpecialStartTiming.WithTextStart) return;
+
+        if (_portraitByProfile.TryGetValue(node.profileId, out var img) && img)
+        {
+            if (_pendingSpecialByProfile.TryGetValue(node.profileId, out var pack))
+            {
+                _pendingSpecialByProfile.Remove(node.profileId);
+                PlaySpecial(img, pack.clip, pack.speed, pack.loop);
+            }
         }
     }
 

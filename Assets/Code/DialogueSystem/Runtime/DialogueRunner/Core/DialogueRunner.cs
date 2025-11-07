@@ -119,6 +119,9 @@ public sealed class DialogueRunner : MonoBehaviour
         // 3) Retrato (sprite + colocación + animaciones especiales)
         await portraits.ApplyAsync(node);
 
+        // Si la animación especial está configurada para arrancar con el inicio del texto:
+        portraits.OnTextStart(node);
+
         // 4) Texto (typewriter o directo)
         var resolvedText = navigator.ResolveBody(node);
 

@@ -443,6 +443,15 @@ public class DialogueNodeView : Node
         _specialAnimLoopToggle = new Toggle("Loop") { value = Data.specialAnimLoop };
         _specialAnimLoopToggle.RegisterValueChangedCallback(e => Data.specialAnimLoop = e.newValue);
         extrasFold.Add(_specialAnimLoopToggle);
+
+        var specialStartField = new EnumField("Inicio anim. especial", Data.specialStart);
+        specialStartField.style.marginBottom = 3;
+        specialStartField.Init(Data.specialStart);
+        specialStartField.RegisterValueChangedCallback(e =>
+        {
+            Data.specialStart = (SpecialStartTiming)e.newValue;
+        });
+        extrasFold.Add(specialStartField);
     }
 
     // ------------------------------

@@ -2238,6 +2238,7 @@ MonoBehaviour:
   - {fileID: 1231740076}
   - {fileID: 105253536}
   - {fileID: 1600962994}
+  conditionEvaluatorRef: {fileID: 0}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   visitedColor: {r: 1, g: 0.85, b: 0.2, a: 1}
   useAlphaForDisabled: 1
@@ -2273,8 +2274,8 @@ MonoBehaviour:
   portraitsRoot: {fileID: 2979906738319819793}
   portraitPrefab: {fileID: 9064292443533730603}
   dimNonSpeaking: 1
-  speakingTint: {r: 0.6981132, g: 0.6981132, b: 0.6981132, a: 1}
-  nonSpeakingTint: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+  speakingTint: {r: 1, g: 1, b: 1, a: 1}
+  nonSpeakingTint: {r: 0.5882353, g: 0.5882353, b: 0.5882353, a: 1}
   scaleNonSpeaking: 1
   speakingScale: {x: 1, y: 1, z: 1}
   nonSpeakingScale: {x: 0.95, y: 0.95, z: 0.95}

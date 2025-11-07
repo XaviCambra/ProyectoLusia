@@ -21,6 +21,12 @@ public interface IPortraitController
     Task ApplyAsync(DialogueNodeData node);
 
     /// <summary>
+    /// Aviso de que el texto del nodo va a empezar a mostrarse. Útil si
+    /// la animación especial está configurada para iniciarse en este momento.
+    /// </summary>
+    void OnTextStart(DialogueNodeData node);
+
+    /// <summary>
     /// Detiene y limpia toda animación activa, oculta retratos y restablece el estado inicial.
     /// </summary>
     void ResetAll();

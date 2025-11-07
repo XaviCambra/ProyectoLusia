@@ -69,6 +69,7 @@ public class DialogueNodeData
     public AnimationClip specialAnimation;
     public float specialAnimSpeed = 1f;
     public bool specialAnimLoop = false;
+    public SpecialStartTiming specialStart = SpecialStartTiming.WithPlacementComplete;
 
     // ---------- Typewriter ----------
     [Serializable]
@@ -205,3 +206,5 @@ public enum TextStartTiming { OnEnterStart, OnEnterMid, OnEnterComplete, Immedia
 public enum EventPayloadType { None, Int, Float, String, Bool, Char }
 
 public enum ProgressArgType { None, Int, Float, String }
+
+public enum SpecialStartTiming { WithPlacementStart, WithPlacementComplete, WithTextStart, Immediate }
