@@ -76,22 +76,25 @@ public class DialogueNodeView : Node
 
         // --- NUEVO ORDEN / ESTRUCTURA ---
         AddDivider("Perfil y color de fondo");
-        BuildBasicHeader();           // Color fondo + Perfil + Retrato
-        
+        BuildProfileAndBackgroundFoldout();   // Foldout: Color fondo + Perfil + Retrato
+
         AddDivider("Texto y localización");
-        BuildMainContentBlock();      // Nombre + Localización + Texto/LocKey
+        BuildTextAndLocalizationFoldout();    // Foldout: Nombre + Localización + Texto/LocKey
 
         AddDivider("Apariencia y animación");
         BuildAppearanceAndAnimation(); // Aparición / Move / Fade / Animación especial
+
+        AddDivider("Animación especial");
+        BuildSpecialAnimationFoldout(); // Foldout independiente para la animación especial
 
         AddDivider("Typewriter");
         BuildTypewriterFoldout();     // (foldout)
 
         AddDivider("Flujo del diálogo");
-        BuildStartAndChoiceBlock();   // Start + Choice
+        BuildDialogueFlowFoldout();           // Foldout: Start + Choice
 
         AddDivider("Eventos");
-        BuildEventsBlock();           // Event key + payload + probar
+        BuildEventsFoldout();                 // Foldout: Event key + payload + probar
 
         BuildInputPort();             // Puertos
         RebuildOutputs();
@@ -190,6 +193,235 @@ public class DialogueNodeView : Node
         BuildPalettePicker();
         BuildProfileSection();
         BuildPortraitKey();
+    }
+
+    // ------------------------------
+    // Perfil y color de fondo (foldout independiente)
+    // ------------------------------
+    private void BuildProfileAndBackgroundFoldout()
+    {
+        var fold = new Foldout { text = "Perfil y color de fondo" };
+        fold.viewDataKey = Data.GUID + "_PROFILE_BG";
+        fold.style.unityFontStyleAndWeight = FontStyle.Italic;
+        fold.style.marginBottom = 3;
+
+        // --- Color de fondo (paleta) ---
+        {
+            var paletteNames = DialogueNodeData.NodePalette.Select(p => p.name).ToList();
+            int safeIndex = Mathf.Clamp(Data.bgColorIndex, 0, Mathf.Max(0, paletteNames.Count - 1));
+
+            Data.bgColorIndex = safeIndex;
+            if (paletteNames.Count > 0)
+            {
+                Data.bgColor = DialogueNodeData.NodePalette[safeIndex].color;
+                mainContainer.style.backgroundColor = new StyleColor(Data.bgColor);
+            }
+
+            var paletteDropdown = new DropdownField("Color de fondo", paletteNames, safeIndex);
+            paletteDropdown.style.marginBottom = 3;
+            paletteDropdown.RegisterValueChangedCallback(e =>
+            {
+                int idx = paletteNames.IndexOf(e.newValue);
+                if (idx < 0) return;
+
+                Data.bgColorIndex = idx;
+                Data.bgColor = DialogueNodeData.NodePalette[idx].color;
+                mainContainer.style.backgroundColor = new StyleColor(Data.bgColor);
+                ScheduleAutoSize();
+            });
+            fold.Add(paletteDropdown);
+        }
+
+        // --- Perfil (SO) ---
+        {
+            var profileField = new EditorObjectField("Perfil (SO)")
+            {
+                objectType = typeof(CharacterProfile),
+                allowSceneObjects = false
+            };
+
+            profileField.value = Data.profileRef != null ? Data.profileRef : FindProfileById(Data.profileId);
+            profileField.style.marginBottom = 3;
+
+            profileField.RegisterValueChangedCallback(e =>
+            {
+                var so = e.newValue as CharacterProfile;
+                Data.profileRef = so;
+                Data.profileId = so ? so.ProfileId : null;
+                OnDataChanged?.Invoke();
+            });
+
+#if UNITY_EDITOR
+            if (Data.profileRef == null && !string.IsNullOrEmpty(Data.profileId))
+            {
+                var guids = AssetDatabase.FindAssets("t:CharacterProfile");
+                foreach (var g in guids)
+                {
+                    var path = AssetDatabase.GUIDToAssetPath(g);
+                    var so = AssetDatabase.LoadAssetAtPath<CharacterProfile>(path);
+                    if (so != null && so.ProfileId == Data.profileId)
+                    {
+                        Data.profileRef = so;
+                        break;
+                    }
+                }
+            }
+            profileField.value = Data.profileRef;
+#endif
+
+            fold.Add(profileField);
+        }
+
+        // --- Retrato (key) ---
+        {
+            var portraitKeyField = new TextField("Retrato (key)") { value = Data.portraitKey };
+            portraitKeyField.RegisterValueChangedCallback(e => Data.portraitKey = e.newValue);
+            fold.Add(portraitKeyField);
+        }
+
+        mainContainer.Add(fold);
+    }
+
+    // ------------------------------
+    // Texto y localización (foldout independiente)
+    // ------------------------------
+    private void BuildTextAndLocalizationFoldout()
+    {
+        var fold = new Foldout { text = "Texto y localización" };
+        fold.viewDataKey = Data.GUID + "_TEXT_LOC";
+        fold.style.unityFontStyleAndWeight = FontStyle.Italic;
+        fold.style.marginBottom = 3;
+
+        // Nombre del hablante
+        fold.Add(new TextField().BindText("Nombre", Data.speakerName, v => Data.speakerName = v));
+
+        // Toggle Localización
+        _locToggle = new Toggle("Localización")
+        {
+            tooltip = "Activa para usar una clave de localización en vez de texto literal.",
+            value = Data.localization
+        };
+        _locToggle.style.marginTop = 3;
+        _locToggle.style.marginBottom = 3;
+        _locToggle.RegisterValueChangedCallback(e =>
+        {
+            Data.localization = e.newValue;
+            UpdateLocalizationVisibility();
+            ScheduleAutoSize();
+        });
+        fold.Add(_locToggle);
+
+        // Texto literal
+        _textField = new TextField("Texto") { multiline = true, value = Data.lineText };
+        _textField.RegisterValueChangedCallback(e => Data.lineText = e.newValue);
+        fold.Add(_textField);
+
+        // Clave de localización
+        _locKeyField = new TextField("Clave de localización") { value = Data.locKey };
+        _locKeyField.RegisterValueChangedCallback(e => Data.locKey = e.newValue);
+        fold.Add(_locKeyField);
+
+        UpdateLocalizationVisibility();
+        mainContainer.Add(fold);
+    }
+
+    // ------------------------------
+    // Flujo del diálogo (foldout independiente)
+    // ------------------------------
+    private void BuildDialogueFlowFoldout()
+    {
+        var fold = new Foldout { text = "Flujo del diálogo" };
+        fold.viewDataKey = Data.GUID + "_FLOW";
+        fold.style.unityFontStyleAndWeight = FontStyle.Italic;
+        fold.style.marginBottom = 3;
+
+        // Toggle: es nodo inicio
+        var isStartToggle = new Toggle("Es nodo inicio") { value = Data.isStart };
+        isStartToggle.RegisterValueChangedCallback(evt =>
+        {
+            Data.isStart = evt.newValue;
+            RebuildOutputs();
+            if (_startIdField != null)
+                _startIdField.style.display = evt.newValue ? DisplayStyle.Flex : DisplayStyle.None;
+        });
+        fold.Add(isStartToggle);
+
+        // Start Id (visible solo si es nodo inicio)
+        _startIdField = new TextField("Start Id")
+        {
+            value = Data.startId ?? string.Empty,
+            style = { display = Data.isStart ? DisplayStyle.Flex : DisplayStyle.None }
+        };
+        _startIdField.style.marginBottom = 3;
+        _startIdField.RegisterValueChangedCallback(e => Data.startId = e.newValue);
+        fold.Add(_startIdField);
+
+        // Nodo de elección
+        fold.Add(new Toggle().BindToggle("Es nodo de elección", Data.isChoiceNode, v =>
+        {
+            Data.isChoiceNode = v;
+            RebuildOutputs();
+        }));
+
+        mainContainer.Add(fold);
+    }
+
+    // ------------------------------
+    // Eventos (foldout independiente)
+    // ------------------------------
+    private void BuildEventsFoldout()
+    {
+        var fold = new Foldout { text = "Eventos" };
+        fold.viewDataKey = Data.GUID + "_EVENTS";
+        fold.style.unityFontStyleAndWeight = FontStyle.Italic;
+        fold.style.marginBottom = 3;
+
+        // Event Key
+        var eventKeyField = new TextField("Event Key") { value = Data.eventKey };
+        eventKeyField.style.marginBottom = 3;
+        eventKeyField.RegisterValueChangedCallback(evt =>
+        {
+            Data.eventKey = evt.newValue;
+            ScheduleAutoSize();
+        });
+        fold.Add(eventKeyField);
+
+        // Selector de tipo
+        var typeField = new EnumField("Payload Type", Data.eventPayloadType);
+        typeField.style.marginBottom = 3;
+        typeField.Init(Data.eventPayloadType);
+        typeField.RegisterValueChangedCallback(evt =>
+        {
+            Data.eventPayloadType = (EventPayloadType)evt.newValue;
+            RebuildEventValueField();
+            ScheduleAutoSize();
+        });
+        fold.Add(typeField);
+
+        // Contenedor dinámico (queda en foldout)
+        _payloadValueContainer = new VisualElement { name = "payload-value-container" };
+        fold.Add(_payloadValueContainer);
+
+        // Fábrica + primer pintado
+        InitEventFieldFactory();
+        RebuildEventValueField();
+
+        // Botón de prueba
+        var testBtn = new Button(() =>
+        {
+            if (!string.IsNullOrEmpty(Data.eventKey))
+            {
+                var payload = Data.BuildEventPayload();
+                GlobalDialogueEvents.Fire(payload);
+                Debug.Log($"[DialogueNodeView] Probar evento -> {payload}");
+            }
+        })
+        { text = "Probar evento" };
+        testBtn.style.marginRight = 2.5f;
+        testBtn.style.marginLeft = 4;
+        fold.Add(testBtn);
+
+        mainContainer.Add(fold);
     }
 
     private void BuildPalettePicker()
@@ -407,18 +639,71 @@ public class DialogueNodeView : Node
         exitTo.RegisterValueChangedCallback(e => Data.exitToOpacity = Mathf.Clamp(e.newValue, 0, 100));
         extrasFold.Add(exitTo);
 
-        // Mini separador y título “Animación especial”
-        var saHeader = new Label("Animación especial");
-        saHeader.style.unityFontStyleAndWeight = FontStyle.Bold;
-        saHeader.style.marginTop = 6;
-        extrasFold.Add(saHeader);
-        var line = new VisualElement { style = { height = 1, backgroundColor = new Color(0, 0, 0, 0.08f), marginBottom = 6 } };
-        extrasFold.Add(line);
+        //// Mini separador y título “Animación especial”
+        //var saHeader = new Label("Animación especial");
+        //saHeader.style.unityFontStyleAndWeight = FontStyle.Bold;
+        //saHeader.style.marginTop = 6;
+        //extrasFold.Add(saHeader);
+        //var line = new VisualElement { style = { height = 1, backgroundColor = new Color(0, 0, 0, 0.08f), marginBottom = 6 } };
+        //extrasFold.Add(line);
 
+        //_specialAnimToggle = new Toggle("Usar animación especial") { value = Data.playSpecialAnimation };
+        //_specialAnimToggle.RegisterValueChangedCallback(e => Data.playSpecialAnimation = e.newValue);
+        //extrasFold.Add(_specialAnimToggle);
+
+        //_specialAnimClipField = new EditorObjectField
+        //{
+        //    label = "Clip",
+        //    objectType = typeof(AnimationClip),
+        //    value = Data.specialAnimation
+        //};
+        //_specialAnimClipField.style.marginBottom = 3;
+        //_specialAnimClipField.RegisterValueChangedCallback(e =>
+        //{
+        //    Data.specialAnimation = e.newValue as AnimationClip;
+        //});
+        //extrasFold.Add(_specialAnimClipField);
+
+        //_specialAnimSpeedField = new FloatField("Velocidad") { value = Data.specialAnimSpeed };
+        //_specialAnimSpeedField.style.marginBottom = 3;
+        //_specialAnimSpeedField.RegisterValueChangedCallback(e =>
+        //{
+        //    Data.specialAnimSpeed = Mathf.Max(0f, e.newValue);
+        //});
+        //extrasFold.Add(_specialAnimSpeedField);
+
+        //_specialAnimLoopToggle = new Toggle("Loop") { value = Data.specialAnimLoop };
+        //_specialAnimLoopToggle.RegisterValueChangedCallback(e => Data.specialAnimLoop = e.newValue);
+        //extrasFold.Add(_specialAnimLoopToggle);
+
+        //var specialStartField = new EnumField("Inicio anim. especial", Data.specialStart);
+        //specialStartField.style.marginBottom = 3;
+        //specialStartField.Init(Data.specialStart);
+        //specialStartField.RegisterValueChangedCallback(e =>
+        //{
+        //    Data.specialStart = (SpecialStartTiming)e.newValue;
+        //});
+        //extrasFold.Add(specialStartField);
+    }
+
+    // ------------------------------
+    // Animación especial (foldout independiente)
+    // ------------------------------
+    private void BuildSpecialAnimationFoldout()
+    {
+        var saFold = new Foldout { text = "Animación especial" };
+        saFold.value = false;
+        // Usamos viewDataKey para persistir el estado del plegado sin tocar el modelo de datos
+        saFold.viewDataKey = Data.GUID + "_SPECIAL_ANIM";
+        saFold.style.unityFontStyleAndWeight = FontStyle.Italic;
+        saFold.style.marginBottom = 3;
+
+        // Toggle principal: activar/desactivar animación especial
         _specialAnimToggle = new Toggle("Usar animación especial") { value = Data.playSpecialAnimation };
         _specialAnimToggle.RegisterValueChangedCallback(e => Data.playSpecialAnimation = e.newValue);
-        extrasFold.Add(_specialAnimToggle);
+        saFold.Add(_specialAnimToggle);
 
+        // Clip de animación
         _specialAnimClipField = new EditorObjectField
         {
             label = "Clip",
@@ -430,20 +715,23 @@ public class DialogueNodeView : Node
         {
             Data.specialAnimation = e.newValue as AnimationClip;
         });
-        extrasFold.Add(_specialAnimClipField);
+        saFold.Add(_specialAnimClipField);
 
+        // Velocidad
         _specialAnimSpeedField = new FloatField("Velocidad") { value = Data.specialAnimSpeed };
         _specialAnimSpeedField.style.marginBottom = 3;
         _specialAnimSpeedField.RegisterValueChangedCallback(e =>
         {
             Data.specialAnimSpeed = Mathf.Max(0f, e.newValue);
         });
-        extrasFold.Add(_specialAnimSpeedField);
+        saFold.Add(_specialAnimSpeedField);
 
+        // Loop
         _specialAnimLoopToggle = new Toggle("Loop") { value = Data.specialAnimLoop };
         _specialAnimLoopToggle.RegisterValueChangedCallback(e => Data.specialAnimLoop = e.newValue);
-        extrasFold.Add(_specialAnimLoopToggle);
+        saFold.Add(_specialAnimLoopToggle);
 
+        // Momento de inicio de la animación especial
         var specialStartField = new EnumField("Inicio anim. especial", Data.specialStart);
         specialStartField.style.marginBottom = 3;
         specialStartField.Init(Data.specialStart);
@@ -451,7 +739,10 @@ public class DialogueNodeView : Node
         {
             Data.specialStart = (SpecialStartTiming)e.newValue;
         });
-        extrasFold.Add(specialStartField);
+        saFold.Add(specialStartField);
+
+        // Finalmente añadimos el foldout al contenedor principal
+        mainContainer.Add(saFold);
     }
 
     // ------------------------------

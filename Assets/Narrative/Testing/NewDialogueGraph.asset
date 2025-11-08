@@ -13,91 +13,13 @@ MonoBehaviour:
   m_Name: NewDialogueGraph
   m_EditorClassIdentifier: 
   nodes:
-  - GUID: 28a3408d-8b81-4417-85da-8635a8d71a6f
-    nodeRect:
-      serializedVersion: 2
-      x: 1254
-      y: 15
-      width: 480
-      height: 770
-    bgColorIndex: 0
-    bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
-    profileRef: {fileID: 0}
-    profileId: dffa52ce-3c0e-4b8e-947e-2a51dae674dc
-    portraitKey: 
-    speakerName: Sora
-    localization: 0
-    lineText: Que pasa bro
-    locKey: 
-    appearance: 0
-    origin: 0
-    target: 1
-    moveSpeed: 600
-    textStart: 2
-    useFade: 0
-    enterFromOpacity: 0
-    enterToOpacity: 100
-    exitFromOpacity: 100
-    exitToOpacity: 0
-    playSpecialAnimation: 0
-    specialAnimation: {fileID: 0}
-    specialAnimSpeed: 1
-    specialAnimLoop: 0
-    specialStart: 1
-    showTypewriterBox: 0
-    useTypewriter: 0
-    tw:
-      secondsPerChar: 0.03
-      globalSpeed: 1
-      respectRichText: 1
-      minimalWhitespaceDelay: 1
-      commaPct: 1.25
-      periodPct: 1.6
-      ellipsisPct: 2
-    showExtrasBox: 0
-    isStart: 0
-    startId: 
-    isChoiceNode: 1
-    choiceCount: 2
-    showBlockedChoices: 0
-    choices:
-    - choiceText: "Opci\xF3n"
-      portName: b6adbe
-      requiresAffinity: 0
-      affinityKey: 
-      requiredAffinity: 0
-      invertRequirement: 0
-      requiresProgress: 0
-      progressMethod: 
-      progressArgType: 0
-      progressArgInt: 0
-      progressArgFloat: 0
-      progressArgString: 
-    - choiceText: "Opci\xF3n"
-      portName: 7d795c
-      requiresAffinity: 0
-      affinityKey: 
-      requiredAffinity: 0
-      invertRequirement: 0
-      requiresProgress: 0
-      progressMethod: 
-      progressArgType: 0
-      progressArgInt: 0
-      progressArgFloat: 0
-      progressArgString: 
-    eventKey: 
-    eventPayloadType: 0
-    eventInt: 0
-    eventFloat: 0
-    eventString: 
-    eventBool: 0
   - GUID: e63d5428-29b6-4eb6-9d12-0c476d3737e9
     nodeRect:
       serializedVersion: 2
       x: -397
       y: -85
       width: 480
-      height: 1070
+      height: 1186
     bgColorIndex: 11
     bgColor: {r: 0.38, g: 0.29, b: 0.44, a: 1}
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
@@ -175,7 +97,7 @@ MonoBehaviour:
       x: 1254
       y: -630
       width: 480
-      height: 551
+      height: 795
     bgColorIndex: 0
     bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
     profileRef: {fileID: 0}
@@ -229,7 +151,7 @@ MonoBehaviour:
       x: 125
       y: 32
       width: 480
-      height: 593
+      height: 837
     bgColorIndex: 8
     bgColor: {r: 0.25, g: 0.35, b: 0.48, a: 1}
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
@@ -310,7 +232,7 @@ MonoBehaviour:
       x: 664
       y: -71
       width: 480
-      height: 1572
+      height: 1688
     bgColorIndex: 4
     bgColor: {r: 0.52, g: 0.33, b: 0.3, a: 1}
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
@@ -399,10 +321,10 @@ MonoBehaviour:
   - GUID: cf71b309-4c3e-4c6e-8010-00dc8aca007d
     nodeRect:
       serializedVersion: 2
-      x: 1228
-      y: 942
+      x: 1254
+      y: 1140
       width: 480
-      height: 1310
+      height: 1426
     bgColorIndex: 14
     bgColor: {r: 0.18, g: 0.25, b: 0.36, a: 1}
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
@@ -473,6 +395,84 @@ MonoBehaviour:
     eventInt: 0
     eventFloat: 0
     eventString: w
+    eventBool: 0
+  - GUID: 28a3408d-8b81-4417-85da-8635a8d71a6f
+    nodeRect:
+      serializedVersion: 2
+      x: 1800
+      y: -115
+      width: 480
+      height: 1593
+    bgColorIndex: 9
+    bgColor: {r: 0.23, g: 0.3, b: 0.46, a: 1}
+    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+    profileId: bc17ed2360684d68b5e7a55be922310b
+    portraitKey: idleFEO
+    speakerName: Sora
+    localization: 1
+    lineText: Que pasa bro
+    locKey: 123456
+    appearance: 3
+    origin: 6
+    target: 6
+    moveSpeed: 100
+    textStart: 1
+    useFade: 1
+    enterFromOpacity: 4
+    enterToOpacity: 4
+    exitFromOpacity: 4
+    exitToOpacity: 4
+    playSpecialAnimation: 1
+    specialAnimation: {fileID: 7400000, guid: 84ef4a4bd64349746bb4e0ea11b8e5c6, type: 2}
+    specialAnimSpeed: 0.1
+    specialAnimLoop: 1
+    specialStart: 3
+    showTypewriterBox: 1
+    useTypewriter: 1
+    tw:
+      secondsPerChar: 0.15
+      globalSpeed: 1
+      respectRichText: 1
+      minimalWhitespaceDelay: 1
+      commaPct: 1
+      periodPct: 1
+      ellipsisPct: 1
+    showExtrasBox: 1
+    isStart: 1
+    startId: 1234
+    isChoiceNode: 1
+    choiceCount: 2
+    showBlockedChoices: 1
+    choices:
+    - choiceText: TEST1
+      portName: b6adbe
+      requiresAffinity: 1
+      affinityKey: PASTO
+      requiredAffinity: 5
+      invertRequirement: 1
+      requiresProgress: 1
+      progressMethod: RECONS
+      progressArgType: 0
+      progressArgInt: 0
+      progressArgFloat: 0
+      progressArgString: 
+    - choiceText: TEST2
+      portName: 7d795c
+      requiresAffinity: 0
+      affinityKey: 
+      requiredAffinity: 0
+      invertRequirement: 0
+      requiresProgress: 1
+      progressMethod: RECONS14
+      progressArgType: 2
+      progressArgInt: 0
+      progressArgFloat: 15.5
+      progressArgString: 
+    eventKey: GES
+    eventPayloadType: 3
+    eventInt: 0
+    eventFloat: 0
+    eventString: BOOOLER
     eventBool: 0
   edges:
   - fromNodeGUID: e63d5428-29b6-4eb6-9d12-0c476d3737e9
