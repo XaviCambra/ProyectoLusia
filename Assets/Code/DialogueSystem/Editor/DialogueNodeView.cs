@@ -1011,25 +1011,7 @@ public class DialogueNodeView : Node
                 // --- Separador antes de cada opción (incluida la primera) ---
                 AddThinDividerTo(outputContainer, 0.12f);
 
-                var row = new VisualElement
-                {
-                    style =
-                    {
-                        flexDirection = FlexDirection.Row,
-                        alignItems = Align.Center,
-                    }
-                };
-
-                var optField = new TextField($"Opción {i + 1}") { value = Data.choices[i].choiceText };
-                optField.style.flexGrow = 1;
                 int idx = i;
-                optField.RegisterValueChangedCallback(e => Data.choices[idx].choiceText = e.newValue);
-
-                var port = PortUtils.CreatePort(this, Direction.Output, Port.Capacity.Single, Data.choices[i].portName);
-                port.tooltip = Data.choices[i].choiceText;
-
-                row.Add(optField);
-                row.Add(port);
 
                 // ===================== REQUISITOS (Foldout) =====================
                 var reqFold = new Foldout
@@ -1221,6 +1203,84 @@ public class DialogueNodeView : Node
 
                 // Añade el foldout al contenedor de outputs
                 outputContainer.Add(reqFold);
+
+                // Contenedor vertical de la sección de opción
+                var optSection = new VisualElement();
+                optSection.style.flexDirection = FlexDirection.Column;
+                optSection.style.alignItems = Align.Stretch;
+
+                // Campos que alternan (literal vs clave)
+                var choiceTextField = new TextField($"Opción {idx + 1}")
+                {
+                    value = Data.choices[idx].choiceText
+                };
+                choiceTextField.style.flexGrow = 1;
+
+                var choiceLocKeyField = new TextField($"Clave localización {idx + 1}")
+                {
+                    value = Data.choices[idx].choiceLocKey
+                };
+                choiceLocKeyField.style.flexGrow = 1;
+
+                // Fila horizontal: campo visible + puerto
+                var row = new VisualElement();
+                row.style.flexDirection = FlexDirection.Row;
+                row.style.alignItems = Align.Center;
+
+                // Puerto
+                var port = PortUtils.CreatePort(this, Direction.Output, Port.Capacity.Single, Data.choices[idx].portName);
+
+                // Helper tooltip
+                System.Action updatePortTooltip = () =>
+                {
+                    if (Data.choices[idx].choiceUseLocalization)
+                        port.tooltip = string.IsNullOrEmpty(Data.choices[idx].choiceLocKey)
+                            ? "(loc: vacío)"
+                            : $"loc: {Data.choices[idx].choiceLocKey}";
+                    else
+                        port.tooltip = Data.choices[idx].choiceText;
+                };
+
+                // Callbacks campos
+                choiceTextField.RegisterValueChangedCallback(e =>
+                {
+                    Data.choices[idx].choiceText = e.newValue;
+                    if (!Data.choices[idx].choiceUseLocalization) updatePortTooltip();
+                });
+                choiceLocKeyField.RegisterValueChangedCallback(e =>
+                {
+                    Data.choices[idx].choiceLocKey = e.newValue;
+                    if (Data.choices[idx].choiceUseLocalization) updatePortTooltip();
+                });
+
+                // Toggle justo DEBAJO del foldout de requisitos
+                var choiceLocToggle = new Toggle("Localización")
+                {
+                    value = Data.choices[idx].choiceUseLocalization
+                };
+                choiceLocToggle.tooltip = "Activa para usar una clave de localización en esta opción.";
+                choiceLocToggle.RegisterValueChangedCallback(e =>
+                {
+                    Data.choices[idx].choiceUseLocalization = e.newValue;
+                    choiceTextField.style.display = e.newValue ? DisplayStyle.None : DisplayStyle.Flex;
+                    choiceLocKeyField.style.display = e.newValue ? DisplayStyle.Flex : DisplayStyle.None;
+                    updatePortTooltip();
+                });
+
+                // Estado inicial + montaje
+                choiceTextField.style.display = Data.choices[idx].choiceUseLocalization ? DisplayStyle.None : DisplayStyle.Flex;
+                choiceLocKeyField.style.display = Data.choices[idx].choiceUseLocalization ? DisplayStyle.Flex : DisplayStyle.None;
+                updatePortTooltip();
+
+                // Orden pedido: (1) Requisitos (ya añadido) -> (2) Toggle loc -> (3) Fila de opción
+                optSection.Add(choiceLocToggle);
+                row.Add(choiceTextField);
+                row.Add(choiceLocKeyField);
+                row.Add(port);
+                optSection.Add(row);
+
+                // Añade sección completa
+                outputContainer.Add(optSection);
 
                 // === Finalmente, la fila principal (texto + puerto) ===
                 outputContainer.Add(row);

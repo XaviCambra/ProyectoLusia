@@ -117,18 +117,20 @@ public class DialogueNodeData
         public string choiceText = "Opción";
         public string portName = "out";
 
+        // --- Localización (por opción) ---
+        public bool choiceUseLocalization = false; // si true: usar choiceLocKey
+        public string choiceLocKey = "";           // clave de localización
+
         // --- Afinidad (requisitos por opción) ---
         public bool requiresAffinity = false;
-        public string affinityKey = "";            // (nombre/personaje/clave en ParamService)
-        public float requiredAffinity = 0f;        // (umbral)
-        public bool invertRequirement = false;     // (comparación inversa: menor que)
+        public string affinityKey = "";
+        public float requiredAffinity = 0f;
+        public bool invertRequirement = false;
 
         // --- Progreso (requisito complementario por opción) ---
         public bool requiresProgress = false;
-        // Nombre del “método” a invocar desde juego (debe estar registrado en runtime)
         public string progressMethod = "";
         public ProgressArgType progressArgType = ProgressArgType.None;
-        // Valores de argumento (se usa uno según progressArgType)
         public int progressArgInt = 0;
         public float progressArgFloat = 0f;
         public string progressArgString = "";

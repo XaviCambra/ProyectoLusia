@@ -304,7 +304,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d04786a527c42941a4a35ed631824bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NeroIsGay: 1
+  methodName: PreferenciasNero
+  expectedKind: 1
+  expectedInt: 5
+  expectedFloat: 5.12
+  expectedString: AntenaRadio
 --- !u!4 &171939567
 Transform:
   m_ObjectHideFlags: 0

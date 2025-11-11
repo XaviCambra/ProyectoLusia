@@ -1,26 +1,62 @@
-using System;
 using UnityEngine;
+using System;
 
-public class ProgressConditionListener : MonoBehaviour
+public sealed class ProgressConditionListener : MonoBehaviour
 {
-    private const string MethodName = "PreferenciasNero";
+    [SerializeField] private string methodName = "TestEquals";
 
-    [SerializeField]
-    private bool NeroIsGay = false;
+    public enum ArgKind { Int, Float, String }
+    [SerializeField] private ArgKind expectedKind = ArgKind.Int;
+
+    [SerializeField] private int expectedInt = 0;
+    [SerializeField] private float expectedFloat = 0f;
+    [SerializeField] private string expectedString = "";
 
     private void OnEnable()
     {
-        // Registra: sin usar el "arg"
-        ProgressConditionInvoker.Register(MethodName, (arg) =>
-        {
-            Debug.LogWarning("ME LLAMAN MARICO Y QUEEEEEEEE!?");
-            //Debug.Log($"[ProgressConditionListener] '{MethodName}' invocado. arg={arg ?? "null"}");
-            return NeroIsGay;
-        });
+        if (!string.IsNullOrWhiteSpace(methodName))
+            ProgressConditionInvoker.Register(methodName, Evaluate);
     }
 
     private void OnDisable()
     {
-        ProgressConditionInvoker.Unregister(MethodName);
+        if (!string.IsNullOrWhiteSpace(methodName))
+            ProgressConditionInvoker.Unregister(methodName);
+    }
+
+    private bool Evaluate(object arg)
+    {
+        switch (expectedKind)
+        {
+            case ArgKind.Int: return CompareInt(arg);
+            case ArgKind.Float: return CompareFloat(arg);
+            case ArgKind.String: return CompareString(arg);
+            default: return false;
+        }
+    }
+
+    private bool CompareInt(object arg)
+    {
+        if (arg is int i) return i == expectedInt;
+        if (arg is string s && int.TryParse(s, out var parsed)) return parsed == expectedInt;
+        return false;
+    }
+
+    private bool CompareFloat(object arg)
+    {
+        if (arg is float f) return f == expectedFloat; // igualdad estricta
+        if (arg is string s && float.TryParse(
+                s,
+                System.Globalization.NumberStyles.Float,
+                System.Globalization.CultureInfo.InvariantCulture,
+                out var parsed))
+            return parsed == expectedFloat; // igualdad estricta
+        return false;
+    }
+
+    private bool CompareString(object arg)
+    {
+        var received = arg?.ToString() ?? string.Empty;
+        return string.Equals(received, expectedString ?? string.Empty, StringComparison.OrdinalIgnoreCase);
     }
 }
