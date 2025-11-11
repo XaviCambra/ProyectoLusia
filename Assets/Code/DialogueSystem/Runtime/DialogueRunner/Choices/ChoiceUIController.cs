@@ -14,6 +14,10 @@ public sealed class ChoiceUIController : MonoBehaviour, IChoiceUIController
     [SerializeField] private MonoBehaviour conditionEvaluatorRef; // arrastra aquí tu ConditionEvaluator
     private IConditionEvaluator _conditions;
 
+    [Header("Localización (opcional)")]
+    [SerializeField] private MonoBehaviour localizationRef; // arrastra aquí tu servicio
+    private ILocalizationService _loc;
+
     [Header("Estilo")]
     [SerializeField] private Color normalColor = Color.white;
     [SerializeField] private Color visitedColor = new(1f, 0.85f, 0.2f, 1f);
@@ -29,6 +33,18 @@ public sealed class ChoiceUIController : MonoBehaviour, IChoiceUIController
     {
         _conditions = conditionEvaluatorRef as IConditionEvaluator;
         if (_conditions == null) _conditions = FindAnyObjectByType<ConditionEvaluator>();
+
+        _loc = localizationRef as ILocalizationService;
+        if (_loc == null)
+        {
+            var monos = FindObjectsByType<MonoBehaviour>(
+                FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+            for (int i = 0; i < monos.Length; i++)
+            {
+                if (monos[i] is ILocalizationService svc) { _loc = svc; break; }
+            }
+        }
     }
 
     public void Init()
@@ -87,7 +103,21 @@ public sealed class ChoiceUIController : MonoBehaviour, IChoiceUIController
 
             var (choice, port, allowed) = toRender[write++];
             var label = btn.GetComponentInChildren<TextMeshProUGUI>(true);
-            if (label) label.text = string.IsNullOrEmpty(choice.choiceText) ? $"Opción {write}" : choice.choiceText;
+            if (label)
+            {
+                string displayText;
+                if (choice.choiceUseLocalization && !string.IsNullOrEmpty(choice.choiceLocKey) && _loc != null)
+                {
+                    displayText = _loc.TryGet(choice.choiceLocKey, out var loc)
+                                  ? loc
+                                  : choice.choiceLocKey; // fallback amigable: muestra la clave
+                }
+                else
+                {
+                    displayText = string.IsNullOrEmpty(choice.choiceText) ? $"Opción {write}" : choice.choiceText;
+                }
+                label.text = displayText;
+            }
 
             // color visitado / normal
             var img = btn.image;

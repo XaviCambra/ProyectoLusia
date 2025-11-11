@@ -401,7 +401,7 @@ MonoBehaviour:
   - GUID: 15ce3799-2ec7-426b-818d-523b43d315df
     nodeRect:
       serializedVersion: 2
-      x: 661
+      x: 659
       y: -70
       width: 480
       height: 1554
@@ -451,7 +451,7 @@ MonoBehaviour:
     - choiceText: Hola
       portName: 6c743e
       choiceUseLocalization: 1
-      choiceLocKey: 
+      choiceLocKey: 100100012
       requiresAffinity: 0
       affinityKey: Guille
       requiredAffinity: 55
@@ -464,8 +464,8 @@ MonoBehaviour:
       progressArgString: AntenaRadio
     - choiceText: Hola Jefe
       portName: fc905f
-      choiceUseLocalization: 0
-      choiceLocKey: 
+      choiceUseLocalization: 1
+      choiceLocKey: 100100014
       requiresAffinity: 1
       affinityKey: Sora
       requiredAffinity: 15
@@ -478,8 +478,8 @@ MonoBehaviour:
       progressArgString: 
     - choiceText: "Hola Rati\xF1a"
       portName: 82acee
-      choiceUseLocalization: 0
-      choiceLocKey: 
+      choiceUseLocalization: 1
+      choiceLocKey: 100100015
       requiresAffinity: 0
       affinityKey: Sora
       requiredAffinity: 30
