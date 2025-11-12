@@ -186,16 +186,6 @@ public class DialogueNodeView : Node
     }
 
     // ------------------------------
-    // Header básico: paleta, perfil, retrato
-    // ------------------------------
-    private void BuildBasicHeader()
-    {
-        BuildPalettePicker();
-        BuildProfileSection();
-        BuildPortraitKey();
-    }
-
-    // ------------------------------
     // Perfil y color de fondo (foldout independiente)
     // ------------------------------
     private void BuildProfileAndBackgroundFoldout()
@@ -520,45 +510,6 @@ public class DialogueNodeView : Node
         mainContainer.Add(portraitKeyField);
     }
 
-    // ------------------------------
-    // Contenido (Texto y Localización)
-    // ------------------------------
-    private void BuildMainContentBlock()
-    {
-        // Nombre del hablante
-        mainContainer.Add(new TextField().BindText("Nombre", Data.speakerName, v => Data.speakerName = v));
-
-        // Toggle Localización
-        _locToggle = new Toggle("Localización")
-        {
-            tooltip = "Activa para usar una clave de localización en vez de texto literal.",
-            value = Data.localization
-        };
-
-        _locToggle.style.marginTop = 3;
-        _locToggle.style.marginBottom = 3;
-
-        _locToggle.RegisterValueChangedCallback(e =>
-        {
-            Data.localization = e.newValue;
-            UpdateLocalizationVisibility();
-            ScheduleAutoSize();
-        });
-        mainContainer.Add(_locToggle);
-
-        // Texto literal
-        _textField = new TextField("Texto") { multiline = true, value = Data.lineText };
-        _textField.RegisterValueChangedCallback(e => Data.lineText = e.newValue);
-        mainContainer.Add(_textField);
-
-        // Clave de localización
-        _locKeyField = new TextField("Clave de localización") { value = Data.locKey };
-        _locKeyField.RegisterValueChangedCallback(e => Data.locKey = e.newValue);
-        mainContainer.Add(_locKeyField);
-
-        UpdateLocalizationVisibility();
-    }
-
     private void UpdateLocalizationVisibility()
     {
         if (_textField != null)
@@ -742,91 +693,6 @@ public class DialogueNodeView : Node
         _twEllipsisPauseField.style.marginBottom = 3;
         _twEllipsisPauseField.RegisterValueChangedCallback(e => Data.tw.ellipsisPct = Mathf.Max(0f, e.newValue));
         typewriterFold.Add(_twEllipsisPauseField);
-    }
-
-    // ------------------------------
-    // Start & Choice (flujo)
-    // ------------------------------
-    private void BuildStartAndChoiceBlock()
-    {
-        // Toggle: es nodo inicio
-        var isStartToggle = new Toggle("Es nodo inicio") { value = Data.isStart };
-        isStartToggle.RegisterValueChangedCallback(evt =>
-        {
-            Data.isStart = evt.newValue;
-            RebuildOutputs();
-            if (_startIdField != null)
-                _startIdField.style.display = evt.newValue ? DisplayStyle.Flex : DisplayStyle.None;
-        });
-        mainContainer.Add(isStartToggle);
-
-        // Start Id (visible solo si es nodo inicio)
-        _startIdField = new TextField("Start Id")
-        {
-            value = Data.startId ?? string.Empty,
-            style = { display = Data.isStart ? DisplayStyle.Flex : DisplayStyle.None }
-        };
-        _startIdField.style.marginBottom = 3;
-        _startIdField.RegisterValueChangedCallback(e => Data.startId = e.newValue);
-        mainContainer.Add(_startIdField);
-
-        // Nodo de elección
-        mainContainer.Add(new Toggle().BindToggle("Es nodo de elección", Data.isChoiceNode, v =>
-        {
-            Data.isChoiceNode = v;
-            RebuildOutputs();
-        }));
-    }
-
-    // ------------------------------
-    // Eventos
-    // ------------------------------
-    private void BuildEventsBlock()
-    {
-        // Event Key
-        var eventKeyField = new TextField("Event Key") { value = Data.eventKey };
-        eventKeyField.style.marginBottom = 3;
-        eventKeyField.RegisterValueChangedCallback(evt =>
-        {
-            Data.eventKey = evt.newValue;
-            ScheduleAutoSize();
-        });
-        mainContainer.Add(eventKeyField);
-
-        // Selector de tipo
-        var typeField = new EnumField("Payload Type", Data.eventPayloadType);
-        typeField.style.marginBottom = 3;
-        typeField.Init(Data.eventPayloadType);
-        typeField.RegisterValueChangedCallback(evt =>
-        {
-            Data.eventPayloadType = (EventPayloadType)evt.newValue;
-            RebuildEventValueField();
-            ScheduleAutoSize();
-        });
-        mainContainer.Add(typeField);
-
-        // Contenedor dinámico
-        _payloadValueContainer = new VisualElement { name = "payload-value-container" };
-        mainContainer.Add(_payloadValueContainer);
-
-        // Fábrica para el campo de valor
-        InitEventFieldFactory();
-        RebuildEventValueField();
-
-        // Botón de prueba
-        var testBtn = new Button(() =>
-        {
-            if (!string.IsNullOrEmpty(Data.eventKey))
-            {
-                var payload = Data.BuildEventPayload();
-                GlobalDialogueEvents.Fire(payload);
-                Debug.Log($"[DialogueNodeView] Probar evento -> {payload}");
-            }
-        })
-        { text = "Probar evento" };
-        testBtn.style.marginRight = 2.5f;
-        testBtn.style.marginLeft = 4;
-        mainContainer.Add(testBtn);
     }
 
     private void InitEventFieldFactory()

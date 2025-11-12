@@ -485,9 +485,6 @@ MonoBehaviour:
     eventString: q
     eventBool: 1
   edges:
-  - fromNodeGUID: e63d5428-29b6-4eb6-9d12-0c476d3737e9
-    fromPortName: Next
-    toNodeGUID: 15ce3799-2ec7-426b-818d-523b43d315df
   - fromNodeGUID: 09fdf76d-e66a-4944-9ac0-2cfa75ea6620
     fromPortName: Next
     toNodeGUID: 15ce3799-2ec7-426b-818d-523b43d315df
@@ -500,3 +497,6 @@ MonoBehaviour:
   - fromNodeGUID: 15ce3799-2ec7-426b-818d-523b43d315df
     fromPortName: 6c743e
     toNodeGUID: e8933d2f-52be-4a35-b3e8-96f2422a2310
+  - fromNodeGUID: e63d5428-29b6-4eb6-9d12-0c476d3737e9
+    fromPortName: Next
+    toNodeGUID: 15ce3799-2ec7-426b-818d-523b43d315df
