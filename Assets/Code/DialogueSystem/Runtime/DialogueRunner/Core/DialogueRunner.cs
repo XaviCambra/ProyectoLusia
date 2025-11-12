@@ -18,6 +18,7 @@ public sealed class DialogueRunner : MonoBehaviour
 
     private IGraphNavigator navigator;
     private IPortraitController portraits;
+    private IPortraitPlacementMilestones portraitsMilestones;
     private ITypewriterPresenter typewriter;
     private IChoiceUIController choices;
     private IConditionEvaluator conditions;
@@ -46,6 +47,7 @@ public sealed class DialogueRunner : MonoBehaviour
         // Casting de dependencias con fallback a búsqueda local/escena
         navigator = AsOrFind<IGraphNavigator>(navigatorBehaviour);
         portraits = AsOrFind<IPortraitController>(portraitsBehaviour);
+        portraitsMilestones = portraits as IPortraitPlacementMilestones;
         typewriter = AsOrFind<ITypewriterPresenter>(typewriterBehaviour);
         choices = AsOrFind<IChoiceUIController>(choicesBehaviour);
         conditions = AsOrFind<IConditionEvaluator>(conditionsBehaviour);
@@ -116,13 +118,7 @@ public sealed class DialogueRunner : MonoBehaviour
         // 2) Speaker
         if (speakerText) speakerText.text = navigator.ResolveSpeaker(node);
 
-        // 3) Retrato (sprite + colocación + animaciones especiales)
-        await portraits.ApplyAsync(node);
-
-        // Si la animación especial está configurada para arrancar con el inicio del texto:
-        portraits.OnTextStart(node);
-
-        // 4) Texto (typewriter o directo)
+        // 3) Texto + retrato con timings finos
         var resolvedText = navigator.ResolveBody(node);
 
         // Construimos un TypewriterProfile solo si el nodo lo requiere
@@ -139,7 +135,44 @@ public sealed class DialogueRunner : MonoBehaviour
             twProfile.ellipsisPct = node.tw.ellipsisPct;
         }
 
-        await typewriter.ShowAsync(resolvedText, twProfile);
+        // 4) Lanzar retrato con hitos y disparar texto según TextStartTiming
+        if (portraitsMilestones != null)
+        {
+            // Nuevo flujo con hitos de colocación
+            var ms = portraitsMilestones.ApplyWithMilestones(node);
+
+            switch (node.textStart)
+            {
+                case TextStartTiming.OnEnterStart:
+                    portraits.OnTextStart(node);                         // dispara especiales "WithTextStart"
+                    await typewriter.ShowAsync(resolvedText, twProfile); // empieza YA el texto
+                    await ms.Complete;                                   // asegura que la colocación acabe antes de elecciones
+                    break;
+
+                case TextStartTiming.OnEnterMid:
+                    await ms.Mid;                                        // espera a ~50% de la colocación
+                    portraits.OnTextStart(node);
+                    await typewriter.ShowAsync(resolvedText, twProfile);
+                    await ms.Complete;                                   // garantiza fin de colocación antes de elecciones
+                    break;
+
+                case TextStartTiming.OnEnterComplete:
+                default:
+                    await ms.Complete;                                   // comportamiento clásico
+                    portraits.OnTextStart(node);
+                    await typewriter.ShowAsync(resolvedText, twProfile);
+                    break;
+            }
+        }
+        else
+        {
+            // Fallback retro-compatible: sin hitos → como antes (espera a terminar)
+            await portraits.ApplyAsync(node);
+            portraits.OnTextStart(node);
+            await typewriter.ShowAsync(resolvedText, twProfile);
+        }
+
+        // Limpieza del perfil temporal
         if (twProfile != null) Destroy(twProfile);
 
         // 5) Elecciones o listo para avanzar (delegación REAL a la UI)

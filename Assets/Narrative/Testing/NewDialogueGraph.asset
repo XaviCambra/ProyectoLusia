@@ -19,7 +19,7 @@ MonoBehaviour:
       x: -397
       y: -85
       width: 480
-      height: 1186
+      height: 1144
     bgColorIndex: 11
     bgColor: {r: 0.38, g: 0.29, b: 0.44, a: 1}
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
@@ -30,15 +30,13 @@ MonoBehaviour:
     lineText: Lorem.
     locKey: 
     appearance: 1
-    origin: 0
-    target: 2
-    moveSpeed: 300
+    origin: 1
+    target: 6
+    moveSpeed: 200
     textStart: 2
-    useFade: 0
-    enterFromOpacity: 0
-    enterToOpacity: 100
-    exitFromOpacity: 100
-    exitToOpacity: 0
+    useFade: 1
+    enterFromOpacity: 100
+    enterToOpacity: 0
     playSpecialAnimation: 1
     specialAnimation: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
     specialAnimSpeed: 0.5
@@ -54,7 +52,7 @@ MonoBehaviour:
       commaPct: 2
       periodPct: 3
       ellipsisPct: 5
-    showExtrasBox: 0
+    showExtrasBox: 1
     isStart: 1
     startId: START01
     isChoiceNode: 0
@@ -119,8 +117,6 @@ MonoBehaviour:
     useFade: 0
     enterFromOpacity: 0
     enterToOpacity: 100
-    exitFromOpacity: 100
-    exitToOpacity: 0
     playSpecialAnimation: 0
     specialAnimation: {fileID: 0}
     specialAnimSpeed: 1
@@ -176,8 +172,6 @@ MonoBehaviour:
     useFade: 1
     enterFromOpacity: 0
     enterToOpacity: 100
-    exitFromOpacity: 100
-    exitToOpacity: 0
     playSpecialAnimation: 1
     specialAnimation: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
     specialAnimSpeed: 0.5
@@ -240,7 +234,7 @@ MonoBehaviour:
       x: 1254
       y: 1140
       width: 480
-      height: 1462
+      height: 1416
     bgColorIndex: 14
     bgColor: {r: 0.18, g: 0.25, b: 0.36, a: 1}
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
@@ -258,8 +252,6 @@ MonoBehaviour:
     useFade: 1
     enterFromOpacity: 25
     enterToOpacity: 75
-    exitFromOpacity: 75
-    exitToOpacity: 25
     playSpecialAnimation: 1
     specialAnimation: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
     specialAnimSpeed: 5
@@ -322,7 +314,7 @@ MonoBehaviour:
       x: 1800
       y: -115
       width: 480
-      height: 1629
+      height: 1585
     bgColorIndex: 9
     bgColor: {r: 0.23, g: 0.3, b: 0.46, a: 1}
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
@@ -340,8 +332,6 @@ MonoBehaviour:
     useFade: 1
     enterFromOpacity: 4
     enterToOpacity: 4
-    exitFromOpacity: 4
-    exitToOpacity: 4
     playSpecialAnimation: 1
     specialAnimation: {fileID: 7400000, guid: 84ef4a4bd64349746bb4e0ea11b8e5c6, type: 2}
     specialAnimSpeed: 0.1
@@ -404,7 +394,7 @@ MonoBehaviour:
       x: 659
       y: -70
       width: 480
-      height: 1554
+      height: 1510
     bgColorIndex: 4
     bgColor: {r: 0.52, g: 0.33, b: 0.3, a: 1}
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
@@ -415,8 +405,8 @@ MonoBehaviour:
     lineText: Donec vitae commodo magna. Lorem ipsum dolor sit amet, consectetur
       adipiscing elit. Morbi mattis aliquet ante hendrerit tincidunt. Mauris lacinia
       et ante tempus imperdiet.
-    locKey: 
-    appearance: 1
+    locKey: 100100003
+    appearance: 0
     origin: 1
     target: 1
     moveSpeed: 600
@@ -424,8 +414,6 @@ MonoBehaviour:
     useFade: 0
     enterFromOpacity: 0
     enterToOpacity: 100
-    exitFromOpacity: 100
-    exitToOpacity: 0
     playSpecialAnimation: 1
     specialAnimation: {fileID: 7400000, guid: cbe870c782a219347aafa709359019c4, type: 2}
     specialAnimSpeed: 1

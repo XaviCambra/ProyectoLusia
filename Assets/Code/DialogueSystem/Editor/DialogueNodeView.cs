@@ -628,62 +628,6 @@ public class DialogueNodeView : Node
         enterTo.style.marginBottom = 3;
         enterTo.RegisterValueChangedCallback(e => Data.enterToOpacity = Mathf.Clamp(e.newValue, 0, 100));
         extrasFold.Add(enterTo);
-
-        var exitFrom = new IntegerField("Exit From %") { value = Data.exitFromOpacity };
-        exitFrom.style.marginBottom = 3;
-        exitFrom.RegisterValueChangedCallback(e => Data.exitFromOpacity = Mathf.Clamp(e.newValue, 0, 100));
-        extrasFold.Add(exitFrom);
-
-        var exitTo = new IntegerField("Exit To %") { value = Data.exitToOpacity };
-        exitTo.style.marginBottom = 3;
-        exitTo.RegisterValueChangedCallback(e => Data.exitToOpacity = Mathf.Clamp(e.newValue, 0, 100));
-        extrasFold.Add(exitTo);
-
-        //// Mini separador y título “Animación especial”
-        //var saHeader = new Label("Animación especial");
-        //saHeader.style.unityFontStyleAndWeight = FontStyle.Bold;
-        //saHeader.style.marginTop = 6;
-        //extrasFold.Add(saHeader);
-        //var line = new VisualElement { style = { height = 1, backgroundColor = new Color(0, 0, 0, 0.08f), marginBottom = 6 } };
-        //extrasFold.Add(line);
-
-        //_specialAnimToggle = new Toggle("Usar animación especial") { value = Data.playSpecialAnimation };
-        //_specialAnimToggle.RegisterValueChangedCallback(e => Data.playSpecialAnimation = e.newValue);
-        //extrasFold.Add(_specialAnimToggle);
-
-        //_specialAnimClipField = new EditorObjectField
-        //{
-        //    label = "Clip",
-        //    objectType = typeof(AnimationClip),
-        //    value = Data.specialAnimation
-        //};
-        //_specialAnimClipField.style.marginBottom = 3;
-        //_specialAnimClipField.RegisterValueChangedCallback(e =>
-        //{
-        //    Data.specialAnimation = e.newValue as AnimationClip;
-        //});
-        //extrasFold.Add(_specialAnimClipField);
-
-        //_specialAnimSpeedField = new FloatField("Velocidad") { value = Data.specialAnimSpeed };
-        //_specialAnimSpeedField.style.marginBottom = 3;
-        //_specialAnimSpeedField.RegisterValueChangedCallback(e =>
-        //{
-        //    Data.specialAnimSpeed = Mathf.Max(0f, e.newValue);
-        //});
-        //extrasFold.Add(_specialAnimSpeedField);
-
-        //_specialAnimLoopToggle = new Toggle("Loop") { value = Data.specialAnimLoop };
-        //_specialAnimLoopToggle.RegisterValueChangedCallback(e => Data.specialAnimLoop = e.newValue);
-        //extrasFold.Add(_specialAnimLoopToggle);
-
-        //var specialStartField = new EnumField("Inicio anim. especial", Data.specialStart);
-        //specialStartField.style.marginBottom = 3;
-        //specialStartField.Init(Data.specialStart);
-        //specialStartField.RegisterValueChangedCallback(e =>
-        //{
-        //    Data.specialStart = (SpecialStartTiming)e.newValue;
-        //});
-        //extrasFold.Add(specialStartField);
     }
 
     // ------------------------------

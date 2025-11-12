@@ -16,13 +16,15 @@ using UnityEngine.UI;
 
 
 [DisallowMultipleComponent]
-public sealed class PortraitController : MonoBehaviour, IPortraitController
+public sealed class PortraitController : MonoBehaviour, IPortraitController, IPortraitPlacementMilestones
 {
     #region Inspector
 
     [Header("Anchors de posición")]
     [SerializeField] private RectTransform leftAnchor;
+    [SerializeField] private RectTransform centerLeftAnchor;
     [SerializeField] private RectTransform centerAnchor;
+    [SerializeField] private RectTransform centerRightAnchor;
     [SerializeField] private RectTransform rightAnchor;
 
     [Header("Pool de retratos")]
@@ -68,6 +70,15 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         public readonly Vector3 screenPos;
         public PortraitState(Vector3 p) { screenPos = p; }
     }
+
+    private struct Pose
+    {
+        public Vector3 pos;
+        public float alpha;
+        public Vector3 scale;
+        public Pose(Vector3 p, float a, Vector3 s) { pos = p; alpha = a; scale = s; }
+    }
+
     private readonly Dictionary<string, PortraitState> _stateByProfile = new();
 
     private ICharacterProfileService _profiles;
@@ -348,7 +359,7 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
 
     #region Colocación (Cut/Fade/Slide)
 
-    private async Task RunPlacementAsync(DialogueNodeData node, RectTransform rootRt)
+    private async Task RunPlacementAsync(DialogueNodeData node, RectTransform rootRt, System.Action<float> onProgress = null)
     {
         if (!rootRt)
             return;
@@ -363,50 +374,71 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         var cg = rootRt.GetComponent<CanvasGroup>();
         if (!cg) cg = rootRt.gameObject.AddComponent<CanvasGroup>();
 
-        Vector3 startPos = ResolveSpot(node.origin, rootRt);
-        rootRt.position = startPos;
+        // Pose unificada: de la pose actual a la pose objetivo del nodo
+        var from = GetCurrentPose(rootRt);          // ← helper nuevo
+        var to = ComputeEndPose(node, rootRt);    // ← helper nuevo
 
-        bool exiting = (node.target == Spot.LeftOffscreen || node.target == Spot.RightOffscreen);
-        Vector3 endPos = ResolveSpot(node.target, rootRt);
-
-        float fromA = 1f, toA = 1f;
+        // Si quieres forzar un alpha de arranque cuando hay fade, usa enterFromOpacity
         if (node.useFade)
         {
-            if (exiting) { fromA = node.exitFromOpacity / 100f; toA = node.exitToOpacity / 100f; }
-            else { fromA = node.enterFromOpacity / 100f; toA = node.enterToOpacity / 100f; }
+            from.alpha = Mathf.Clamp01(node.enterFromOpacity / 100f);
+            cg.alpha = from.alpha;
         }
-        cg.alpha = fromA;
 
         switch (node.appearance)
         {
             case AppearanceMode.Cut:
-                rootRt.position = endPos;
-                cg.alpha = toA;
+                rootRt.position = to.pos;
+                cg.alpha = to.alpha;
                 _stateByProfile[node.profileId] = new PortraitState(rootRt.position);
                 return;
 
-            case AppearanceMode.Fade:
-                {
-                    await RunAsTask(CoFade(rootRt, cg, toA));
-                    _stateByProfile[node.profileId] = new PortraitState(rootRt.position);
-                    return;
-                }
             case AppearanceMode.Slide:
+                if (node.moveSpeed <= 1f)
                 {
-                    if (node.moveSpeed <= 1f)
-                    {
-                        rootRt.position = endPos;
-                        cg.alpha = toA;
-                        _stateByProfile[node.profileId] = new PortraitState(rootRt.position);
-                        return;
-                    }
-                    await RunAsTask(CoSlideAndFade(rootRt, cg, endPos, toA, node.moveSpeed));
+                    rootRt.position = to.pos;
+                    cg.alpha = to.alpha;
                     _stateByProfile[node.profileId] = new PortraitState(rootRt.position);
                     return;
                 }
+                await RunAsTask(CoPlace(rootRt, cg, from, to, node.moveSpeed, onProgress)); // ← nueva corrutina
+                _stateByProfile[node.profileId] = new PortraitState(rootRt.position);
+                return;
+
             default:
                 return;
         }
+    }
+
+    private IEnumerator CoPlace(RectTransform rt, CanvasGroup cg, Pose from, Pose to, float speed, System.Action<float> onProgress)
+    {
+        Vector3 startPos = from.pos;
+        float startAlpha = from.alpha;
+
+        float dist = Vector3.Distance(startPos, to.pos);
+        if (dist <= Mathf.Epsilon && Mathf.Abs(startAlpha - to.alpha) <= Mathf.Epsilon)
+            yield break;
+
+        float duration = (dist <= Mathf.Epsilon) ? (1f / Mathf.Max(0.0001f, speed))
+                                                 : (dist / Mathf.Max(0.0001f, speed));
+        float elapsed = 0f;
+        var curve = (moveCurve != null) ? moveCurve : AnimationCurve.Linear(0f, 0f, 1f, 1f);
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float rawT = Mathf.Clamp01(elapsed / duration);
+            float easedT = Mathf.Clamp01(curve.Evaluate(rawT));
+
+            rt.position = Vector3.LerpUnclamped(startPos, to.pos, easedT);
+            if (cg) cg.alpha = Mathf.Lerp(startAlpha, to.alpha, rawT); // alpha lineal; cambia a easedT si prefieres
+
+            onProgress?.Invoke(rawT); // usa easedT si quieres “mitad visual”
+            yield return null;
+        }
+
+        rt.position = to.pos;
+        if (cg) cg.alpha = to.alpha;
     }
 
     private IEnumerator CoFade(RectTransform rootRt, CanvasGroup cg, float endAlpha)
@@ -421,7 +453,7 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         }
     }
 
-    private IEnumerator CoSlideAndFade(RectTransform rt, CanvasGroup cg, Vector3 endPos, float endAlpha, float speed)
+    private IEnumerator CoSlideAndFade(RectTransform rt, CanvasGroup cg, Vector3 endPos, float endAlpha, float speed, System.Action<float> onProgress)
     {
         Vector3 startPos = rt.position;
         float startAlpha = cg.alpha;
@@ -452,6 +484,7 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
 
             rt.position = Vector3.LerpUnclamped(startPos, endPos, easedT);
             cg.alpha = Mathf.Lerp(startAlpha, endAlpha, rawT);
+            onProgress?.Invoke(rawT);
             yield return null;
         }
 
@@ -547,9 +580,9 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         return spot switch
         {
             Spot.Left => GetAnchorPos(leftAnchor, rt.position),
-            Spot.CenterLeft => GetAnchorPos(leftAnchor ? leftAnchor : centerAnchor, rt.position),
+            Spot.CenterLeft => GetAnchorPos(centerLeftAnchor, rt.position),
             Spot.Center => GetAnchorPos(centerAnchor, rt.position),
-            Spot.CenterRight => GetAnchorPos(rightAnchor ? rightAnchor : centerAnchor, rt.position),
+            Spot.CenterRight => GetAnchorPos(centerRightAnchor, rt.position),
             Spot.Right => GetAnchorPos(rightAnchor, rt.position),
             Spot.LeftOffscreen => OffscreenFromAnchor(GetAnchorPos(leftAnchor, rt.position), true),
             Spot.RightOffscreen => OffscreenFromAnchor(GetAnchorPos(rightAnchor, rt.position), false),
@@ -564,6 +597,113 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         return p;
     }
 
+    private static bool IsOffscreen(Spot s)
+    => s == Spot.LeftOffscreen || s == Spot.RightOffscreen;
+
+    private Pose GetCurrentPose(RectTransform rt)
+    {
+        var cg = rt.GetComponent<CanvasGroup>();
+        if (!cg) cg = rt.gameObject.AddComponent<CanvasGroup>();
+        // Escala: usamos la actual del root; el retrato interior ya la animas aparte
+        return new Pose(rt.position, cg.alpha, rt.localScale);
+    }
+
+    private Pose ComputeEndPose(DialogueNodeData node, RectTransform rt)
+    {
+        // 1) Posición final según target
+        var endPos = ResolveSpot(node.target, rt);
+
+        // 2) Alpha final: usa enterToOpacity como “TO” universal (simplificación)
+        //    Si quieres un “apagado” automático al salir de pantalla, mantén toAlpha tal cual:
+        var toAlpha = node.useFade ? Mathf.Clamp01(node.enterToOpacity / 100f) : 1f;
+
+        // 3) Escala final (mantén la actual del root; el scale dinámico lo llevas en UpdateScale)
+        var endScale = rt.localScale;
+
+        // Opcional: si quieres que salir offscreen siempre tienda a alpha 0, descomenta:
+        // if (IsOffscreen(node.target) && node.useFade) toAlpha = 0f;
+
+        return new Pose(endPos, toAlpha, endScale);
+    }
+    #endregion
+
+    #region IPortraitPlacementMilestones
+
+    public IPortraitPlacementMilestones.Milestones ApplyWithMilestones(DialogueNodeData node)
+    {
+        // Reusa la lógica de ApplyAsync, pero sin esperar a la colocación
+        // y exponiendo hitos Mid/Complete mediante TaskCompletionSource.
+        var midTcs = new System.Threading.Tasks.TaskCompletionSource<bool>();
+        var endTcs = new System.Threading.Tasks.TaskCompletionSource<bool>();
+
+        _ = ApplyWithProgressAsync(node, progress =>
+        {
+            // dispara "Mid" una única vez cuando rawT >= 0.5
+            if (progress >= 0.5f)
+                midTcs.TrySetResult(true);
+        },
+        onComplete: () => endTcs.TrySetResult(true));
+
+        return new IPortraitPlacementMilestones.Milestones(midTcs.Task, endTcs.Task);
+    }
+
+    // Implementación auxiliar: igual que ApplyAsync pero recibe callbacks de progreso/fin.
+    private async System.Threading.Tasks.Task ApplyWithProgressAsync(DialogueNodeData node, System.Action<float> onProgress, System.Action onComplete)
+    {
+        if (node == null || string.IsNullOrEmpty(node.profileId) || !_rootByProfile.TryGetValue(node.profileId, out var rootRt))
+        {
+            if (resetSpecialsWithStaticPoseOnNodeChange)
+                ResetSpecialsToStaticPose();
+            onProgress?.Invoke(1f);
+            onComplete?.Invoke();
+            return;
+        }
+
+        if (resetSpecialsWithStaticPoseOnNodeChange)
+            ResetSpecialsToStaticPose();
+
+        var img = _portraitByProfile[node.profileId];
+        SetSpriteForNode(img, node);
+        BringOnTop(node.profileId);
+        UpdateTint(node.profileId);
+        UpdateScale(node.profileId);
+        _pendingSpecialByProfile.Remove(node.profileId);
+
+        // Lanzado/pendiente de especial igual que en ApplyAsync
+        if (node.playSpecialAnimation && node.specialAnimation)
+        {
+            switch (node.specialStart)
+            {
+                case SpecialStartTiming.Immediate:
+                case SpecialStartTiming.WithPlacementStart:
+                    PlaySpecial(img, node.specialAnimation, node.specialAnimSpeed, node.specialAnimLoop);
+                    break;
+                case SpecialStartTiming.WithTextStart:
+                    _pendingSpecialByProfile[node.profileId] = (node.specialAnimation, node.specialAnimSpeed, node.specialAnimLoop);
+                    StopSpecial(img);
+                    break;
+                case SpecialStartTiming.WithPlacementComplete:
+                    StopSpecial(img);
+                    break;
+            }
+        }
+        else
+        {
+            StopSpecial(img);
+        }
+
+        // Colocación con callback de progreso
+        await RunPlacementAsync(node, rootRt, onProgress);
+
+        if (node.playSpecialAnimation && node.specialAnimation && node.specialStart == SpecialStartTiming.WithPlacementComplete)
+            PlaySpecial(img, node.specialAnimation, node.specialAnimSpeed, node.specialAnimLoop);
+
+        // Seguridad: si el nodo no pedía especial, nos aseguramos de parar
+        if (!(node.playSpecialAnimation && node.specialAnimation))
+            StopSpecial(img);
+
+        onComplete?.Invoke();
+    }
     #endregion
 }
 
