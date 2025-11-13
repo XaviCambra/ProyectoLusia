@@ -14,43 +14,38 @@ public class DialogueEventListener : MonoBehaviour
 
         Debug.Log($"Handling event for key: {key} (type={p.type})");
 
-        // Lee el payload según el tipo definido en el nodo
         switch (p.type)
         {
             case EventPayloadType.Int:
-                OpenDoor(Mathf.Max(0, p.intValue));
+                OpenDoorInt(p.intValue);
                 break;
 
             case EventPayloadType.Float:
-                OpenDoor(Mathf.Max(0, Mathf.RoundToInt(p.floatValue)));
+                OpenDoorFloat(p.floatValue);
                 break;
 
             case EventPayloadType.String:
-                if (int.TryParse(p.stringValue, out var speedFromString))
-                    OpenDoor(Mathf.Max(0, speedFromString));
-                else
-                    OpenDoor(1); // fallback
+                OpenDoorString(p.stringValue);
                 break;
 
             case EventPayloadType.Bool:
-                OpenDoor(p.boolValue ? 1 : 0);
+                OpenDoorBool(p.boolValue);
                 break;
 
             case EventPayloadType.Char:
-                // si es dígito '0'..'9', úsalo; si no, fallback
-                int speedFromChar = char.IsDigit(p.charValue) ? (p.charValue - '0') : 1;
-                OpenDoor(Mathf.Max(0, speedFromChar));
+                OpenDoorChar(p.charValue);
                 break;
 
             default:
-                OpenDoor(1);
+                OpenDoor();
                 break;
         }
     }
 
-    private void OpenDoor(int speed)
-    {
-        Debug.Log($"Door opened with speed: {speed}");
-        // TODO: tu lógica real de apertura
-    }
+    private void OpenDoor() => Debug.Log($"ANY TYPE value");
+    private void OpenDoorInt(int v) => Debug.Log($"INT TYPE value: {v}");
+    private void OpenDoorFloat(float v) => Debug.Log($"FLOAT TYPE value: {v}");
+    private void OpenDoorString(string v) => Debug.Log($"STRING TYPE value: {v}");
+    private void OpenDoorBool(bool v) => Debug.Log($"BOOL TYPE value: {v}");
+    private void OpenDoorChar(char v) => Debug.Log($"CHAR TYPE value: {v}");
 }

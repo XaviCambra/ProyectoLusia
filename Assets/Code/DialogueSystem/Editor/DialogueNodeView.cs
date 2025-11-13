@@ -670,29 +670,6 @@ public class DialogueNodeView : Node
         _twGlobalSpeedField.style.marginBottom = 3;
         _twGlobalSpeedField.RegisterValueChangedCallback(e => Data.tw.globalSpeed = Mathf.Clamp(e.newValue, 0.1f, 3f));
         typewriterFold.Add(_twGlobalSpeedField);
-
-        _twRespectRichTextToggle = new Toggle("Respetar RichText") { value = Data.tw.respectRichText };
-        _twRespectRichTextToggle.RegisterValueChangedCallback(e => Data.tw.respectRichText = e.newValue);
-        typewriterFold.Add(_twRespectRichTextToggle);
-
-        _twWhitespaceDelayToggle = new Toggle("Min. delay en espacios") { value = Data.tw.minimalWhitespaceDelay };
-        _twWhitespaceDelayToggle.RegisterValueChangedCallback(e => Data.tw.minimalWhitespaceDelay = e.newValue);
-        typewriterFold.Add(_twWhitespaceDelayToggle);
-
-        _twCommaPauseField = new FloatField("Pausa coma (x)") { value = Data.tw.commaPct };
-        _twCommaPauseField.style.marginBottom = 3;
-        _twCommaPauseField.RegisterValueChangedCallback(e => Data.tw.commaPct = Mathf.Max(0f, e.newValue));
-        typewriterFold.Add(_twCommaPauseField);
-
-        _twPeriodPauseField = new FloatField("Pausa punto (x)") { value = Data.tw.periodPct };
-        _twPeriodPauseField.style.marginBottom = 3;
-        _twPeriodPauseField.RegisterValueChangedCallback(e => Data.tw.periodPct = Mathf.Max(0f, e.newValue));
-        typewriterFold.Add(_twPeriodPauseField);
-
-        _twEllipsisPauseField = new FloatField("Pausa '.' (x)") { value = Data.tw.ellipsisPct };
-        _twEllipsisPauseField.style.marginBottom = 3;
-        _twEllipsisPauseField.RegisterValueChangedCallback(e => Data.tw.ellipsisPct = Mathf.Max(0f, e.newValue));
-        typewriterFold.Add(_twEllipsisPauseField);
     }
 
     private void InitEventFieldFactory()

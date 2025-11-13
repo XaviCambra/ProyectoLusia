@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CharacterAffinityMap
   m_EditorClassIdentifier: 
   schema: {fileID: 11400000, guid: ef5808264b9a91948bbb4e5aeed77209, type: 2}
-  symmetry: 1
+  symmetry: 0
   entries:
   - from: {fileID: 11400000, guid: d70b27107e44f044fb2e2d0f5b84a2f0, type: 2}
     to: {fileID: 11400000, guid: 9b5d496d3929b594fb3102d3d797aea5, type: 2}

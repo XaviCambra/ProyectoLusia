@@ -128,11 +128,6 @@ public sealed class DialogueRunner : MonoBehaviour
             twProfile = ScriptableObject.CreateInstance<TypewriterProfile>();
             twProfile.secondsPerChar = node.tw.secondsPerChar;
             twProfile.globalSpeed = node.tw.globalSpeed;
-            twProfile.respectRichText = node.tw.respectRichText;
-            twProfile.minimalWhitespaceDelay = node.tw.minimalWhitespaceDelay;
-            twProfile.commaPct = node.tw.commaPct;
-            twProfile.periodPct = node.tw.periodPct;
-            twProfile.ellipsisPct = node.tw.ellipsisPct;
         }
 
         // 4) Lanzar retrato con hitos y disparar texto según TextStartTiming

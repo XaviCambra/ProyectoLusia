@@ -77,11 +77,6 @@ public class DialogueNodeData
     {
         [Range(0.001f, 0.2f)] public float secondsPerChar;
         [Range(0.1f, 3f)] public float globalSpeed;
-        public bool respectRichText;
-        public bool minimalWhitespaceDelay;
-        public float commaPct;     // multiplicadores de pausa
-        public float periodPct;
-        public float ellipsisPct;
     }
 
     public bool showTypewriterBox = false; // plegable (Editor)
@@ -90,11 +85,6 @@ public class DialogueNodeData
     {
         secondsPerChar = 0.03f,
         globalSpeed = 1f,
-        respectRichText = true,
-        minimalWhitespaceDelay = true,
-        commaPct = 1.25f,
-        periodPct = 1.6f,
-        ellipsisPct = 2.0f
     };
 
     // ---------- Pliegues UI (Editor) ----------
