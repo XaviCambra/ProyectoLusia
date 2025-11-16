@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "CharacterStatsSO", menuName = "Scriptable Objects/CharacterStatsSO")]
-public class CharacterCombatStatsSO : ScriptableObject
+public class CombatCharacterStatsSO : ScriptableObject
 {
     [Header("Character")]
     [SerializeField, Tooltip("Personaje origen")] CharacterProfile m_CharacterProfile;

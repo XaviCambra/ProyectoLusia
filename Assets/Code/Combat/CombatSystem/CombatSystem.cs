@@ -3,65 +3,80 @@ using UnityEngine;
 
 public class CombatSystem : MonoBehaviour
 {
-    // Lo meto todo aquí mientras me aclaro como hacerlo bien, demomento va an a ser tremendos espaguetis com tomatico code
-
-
-    public void SetCharactersToCombat(List<CombatCharacter> l_CombatCharacter)
-    {
-
-    }
-
-
+    // Lo meto todo aqui mientras me aclaro como hacerlo bien, demomento va an a ser tremendos espaguetis com tomatico code
     private void Update()
     {
         PlayTurn();
     }
 
-
     #region SISTEMA POR TURNOS
-    int m_TurnAction = 0;
-    _CombatAbility m_CombatAbility = null;
-    List<CharacterCombatStatsSO> m_Targets = new List<CharacterCombatStatsSO>();
+    public enum TurnPhase
+    {
+        ChooseAction,
+        ChooseTarget,
+        Resolve
+    }
+
+    int _currentActorIndex = 0; // si tienes varios combatientes
+    TurnPhase _phase = TurnPhase.ChooseAction;
+
+    _CombatAbility _ability;
+    readonly List<CombatCharacterStatsSO> _targets = new();
 
     void PlayTurn()
     {
-        switch(m_TurnAction)
+        switch (_phase)
         {
-            case 0:
-                ChooseAction();
+            case TurnPhase.ChooseAction:
+                if (_ability != null)
+                    Advance();
                 break;
-            case 1:
-                ChooseTarget();
+
+            case TurnPhase.ChooseTarget:
+                if (_targets.Count > 0)
+                    Advance();
                 break;
-            default:
-                PlayActionOnTarget();
+
+            case TurnPhase.Resolve:
+                ResolveAction();
+                EndTurn();
                 break;
         }
     }
 
-    void ChooseAction()
+    void Advance()
     {
-        if (m_CombatAbility == null)
-            return;
-
-        m_TurnAction++;
+        _phase = _phase switch
+        {
+            TurnPhase.ChooseAction => TurnPhase.ChooseTarget,
+            TurnPhase.ChooseTarget => TurnPhase.Resolve,
+            _ => TurnPhase.ChooseAction
+        };
     }
 
-    void ChooseTarget()
+    public void SetChosenAbility(_CombatAbility ability)
     {
-        if(m_Targets.Count == 0)
-            return;
-
-        m_TurnAction++;
+        _ability = ability;
     }
 
-    void PlayActionOnTarget()
+    public void SetTargets(IEnumerable<CombatCharacterStatsSO> targets)
     {
+        _targets.Clear();
+        _targets.AddRange(targets);
+    }
 
+    void ResolveAction()
+    {
+        _ability.Apply(_targets);
+    }
 
-        m_Targets.Clear();
-        m_CombatAbility = null;
-        m_TurnAction = 0;
+    void EndTurn()
+    {
+        _ability = null;
+        _targets.Clear();
+        _phase = TurnPhase.ChooseAction;
+
+        // _currentActorIndex = GetNextActorIndex();
     }
     #endregion
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CombatCharacter : MonoBehaviour
 {
-    public CharacterCombatStatsSO m_CombatCharacterSO;
+    public CombatCharacterStatsSO m_CombatCharacterSO;
 
     public List<_CombatAbility> m_CombatAbilities = new List<_CombatAbility>();
 
