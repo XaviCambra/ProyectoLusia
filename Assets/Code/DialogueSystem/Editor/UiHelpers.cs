@@ -11,12 +11,12 @@ public static class UiHelpers
         return tf;
     }
 
-    public static EnumField BindEnum<T>(this EnumField ef, string label, T value, Action<T> onChange) where T : Enum
-    {
-        ef.label = label; ef.value = value;
-        ef.RegisterValueChangedCallback(e => onChange((T)e.newValue));
-        return ef;
-    }
+    //public static EnumField BindEnum<T>(this EnumField ef, string label, T value, Action<T> onChange) where T : Enum
+    //{
+    //    ef.label = label; ef.value = value;
+    //    ef.RegisterValueChangedCallback(e => onChange((T)e.newValue));
+    //    return ef;
+    //}
 
     public static Toggle BindToggle(this Toggle t, string label, bool value, Action<bool> onChange)
     {
@@ -25,12 +25,12 @@ public static class UiHelpers
         return t;
     }
 
-    public static VisualElement Row(params VisualElement[] children)
-    {
-        var row = new VisualElement();
-        row.style.flexDirection = FlexDirection.Row;
-        foreach (var c in children) row.Add(c);
-        return row;
-    }
+    //public static VisualElement Row(params VisualElement[] children)
+    //{
+    //    var row = new VisualElement();
+    //    row.style.flexDirection = FlexDirection.Row;
+    //    foreach (var c in children) row.Add(c);
+    //    return row;
+    //}
 }
 #endif

@@ -1,5 +1,6 @@
-// Runtime/Profiles/CharacterProfileDatabase.cs
+﻿// Runtime/Profiles/CharacterProfileDatabase.cs
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Dialogue/Profiles/Character Profile Database", fileName = "CharacterProfiles")]
@@ -28,8 +29,12 @@ public class CharacterProfileDatabase : ScriptableObject
 
     public CharacterProfile FindById(string profileId)
     {
-        if (string.IsNullOrEmpty(profileId)) return null;
-        if (_byId == null) BuildIndex();
+        if (string.IsNullOrEmpty(profileId))
+            return null;
+
+        if (_byId == null)
+            BuildIndex();
+
         _byId.TryGetValue(profileId, out var p);
         return p;
     }

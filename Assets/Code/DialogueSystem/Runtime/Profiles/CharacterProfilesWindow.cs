@@ -1,4 +1,3 @@
-// Editor/Profiles/CharacterProfilesWindow.cs
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -11,11 +10,12 @@ public class CharacterProfilesWindow : EditorWindow
 {
     private CharacterProfileDatabase _db;
 
-    // Ajustes del grid y las cards
+    // Ajustes del grid, las cards y del margen general
     private const float CARD_WIDTH = 180f;
     private const float CARD_HEIGHT = 240f;
     private const float CARD_MARGIN = 6f;
     private const float THUMB = 128f;
+    private const float MARGIN_CONTENT = 6f;
 
     private ObjectField _addExistingField;
 
@@ -28,15 +28,16 @@ public class CharacterProfilesWindow : EditorWindow
     private void CreateGUI()
     {
         var root = rootVisualElement;
-        root.style.paddingLeft = 8;
-        root.style.paddingRight = 8;
-        root.style.paddingTop = 8;
+        root.style.paddingLeft = MARGIN_CONTENT;
+        root.style.paddingRight = MARGIN_CONTENT;
+        root.style.paddingTop = MARGIN_CONTENT;
+        root.style.paddingBottom = MARGIN_CONTENT;
         root.style.flexDirection = FlexDirection.Column;
-        root.style.flexGrow = 1;
+        //root.style.flexGrow = 1;
 
-        var header = new Label("Character Profiles Database");
-        header.style.unityFontStyleAndWeight = FontStyle.Bold;
-        root.Add(header);
+        //var header = new Label("Character Profiles Database");
+        //header.style.unityFontStyleAndWeight = FontStyle.Bold;
+        //root.Add(header);
         AddSpacer(root, 4);
 
         // --- Campo Database ---
@@ -46,6 +47,8 @@ public class CharacterProfilesWindow : EditorWindow
             _db = e.newValue as CharacterProfileDatabase;
             DrawList(root);
         });
+        //dbField.style.marginLeft = MARGIN_LEFT_RIGHT;
+        //dbField.style.marginRight = MARGIN_LEFT_RIGHT;
         root.Add(dbField);
         AddSpacer(root, 4);
 
@@ -64,7 +67,9 @@ public class CharacterProfilesWindow : EditorWindow
             }
         })
         { text = "Crear nueva Database..." };
-        createDbBtn.style.height = 24;
+        //createDbBtn.style.marginLeft = MARGIN_LEFT_RIGHT;
+        //createDbBtn.style.marginRight = MARGIN_LEFT_RIGHT;
+        //createDbBtn.style.height = 24;
         root.Add(createDbBtn);
         AddSpacer(root, 6);
 
@@ -73,7 +78,7 @@ public class CharacterProfilesWindow : EditorWindow
         {
             if (!EnsureDatabaseAssigned()) return;
 
-            var p = ScriptableObject.CreateInstance<CharacterProfile>();
+            var p = CreateInstance<CharacterProfile>();
             p.name = "NewCharacterProfile";
             var path = EditorUtility.SaveFilePanelInProject("Guardar Perfil", p.name, "asset", "");
             if (!string.IsNullOrEmpty(path))
@@ -83,7 +88,9 @@ public class CharacterProfilesWindow : EditorWindow
             }
         })
         { text = "+ Añadir Perfil..." };
-        addNewBtn.style.height = 24;
+        //addNewBtn.style.height = 24;
+        //addNewBtn.style.marginLeft = MARGIN_LEFT_RIGHT;
+        //addNewBtn.style.marginRight = MARGIN_LEFT_RIGHT;
         addNewBtn.style.alignSelf = Align.Stretch;
         root.Add(addNewBtn);
         AddSpacer(root, 6);
@@ -94,7 +101,7 @@ public class CharacterProfilesWindow : EditorWindow
         _addExistingField = new ObjectField() { objectType = typeof(CharacterProfile) };
         _addExistingField.tooltip = "Selecciona un CharacterProfile existente para añadirlo a la database.";
         _addExistingField.style.flexGrow = 1;
-        _addExistingField.style.marginRight = 6;
+        //_addExistingField.style.marginRight = 6;
 
         var addExistingBtn = new Button(() =>
         {
@@ -110,7 +117,9 @@ public class CharacterProfilesWindow : EditorWindow
         })
         { text = "Añadir existente..." };
         addExistingBtn.style.flexGrow = 1;
-        addExistingBtn.style.height = 24;
+
+        //twoCol.style.marginLeft = MARGIN_LEFT_RIGHT - 3;
+        //twoCol.style.marginRight = MARGIN_LEFT_RIGHT - 3;
 
         twoCol.Add(_addExistingField);
         twoCol.Add(addExistingBtn);
@@ -119,8 +128,9 @@ public class CharacterProfilesWindow : EditorWindow
 
         // --- Botón Actualizar (ocupa todo el ancho, estilo igual) ---
         var refreshBtn = new Button(() => ForceRefresh()) { text = "Actualizar" };
-        refreshBtn.style.height = 24;
         refreshBtn.style.alignSelf = Align.Stretch;
+        //refreshBtn.style.marginLeft = MARGIN_LEFT_RIGHT;
+        //refreshBtn.style.marginRight = MARGIN_LEFT_RIGHT;
         root.Add(refreshBtn);
         AddSpacer(root, 8);
 
@@ -150,7 +160,6 @@ public class CharacterProfilesWindow : EditorWindow
         AssetDatabase.Refresh();
         if (_db != null) _db.BuildIndex();
         DrawList(rootVisualElement);
-        ShowNotification(new GUIContent("Actualizado"));
     }
 
     private void DrawList(VisualElement root)
@@ -193,6 +202,10 @@ public class CharacterProfilesWindow : EditorWindow
         card.style.marginRight = CARD_MARGIN;
         card.style.marginTop = CARD_MARGIN;
         card.style.marginBottom = CARD_MARGIN;
+        card.style.borderTopLeftRadius = 4;
+        card.style.borderTopRightRadius = 4;
+        card.style.borderBottomLeftRadius = 4;
+        card.style.borderBottomRightRadius = 4;
         card.style.paddingLeft = 10;
         card.style.paddingRight = 10;
         card.style.paddingTop = 10;
@@ -211,10 +224,10 @@ public class CharacterProfilesWindow : EditorWindow
         thumb.style.height = THUMB;
         thumb.style.alignSelf = Align.Center;
         thumb.style.backgroundColor = new Color(0, 0, 0, 0.08f);
-        thumb.style.borderTopLeftRadius = 6;
-        thumb.style.borderTopRightRadius = 6;
-        thumb.style.borderBottomLeftRadius = 6;
-        thumb.style.borderBottomRightRadius = 6;
+        thumb.style.borderTopLeftRadius = 8;
+        thumb.style.borderTopRightRadius = 8;
+        thumb.style.borderBottomLeftRadius = 8;
+        thumb.style.borderBottomRightRadius = 8;
 
         if (tex != null)
         {
@@ -255,7 +268,6 @@ public class CharacterProfilesWindow : EditorWindow
         })
         { text = "Quitar" };
 
-        openBtn.style.marginRight = 4;
         btnRow.Add(openBtn);
         btnRow.Add(removeBtn);
         card.Add(btnRow);
@@ -267,17 +279,18 @@ public class CharacterProfilesWindow : EditorWindow
     private VisualElement MakeDropZone()
     {
         var dz = new VisualElement();
-        dz.style.height = 36;
-        dz.style.backgroundColor = new Color(0, 0, 0, 0.08f);
-        dz.style.borderTopLeftRadius = 6;
-        dz.style.borderTopRightRadius = 6;
-        dz.style.borderBottomLeftRadius = 6;
-        dz.style.borderBottomRightRadius = 6;
+        dz.style.height = 64;
+        dz.style.backgroundColor = new Color(0, 0, 0, 0.1f);
+        //dz.style.marginLeft = MARGIN_LEFT_RIGHT;
+        //dz.style.marginRight = MARGIN_LEFT_RIGHT;
+        dz.style.borderTopLeftRadius = 4;
+        dz.style.borderTopRightRadius = 4;
+        dz.style.borderBottomLeftRadius = 4;
+        dz.style.borderBottomRightRadius = 4;
         dz.style.alignItems = Align.Center;
         dz.style.justifyContent = Justify.Center;
 
         var lbl = new Label("Arrastra aquí CharacterProfile para añadirlos a la Database");
-        lbl.style.opacity = 0.8f;
         dz.Add(lbl);
 
         dz.RegisterCallback<DragUpdatedEvent>(evt =>

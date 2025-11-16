@@ -12,6 +12,10 @@ public class DialogueGraph : ScriptableObject
     [SerializeField] private List<DialogueNodeData> nodes = new();
     [SerializeField] private List<EdgeData> edges = new();
 
+    // NUEVO: datos de marcos de fondo
+    private List<BackdropFrameData> frames = new();
+    public IReadOnlyList<BackdropFrameData> Frames => frames;
+
     public IReadOnlyList<DialogueNodeData> Nodes => nodes;
     public IReadOnlyList<EdgeData> Edges => edges;
 
@@ -22,6 +26,14 @@ public class DialogueGraph : ScriptableObject
     {
         nodes = nodeList ?? new();
         edges = edgeList ?? new();
+#if UNITY_EDITOR
+        UnityEditor.EditorUtility.SetDirty(this);
+#endif
+    }
+
+    public void SetFrames(List<BackdropFrameData> list)
+    {
+        frames = list ?? new();
 #if UNITY_EDITOR
         UnityEditor.EditorUtility.SetDirty(this);
 #endif
