@@ -5,10 +5,3 @@ public enum ECombatTarget
     Enemy,
     All
 }
-
-public enum ECombatScope
-{
-    Single,
-    Multiple,
-    All
-}

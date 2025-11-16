@@ -17,7 +17,6 @@ public class CombatSystem : MonoBehaviour
         Resolve
     }
 
-    int _currentActorIndex = 0; // si tienes varios combatientes
     TurnPhase _phase = TurnPhase.ChooseAction;
 
     _CombatAbility _ability;

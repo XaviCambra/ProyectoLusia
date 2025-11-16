@@ -32,7 +32,7 @@ public class TileData
     /// <param name="character">El personaje que intenta moverse a esta casilla.</param>
     /// <param name="rules">Asset ScriptableObject con las reglas de costes de efectos.</param>
     /// <returns>Coste total de movimiento para esta casilla para ese personaje.</returns>
-    public int GetMovementCost(CharacterStats character, SOTileEffectRules rules)
+    public int GetMovementCost(Character character, SOTileEffectRules rules)
     {
         int cost = 1; // Coste base de moverse a una casilla “limpia”
         foreach (var effect in Effects)
