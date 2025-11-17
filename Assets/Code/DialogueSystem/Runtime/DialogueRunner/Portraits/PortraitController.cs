@@ -697,5 +697,33 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController, IPo
         onComplete?.Invoke();
     }
     #endregion
+
+    private void OnDisable()
+    {
+        CleanupGraphs();
+    }
+
+    private void OnDestroy()
+    {
+        CleanupGraphs();
+    }
+
+    private void CleanupGraphs()
+    {
+        foreach (var co in _placementCo.Values)
+            if (co != null) StopCoroutine(co);
+        _placementCo.Clear();
+
+        foreach (var co in _scaleCo.Values)
+            if (co != null) StopCoroutine(co);
+        _scaleCo.Clear();
+
+        foreach (var kv in _specialGraphs)
+        {
+            if (kv.Value.IsValid())
+                kv.Value.Destroy();
+        }
+        _specialGraphs.Clear();
+    }
 }
 
