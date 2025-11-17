@@ -6,8 +6,6 @@ public class Character : MonoBehaviour
 {
     public CombatCharacterStatsSO m_CombatCharacterSO;
 
-    public List<_CombatAbility> m_CombatAbilities = new List<_CombatAbility>();
-
     #region Statistics
     [Header("Statistics")]
     float m_Vitalidad;
@@ -20,7 +18,7 @@ public class Character : MonoBehaviour
     #endregion
 
     #region Getters i Setters
-    void GetStats()
+    void SetStats()
     {
         m_Vitalidad = m_CombatCharacterSO.m_BaseVitalidad;
         m_Fuerza = m_CombatCharacterSO.m_BaseFuerza;
@@ -29,12 +27,9 @@ public class Character : MonoBehaviour
         m_Suerte = m_CombatCharacterSO.m_BaseSuerte;
     }
 
-    void GetAbilities()
+    List<_CombatAbility> GetAbilities()
     {
-        foreach(_CombatAbility l_CombatAbility in m_CombatCharacterSO.m_CombatAbilities)
-        {
-            m_CombatAbilities.Add(l_CombatAbility);
-        }
+        return m_CombatCharacterSO.m_CombatAbilities;
     }
     #endregion
 
