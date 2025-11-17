@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
@@ -45,18 +44,17 @@ public sealed class DialogueRunner : MonoBehaviour
         }
 
         // Casting de dependencias con fallback a búsqueda local/escena
-        navigator = AsOrFind<IGraphNavigator>(navigatorBehaviour);
-        portraits = AsOrFind<IPortraitController>(portraitsBehaviour);
-        portraitsMilestones = portraits as IPortraitPlacementMilestones;
-        typewriter = AsOrFind<ITypewriterPresenter>(typewriterBehaviour);
-        choices = AsOrFind<IChoiceUIController>(choicesBehaviour);
-        conditions = AsOrFind<IConditionEvaluator>(conditionsBehaviour);
+        navigator = navigatorBehaviour as IGraphNavigator;
+        portraits = portraitsBehaviour as IPortraitController;
+        typewriter = typewriterBehaviour as ITypewriterPresenter;
+        choices = choicesBehaviour as IChoiceUIController;
+        conditions = conditionsBehaviour as IConditionEvaluator;
 
         // Validación mínima
-        if (navigator == null) { Debug.LogError("[DialogueRunner] Falta IGraphNavigator."); enabled = false; return; }
-        if (portraits == null) { Debug.LogError("[DialogueRunner] Falta IPortraitController."); enabled = false; return; }
-        if (typewriter == null) { Debug.LogError("[DialogueRunner] Falta ITypewriterPresenter."); enabled = false; return; }
-        if (choices == null) { Debug.LogError("[DialogueRunner] Falta IChoiceUIController."); enabled = false; return; }
+        if (navigator == null) { Debug.LogError("[DialogueRunner] Falta IGraphNavigator (o componente no implementa la interfaz)."); enabled = false; return; }
+        if (portraits == null) { Debug.LogError("[DialogueRunner] Falta IPortraitController (o componente no implementa la interfaz)."); enabled = false; return; }
+        if (typewriter == null) { Debug.LogError("[DialogueRunner] Falta ITypewriterPresenter (o componente no implementa la interfaz)."); enabled = false; return; }
+        if (choices == null) { Debug.LogError("[DialogueRunner] Falta IChoiceUIController (o componente no implementa la interfaz)."); enabled = false; return; }
         if (conditions == null) { Debug.LogError("[DialogueRunner] Falta IConditionEvaluator."); enabled = false; return; }
 
         // Init de módulos
@@ -174,9 +172,6 @@ public sealed class DialogueRunner : MonoBehaviour
         _waitingChoice = choices.Show(node, node.choices, OnChoiceSelected);
         // Si la UI decide no mostrar nada, quedamos listos para avanzar
         _nodeReadyToAdvance = !_waitingChoice;
-
-        if (!_waitingChoice)
-            _nodeReadyToAdvance = true; // no hay elecciones que mostrar → listo para avanzar
     }
 
     private void OnChoiceSelected(string fromPort)
@@ -212,40 +207,28 @@ public sealed class DialogueRunner : MonoBehaviour
 
     private void Restart()
     {
-        portraits.ResetAll();
-        typewriter.Cancel();
-        choices.Hide();
-
-        _waitingChoice = false;
-        _nodeReadyToAdvance = false;
-
+        ResetUiAndState();
         _current = navigator.StartNode();
         _ = ShowNodeAsync(_current);
     }
 
     private void EndDialogue()
     {
+        ResetUiAndState();
+        if (bodyText) bodyText.text = "<i>(Fin del diálogo)</i>";
+        if (speakerText) speakerText.text = string.Empty;
+        _current = null;
+    }
+
+    private void ResetUiAndState()
+    {
+        // Apagar visuales
         portraits.ResetAll();
         typewriter.Cancel();
         choices.Hide();
 
-        if (bodyText) bodyText.text = "<i>(Fin del diálogo)</i>";
-        if (speakerText) speakerText.text = string.Empty;
-
-        _current = null;
-    }
-
-    // Utilidad para castear o buscar componentes que implementen una interfaz
-    private T AsOrFind<T>(MonoBehaviour mb) where T : class
-    {
-        if (mb is T ok) return ok;
-        // Primero en este GameObject
-        var local = GetComponents<MonoBehaviour>().OfType<T>().FirstOrDefault();
-        if (local != null) return local;
-        // Luego en toda la escena (incluyendo inactivos)
-        var all = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None)
-                 .OfType<T>()
-                 .FirstOrDefault();
-        return all;
+        // Resetear estado interno
+        _waitingChoice = false;
+        _nodeReadyToAdvance = false;
     }
 }

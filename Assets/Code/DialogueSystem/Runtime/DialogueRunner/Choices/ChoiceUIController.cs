@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -11,11 +11,11 @@ public sealed class ChoiceUIController : MonoBehaviour, IChoiceUIController
     [Header("Botones (en orden)")]
     [SerializeField] private Button[] buttons;
 
-    [SerializeField] private MonoBehaviour conditionEvaluatorRef; // arrastra aquí tu ConditionEvaluator
+    [SerializeField] private MonoBehaviour conditionEvaluatorRef; // arrastra aquÃ­ tu ConditionEvaluator
     private IConditionEvaluator _conditions;
 
-    [Header("Localización (opcional)")]
-    [SerializeField] private MonoBehaviour localizationRef; // arrastra aquí tu servicio
+    [Header("LocalizaciÃ³n (opcional)")]
+    [SerializeField] private MonoBehaviour localizationRef; // arrastra aquÃ­ tu servicio
     private ILocalizationService _loc;
 
     [Header("Estilo")]
@@ -31,19 +31,38 @@ public sealed class ChoiceUIController : MonoBehaviour, IChoiceUIController
 
     private void Awake()
     {
-        _conditions = conditionEvaluatorRef as IConditionEvaluator;
-        if (_conditions == null) _conditions = FindAnyObjectByType<ConditionEvaluator>();
-
-        _loc = localizationRef as ILocalizationService;
-        if (_loc == null)
+        // 1) ConditionEvaluator
+        if (conditionEvaluatorRef != null)
         {
-            var monos = FindObjectsByType<MonoBehaviour>(
-                FindObjectsInactive.Include, FindObjectsSortMode.None);
-
-            for (int i = 0; i < monos.Length; i++)
+            _conditions = conditionEvaluatorRef as IConditionEvaluator;
+            if (_conditions == null)
             {
-                if (monos[i] is ILocalizationService svc) { _loc = svc; break; }
+                Debug.LogError("[ChoiceUIController] El componente asignado en 'conditionEvaluatorRef' no implementa IConditionEvaluator.");
             }
+        }
+
+        // Fallback: si no se ha asignado nada en el inspector, buscar uno en la escena
+        if (_conditions == null)
+        {
+            _conditions = FindAnyObjectByType<ConditionEvaluator>();
+            if (_conditions == null)
+            {
+                Debug.LogWarning("[ChoiceUIController] No se encontrÃ³ ningÃºn ConditionEvaluator en la escena. Las opciones no comprobarÃ¡n requisitos.");
+            }
+        }
+
+        // 2) Localization (opcional)
+        if (localizationRef != null)
+        {
+            _loc = localizationRef as ILocalizationService;
+            if (_loc == null)
+            {
+                Debug.LogError("[ChoiceUIController] El componente asignado en 'localizationRef' no implementa ILocalizationService.");
+            }
+        }
+        else
+        {
+            _loc = null; // sin localizaciÃ³n â†’ usar texto tal cual
         }
     }
 
@@ -61,13 +80,13 @@ public sealed class ChoiceUIController : MonoBehaviour, IChoiceUIController
                  IEnumerable<DialogueNodeData.ChoiceData> candidates,
                  Action<string> onClick)
     {
-        // Precondición: BeginNode() ya limpió la UI.
+        // PrecondiciÃ³n: BeginNode() ya limpiÃ³ la UI.
         _currentNode = node;
 
         if (node == null || !node.isChoiceNode || buttons == null || buttons.Length == 0)
             return false;
 
-        // 1) Prepara una lista con el estado permitido/bloqueado por cada opción
+        // 1) Prepara una lista con el estado permitido/bloqueado por cada opciÃ³n
         var toRender = new List<(DialogueNodeData.ChoiceData choice, string port, bool allowed)>();
         foreach (var c in candidates ?? Enumerable.Empty<DialogueNodeData.ChoiceData>())
         {
@@ -84,7 +103,7 @@ public sealed class ChoiceUIController : MonoBehaviour, IChoiceUIController
         // Nada que mostrar
         if (toRender.Count == 0) return false;
 
-        // 2) Pintar en botones (hasta el máximo disponible)
+        // 2) Pintar en botones (hasta el mÃ¡ximo disponible)
         _map.Clear();
         int write = 0;
 
@@ -114,7 +133,7 @@ public sealed class ChoiceUIController : MonoBehaviour, IChoiceUIController
                 }
                 else
                 {
-                    displayText = string.IsNullOrEmpty(choice.choiceText) ? $"Opción {write}" : choice.choiceText;
+                    displayText = string.IsNullOrEmpty(choice.choiceText) ? $"OpciÃ³n {write}" : choice.choiceText;
                 }
                 label.text = displayText;
             }
@@ -159,33 +178,20 @@ public sealed class ChoiceUIController : MonoBehaviour, IChoiceUIController
 
     public void Hide()
     {
-        // 1) Oculta y limpia lo que estuviera mapeado por el último Show()
-        if (_map.Count > 0)
-        {
-            foreach (var (btn, _, _) in _map)
-            {
-                if (!btn) continue;
-                btn.onClick.RemoveAllListeners();
-                btn.gameObject.SetActive(false);
-                // Debug.Log($"HIDE map -> {btn.name}");
-            }
-            _map.Clear();
-        }
-
-        // 2) Fallback: también oculta TODOS los botones asignados en el inspector
-        //    (útil cuando Hide() se llama ANTES del primer Show(), p.ej. en BeginNode())
+        // Oculta y limpia TODOS los botones asignados en el inspector
         if (buttons != null)
         {
             for (int i = 0; i < buttons.Length; i++)
             {
                 var btn = buttons[i];
                 if (!btn) continue;
+
                 btn.onClick.RemoveAllListeners();
                 btn.gameObject.SetActive(false);
-                // Debug.Log($"HIDE fallback -> {btn.name}");
             }
         }
 
+        _map.Clear();
         _currentNode = null;
     }
 
@@ -194,23 +200,21 @@ public sealed class ChoiceUIController : MonoBehaviour, IChoiceUIController
         chosenPort = null;
         if (_currentNode == null || _map.Count == 0) return false;
 
-        int idx = 0;
-        for (int i = 0; i < buttons.Length && idx < _map.Count; i++)
+        for (int i = 0; i < _map.Count; i++)
         {
-            var btn = buttons[i];
-            if (!btn || !btn.gameObject.activeSelf) continue;  // botón no visible
-            var mapping = _map[idx++];
+            var (btn, _, port) = _map[i];
+            if (!btn || !btn.gameObject.activeSelf || !btn.interactable)
+                continue;
 
-            // Solo consume hotkey si el botón está interactivo (opción permitida)
-            if (!btn.interactable) continue;
-
-            if (Input.GetKeyDown(KeyCode.Alpha1 + (idx - 1)) || Input.GetKeyDown(KeyCode.Keypad1 + (idx - 1)))
+            // i = 0 â†’ tecla 1, i = 1 â†’ tecla 2, etc.
+            if (Input.GetKeyDown(KeyCode.Alpha1 + i) || Input.GetKeyDown(KeyCode.Keypad1 + i))
             {
-                chosenPort = mapping.port;
+                chosenPort = port;
                 _visited.Add(Key(_currentNode.GUID, chosenPort));
                 return true;
             }
         }
+
         return false;
     }
 

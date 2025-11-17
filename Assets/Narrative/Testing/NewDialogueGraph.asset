@@ -288,13 +288,88 @@ MonoBehaviour:
     eventFloat: 0
     eventString: BOOOLER
     eventBool: 0
+  - GUID: e63d5428-29b6-4eb6-9d12-0c476d3737e9
+    nodeRect:
+      serializedVersion: 2
+      x: -397
+      y: -85
+      width: 480
+      height: 1066
+    bgColorIndex: 11
+    bgColor: {r: 0.38, g: 0.29, b: 0.44, a: 1}
+    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+    profileId: bc17ed2360684d68b5e7a55be922310b
+    portraitKey: idle
+    speakerName: Guille 1
+    localization: 1
+    lineText: Lorem.
+    locKey: 100100001
+    appearance: 1
+    origin: 0
+    target: 3
+    moveSpeed: 300
+    textStart: 2
+    useFade: 1
+    enterFromOpacity: 0
+    enterToOpacity: 100
+    playSpecialAnimation: 1
+    specialAnimation: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
+    specialAnimSpeed: 0.5
+    specialAnimLoop: 1
+    specialStart: 3
+    showTypewriterBox: 1
+    useTypewriter: 1
+    tw:
+      secondsPerChar: 0.2
+      globalSpeed: 0.5
+    showExtrasBox: 1
+    isStart: 1
+    startId: START01
+    isChoiceNode: 0
+    choiceCount: 2
+    showBlockedChoices: 0
+    choices:
+    - choiceText: "Opci\xF3n"
+      portName: ce1a11
+      choiceUseLocalization: 0
+      choiceLocKey: 
+      requiresAffinity: 0
+      affinityKey: 
+      requiredAffinity: 0
+      invertRequirement: 0
+      requiresProgress: 0
+      progressMethod: 
+      progressArgType: 0
+      progressArgInt: 0
+      progressArgFloat: 0
+      progressArgString: 
+    - choiceText: "Opci\xF3n"
+      portName: 825736
+      choiceUseLocalization: 0
+      choiceLocKey: 
+      requiresAffinity: 0
+      affinityKey: 
+      requiredAffinity: 0
+      invertRequirement: 0
+      requiresProgress: 0
+      progressMethod: 
+      progressArgType: 0
+      progressArgInt: 0
+      progressArgFloat: 0
+      progressArgString: 
+    eventKey: OpenDoor
+    eventPayloadType: 5
+    eventInt: 5
+    eventFloat: 2.6
+    eventString: "\xD1"
+    eventBool: 1
   - GUID: 15ce3799-2ec7-426b-818d-523b43d315df
     nodeRect:
       serializedVersion: 2
       x: 659
       y: -70
       width: 480
-      height: 1407
+      height: 1556
     bgColorIndex: 4
     bgColor: {r: 0.52, g: 0.33, b: 0.3, a: 1}
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
@@ -378,81 +453,6 @@ MonoBehaviour:
     eventInt: 3
     eventFloat: 15.8
     eventString: q
-    eventBool: 1
-  - GUID: e63d5428-29b6-4eb6-9d12-0c476d3737e9
-    nodeRect:
-      serializedVersion: 2
-      x: -397
-      y: -85
-      width: 480
-      height: 1066
-    bgColorIndex: 11
-    bgColor: {r: 0.38, g: 0.29, b: 0.44, a: 1}
-    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: bc17ed2360684d68b5e7a55be922310b
-    portraitKey: idle
-    speakerName: Guille 1
-    localization: 1
-    lineText: Lorem.
-    locKey: 100100001
-    appearance: 1
-    origin: 0
-    target: 3
-    moveSpeed: 300
-    textStart: 2
-    useFade: 1
-    enterFromOpacity: 0
-    enterToOpacity: 100
-    playSpecialAnimation: 1
-    specialAnimation: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
-    specialAnimSpeed: 0.5
-    specialAnimLoop: 1
-    specialStart: 3
-    showTypewriterBox: 1
-    useTypewriter: 1
-    tw:
-      secondsPerChar: 0.2
-      globalSpeed: 0.5
-    showExtrasBox: 1
-    isStart: 1
-    startId: START01
-    isChoiceNode: 0
-    choiceCount: 2
-    showBlockedChoices: 0
-    choices:
-    - choiceText: "Opci\xF3n"
-      portName: ce1a11
-      choiceUseLocalization: 0
-      choiceLocKey: 
-      requiresAffinity: 0
-      affinityKey: 
-      requiredAffinity: 0
-      invertRequirement: 0
-      requiresProgress: 0
-      progressMethod: 
-      progressArgType: 0
-      progressArgInt: 0
-      progressArgFloat: 0
-      progressArgString: 
-    - choiceText: "Opci\xF3n"
-      portName: 825736
-      choiceUseLocalization: 0
-      choiceLocKey: 
-      requiresAffinity: 0
-      affinityKey: 
-      requiredAffinity: 0
-      invertRequirement: 0
-      requiresProgress: 0
-      progressMethod: 
-      progressArgType: 0
-      progressArgInt: 0
-      progressArgFloat: 0
-      progressArgString: 
-    eventKey: OpenDoor
-    eventPayloadType: 5
-    eventInt: 5
-    eventFloat: 2.6
-    eventString: "\xD1"
     eventBool: 1
   edges:
   - fromNodeGUID: 09fdf76d-e66a-4944-9ac0-2cfa75ea6620

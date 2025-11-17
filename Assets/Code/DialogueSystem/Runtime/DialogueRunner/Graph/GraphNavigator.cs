@@ -85,28 +85,21 @@ public sealed class GraphNavigator : MonoBehaviour, IGraphNavigator
         return (!string.IsNullOrEmpty(fallback) && _byGuid.TryGetValue(fallback, out var to2)) ? to2 : null;
     }
 
-    public IEnumerable<DialogueNodeData.ChoiceData> FilterChoices(
-        DialogueNodeData node,
-        Func<DialogueNodeData.ChoiceData, bool> predicate)
-    {
-        if (node?.choices == null) return Array.Empty<DialogueNodeData.ChoiceData>();
-        return node.choices.Where(c => c != null && predicate(c));
-    }
-
-    public string ResolveSpeaker(DialogueNodeData node)
-        => TryGetStringField(node, "speakerName", "speaker", "character", "name");
+    string IGraphNavigator.ResolveSpeaker(DialogueNodeData node) => node?.speakerName ?? string.Empty;
 
     public string ResolveBody(DialogueNodeData node)
     {
         if (node == null) return string.Empty;
+
         if (node.localization && !string.IsNullOrEmpty(node.locKey) && _loc != null)
         {
             if (_loc.TryGet(node.locKey, out var localizedText))
                 return localizedText;
-            else
-                Debug.LogWarning($"[GraphNavigator] Clave de localización no encontrada: {node.locKey}");
+
+            Debug.LogWarning($"[GraphNavigator] Clave de localización no encontrada: {node.locKey}");
         }
-        return TryGetStringField(node, "lineText", "text", "dialogueText", "dialogText", "content", "body");
+
+        return string.IsNullOrEmpty(node.lineText) ? string.Empty : node.lineText;
     }
 
     public void RaiseEnterEvents(DialogueNodeData node)
@@ -179,26 +172,6 @@ public sealed class GraphNavigator : MonoBehaviour, IGraphNavigator
             _edges[edgeKey] = e.toNodeGUID;
             _incomingCount[e.toNodeGUID] = _incomingCount.GetValueOrDefault(e.toNodeGUID) + 1;
         }
-    }
-
-    #endregion
-
-    #region Helpers
-
-    private static string TryGetStringField(object obj, params string[] names)
-    {
-        if (obj == null) return string.Empty;
-        var t = obj.GetType();
-        foreach (var n in names)
-        {
-            var f = t.GetField(n);
-            if (f != null && f.FieldType == typeof(string))
-                return (string)(f.GetValue(obj) ?? string.Empty);
-            var p = t.GetProperty(n);
-            if (p != null && p.PropertyType == typeof(string))
-                return (string)(p.GetValue(obj) ?? string.Empty);
-        }
-        return string.Empty;
     }
 
     #endregion
