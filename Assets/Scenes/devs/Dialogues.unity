@@ -2407,6 +2407,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   resetSpecialsWithStaticPoseOnNodeChange: 1
   specialStaticPoseClip: {fileID: 7400000, guid: cbe870c782a219347aafa709359019c4, type: 2}
+  profileDatabase: {fileID: 11400000, guid: ee3d3bf881cc48248ab5bbc644f54bf0, type: 2}
 --- !u!114 &2059072035
 MonoBehaviour:
   m_ObjectHideFlags: 0

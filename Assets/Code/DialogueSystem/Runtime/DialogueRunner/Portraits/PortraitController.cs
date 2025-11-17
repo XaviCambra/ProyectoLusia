@@ -81,7 +81,8 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController, IPo
 
     private readonly Dictionary<string, PortraitState> _stateByProfile = new();
 
-    private ICharacterProfileService _profiles;
+    [Header("Perfiles")]
+    [SerializeField] private CharacterProfileDatabase profileDatabase;
 
     #endregion
 
@@ -90,7 +91,6 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController, IPo
     public void Init(DialogueGraph graph)
     {
         _graph = graph;
-        _profiles = FindAnyObjectByType<CharacterProfileService>();
         RebuildPool();
     }
 
@@ -258,23 +258,15 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController, IPo
 
     private void SetSpriteForNode(Image img, DialogueNodeData node)
     {
-        if (!img || node == null || _profiles == null) return;
+        if (!img || node == null || profileDatabase == null) return;
 
         Sprite sprite = null;
+
         if (!string.IsNullOrEmpty(node.profileId))
         {
-            var p = _profiles.GetById(node.profileId);
-            if (p != null)
-            {
-                if (!string.IsNullOrEmpty(node.portraitKey))
-                    sprite = p.GetPortraitByKey(node.portraitKey);
-                if (!sprite) sprite = p.GetPortraitByKey("Default");
-                if (!sprite)
-                {
-                    var firstKey = p.GetPortraitKeys().FirstOrDefault();
-                    if (!string.IsNullOrEmpty(firstKey)) sprite = p.GetPortraitByKey(firstKey);
-                }
-            }
+            var profile = profileDatabase.FindById(node.profileId);
+            if (profile != null)
+                sprite = profile.GetSprite(node.portraitKey);
         }
 
         img.sprite = sprite;
