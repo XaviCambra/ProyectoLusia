@@ -305,10 +305,10 @@ MonoBehaviour:
     lineText: Lorem.
     locKey: 100100001
     appearance: 1
-    origin: 0
-    target: 3
+    origin: 1
+    target: 4
     moveSpeed: 300
-    textStart: 1
+    textStart: 0
     useFade: 1
     enterFromOpacity: 0
     enterToOpacity: 100
@@ -316,7 +316,7 @@ MonoBehaviour:
     specialAnimation: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
     specialAnimSpeed: 0.5
     specialAnimLoop: 1
-    specialStart: 2
+    specialStart: 1
     showTypewriterBox: 1
     useTypewriter: 1
     tw:
