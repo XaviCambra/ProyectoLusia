@@ -150,16 +150,11 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController, IPo
         await RunPlacementAsync(node, rootRt);
 
         // Si el inicio elegido es "al completar la colocación", lánzalo ahora
-        if (node.playSpecialAnimation && node.specialAnimation && node.specialStart == SpecialStartTiming.WithPlacementComplete)
+        if (node.playSpecialAnimation && node.specialAnimation &&
+            node.specialStart == SpecialStartTiming.WithPlacementComplete)
         {
             PlaySpecial(img, node.specialAnimation, node.specialAnimSpeed, node.specialAnimLoop);
         }
-
-        // 4) Animación especial (si procede)
-        if (node.playSpecialAnimation && node.specialAnimation)
-            PlaySpecial(img, node.specialAnimation, node.specialAnimSpeed, node.specialAnimLoop);
-        else
-            StopSpecial(img); // asegura que no queden loops antiguos
     }
 
     public void ResetAll()
@@ -367,15 +362,12 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController, IPo
         if (!cg) cg = rootRt.gameObject.AddComponent<CanvasGroup>();
 
         // Pose unificada: de la pose actual a la pose objetivo del nodo
-        var from = GetCurrentPose(rootRt);          // ← helper nuevo
+        var from = ComputeStartPose(node, rootRt);          // ← helper nuevo
         var to = ComputeEndPose(node, rootRt);    // ← helper nuevo
 
-        // Si quieres forzar un alpha de arranque cuando hay fade, usa enterFromOpacity
-        if (node.useFade)
-        {
-            from.alpha = Mathf.Clamp01(node.enterFromOpacity / 100f);
-            cg.alpha = from.alpha;
-        }
+        // Aplicamos inmediatamente posición y alpha iniciales
+        rootRt.position = from.pos;
+        cg.alpha = from.alpha;
 
         switch (node.appearance)
         {
@@ -598,6 +590,24 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController, IPo
         if (!cg) cg = rt.gameObject.AddComponent<CanvasGroup>();
         // Escala: usamos la actual del root; el retrato interior ya la animas aparte
         return new Pose(rt.position, cg.alpha, rt.localScale);
+    }
+
+    private Pose ComputeStartPose(DialogueNodeData node, RectTransform rt)
+    {
+        var cg = rt.GetComponent<CanvasGroup>();
+        if (!cg) cg = rt.gameObject.AddComponent<CanvasGroup>();
+
+        // Posición de ORIGEN según el Spot configurado en el nodo
+        var startPos = ResolveSpot(node.origin, rt);
+
+        // Alpha de origen: si hay fade, usamos enterFromOpacity; si no, mantenemos el alpha actual
+        var startAlpha = node.useFade
+            ? Mathf.Clamp01(node.enterFromOpacity / 100f)
+            : cg.alpha;
+
+        var startScale = rt.localScale;
+
+        return new Pose(startPos, startAlpha, startScale);
     }
 
     private Pose ComputeEndPose(DialogueNodeData node, RectTransform rt)

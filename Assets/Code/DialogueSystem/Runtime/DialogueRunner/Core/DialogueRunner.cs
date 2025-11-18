@@ -46,6 +46,7 @@ public sealed class DialogueRunner : MonoBehaviour
         // Casting de dependencias con fallback a búsqueda local/escena
         navigator = navigatorBehaviour as IGraphNavigator;
         portraits = portraitsBehaviour as IPortraitController;
+        portraitsMilestones = portraitsBehaviour as IPortraitPlacementMilestones; // ← NUEVO
         typewriter = typewriterBehaviour as ITypewriterPresenter;
         choices = choicesBehaviour as IChoiceUIController;
         conditions = conditionsBehaviour as IConditionEvaluator;

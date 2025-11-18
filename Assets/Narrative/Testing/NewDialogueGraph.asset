@@ -291,7 +291,7 @@ MonoBehaviour:
   - GUID: e63d5428-29b6-4eb6-9d12-0c476d3737e9
     nodeRect:
       serializedVersion: 2
-      x: -397
+      x: -398
       y: -85
       width: 480
       height: 1066
@@ -308,7 +308,7 @@ MonoBehaviour:
     origin: 0
     target: 3
     moveSpeed: 300
-    textStart: 2
+    textStart: 1
     useFade: 1
     enterFromOpacity: 0
     enterToOpacity: 100
@@ -316,7 +316,7 @@ MonoBehaviour:
     specialAnimation: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
     specialAnimSpeed: 0.5
     specialAnimLoop: 1
-    specialStart: 3
+    specialStart: 2
     showTypewriterBox: 1
     useTypewriter: 1
     tw:
@@ -369,7 +369,7 @@ MonoBehaviour:
       x: 659
       y: -70
       width: 480
-      height: 1556
+      height: 1301
     bgColorIndex: 4
     bgColor: {r: 0.52, g: 0.33, b: 0.3, a: 1}
     profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
