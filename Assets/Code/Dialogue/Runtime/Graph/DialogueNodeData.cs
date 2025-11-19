@@ -61,8 +61,6 @@ public class DialogueNodeData
     public bool useFade = false;
     [Range(0, 100)] public int enterFromOpacity = 0;
     [Range(0, 100)] public int enterToOpacity = 100;
-    //[Range(0, 100)] public int exitFromOpacity = 100;
-    //[Range(0, 100)] public int exitToOpacity = 0;
 
     // ---------- Animación especial ----------
     public bool playSpecialAnimation = false;
@@ -175,8 +173,6 @@ public class DialogueNodeData
 
         enterFromOpacity = Mathf.Clamp(enterFromOpacity, 0, 100);
         enterToOpacity = Mathf.Clamp(enterToOpacity, 0, 100);
-        //exitFromOpacity = Mathf.Clamp(exitFromOpacity, 0, 100);
-        //exitToOpacity = Mathf.Clamp(exitToOpacity, 0, 100);
 
         specialAnimSpeed = Mathf.Max(0f, specialAnimSpeed);
 
