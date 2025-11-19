@@ -31,18 +31,4 @@ public static class ParamService
         if (Settings != null && Settings.TryGetFloat(key, out var v)) return v;
         return @default;
     }
-
-    /// <summary> Devuelve un color paramétrico. </summary>
-    public static Color GetColor(string key, Color defaultColor)
-    {
-        if (Settings != null && Settings.TryGetColor(key, out var v)) return v;
-        return defaultColor;
-    }
-
-    /// <summary> Devuelve una curva paramétrica. </summary>
-    public static AnimationCurve GetCurve(string key, AnimationCurve defaultCurve = null)
-    {
-        if (Settings != null && Settings.TryGetCurve(key, out var v) && v != null) return v;
-        return defaultCurve ?? AnimationCurve.Linear(0, 0, 1, 1);
-    }
 }

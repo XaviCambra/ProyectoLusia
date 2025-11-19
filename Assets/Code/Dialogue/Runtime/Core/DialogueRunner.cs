@@ -24,7 +24,6 @@ public sealed class DialogueRunner : MonoBehaviour
 
     [Header("Controles")]
     [SerializeField] private KeyCode advanceKey = KeyCode.N;
-    [SerializeField] private KeyCode restartKey = KeyCode.R;
 
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI speakerText;
@@ -74,12 +73,6 @@ public sealed class DialogueRunner : MonoBehaviour
     private void Update()
     {
         if (_current == null) return;
-
-        if (Input.GetKeyDown(restartKey))
-        {
-            Restart();
-            return;
-        }
 
         // Hotkeys de elección (si estamos esperando elección)
         if (_waitingChoice && choices.TryConsumeHotkey(out var chosenPort))
@@ -204,13 +197,6 @@ public sealed class DialogueRunner : MonoBehaviour
         {
             EndDialogue();
         }
-    }
-
-    private void Restart()
-    {
-        ResetUiAndState();
-        _current = navigator.StartNode();
-        _ = ShowNodeAsync(_current);
     }
 
     private void EndDialogue()

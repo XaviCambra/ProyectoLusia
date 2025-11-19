@@ -2196,7 +2196,7 @@ GameObject:
   - component: {fileID: 2059072032}
   - component: {fileID: 2059072031}
   m_Layer: 0
-  m_Name: Dialogandoso
+  m_Name: DialogueSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
