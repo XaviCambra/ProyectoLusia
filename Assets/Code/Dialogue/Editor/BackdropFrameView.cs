@@ -16,6 +16,9 @@ public class BackdropFrameView : GraphElement
     private TextField _title;
     private ColorField _color;
 
+    // Título grande superpuesto dentro del frame
+    private Label _overlayTitle;
+
     // Evita guardar mientras estamos aplicando un rect por código (carga)
     private bool _suppressAutoSave;
 
@@ -54,25 +57,46 @@ public class BackdropFrameView : GraphElement
         layer = -1000; // Siempre detrás de los edges
         SendToBack();
 
-        // Header (para editar título/color)
+        // ---------- HEADER (EDICIÓN) ----------
         var header = new VisualElement { name = "header" };
         header.style.flexDirection = FlexDirection.Row;
         header.style.paddingLeft = 6;
         header.style.paddingRight = 6;
         header.style.paddingTop = 4;
         header.style.paddingBottom = 4;
-        header.style.backgroundColor = new Color(0, 0, 0, 0.06f);
+        header.style.backgroundColor = new Color(0, 0, 0, 0.0f); // transparente
         header.style.unityFontStyleAndWeight = FontStyle.Bold;
 
         _title = new TextField { value = Data.title };
         _title.style.flexGrow = 1;
-        _title.RegisterValueChangedCallback(e => Data.title = e.newValue);
+
+        // Hacemos el campo visualmente "invisible"
+        _title.style.backgroundColor = Color.clear;
+        _title.style.borderBottomWidth = 0;
+        _title.style.borderTopWidth = 0;
+        _title.style.borderLeftWidth = 0;
+        _title.style.borderRightWidth = 0;
+        _title.style.unityFontStyleAndWeight = FontStyle.Normal;
+        _title.style.fontSize = 11; // pequeñito, solo para editar
+        _title.style.marginLeft = 0;
+        _title.style.marginRight = 4;
+
+        _title.RegisterValueChangedCallback(e =>
+        {
+            Data.title = e.newValue;
+            if (_overlayTitle != null)
+                _overlayTitle.text = e.newValue;
+        });
 
         _color = new ColorField { value = Data.color, showAlpha = true };
         _color.RegisterValueChangedCallback(e =>
         {
-            Data.color = e.newValue;
-            style.backgroundColor = e.newValue;
+            var newColor = e.newValue;
+            Data.color = newColor;
+            style.backgroundColor = newColor;
+
+            if (_overlayTitle != null)
+                _overlayTitle.style.color = GetTitleColorFromBackground(newColor);
         });
 
         header.Add(_title);
@@ -80,11 +104,26 @@ public class BackdropFrameView : GraphElement
         EnableHeaderDrag(header);
         Add(header);
 
+        // ---------- TÍTULO GRANDE SUPERPUESTO ----------
+        _overlayTitle = new Label(Data.title)
+        {
+            name = "overlay-title"
+        };
+        _overlayTitle.style.position = Position.Absolute;
+        _overlayTitle.style.left = 12;
+        _overlayTitle.style.top = 32; // bajo el header
+        _overlayTitle.style.unityFontStyleAndWeight = FontStyle.Bold;
+        _overlayTitle.style.fontSize = 128; // tamaño grande
+        _overlayTitle.style.color = GetTitleColorFromBackground(Data.color);
+        _overlayTitle.pickingMode = PickingMode.Ignore; // no intercepta clics
+
+        Add(_overlayTitle);
+         
         // El cuerpo NO bloquea clics; solo el header y grips capturan
         pickingMode = PickingMode.Ignore;
         header.pickingMode = PickingMode.Position;
 
-        // Handles de resize (8)
+        // Handles de resize
         AddResizeHandles();
 
         // Persistir rect solo cuando no estamos “silenciados”
@@ -142,14 +181,30 @@ public class BackdropFrameView : GraphElement
             if (!dragging) return;
             dragging = false;
             header.ReleasePointer(e.pointerId);
-            SaveRect(); // (1c) persistir al soltar
+            SaveRect();
             e.StopImmediatePropagation();
         });
     }
 
     // ---- helpers de rect ----
 
-    // Lee los valores “crudos” (sin redondeos) desde style.*
+    private Color GetTitleColorFromBackground(Color bg)
+    {
+        // Luma perceptual (0 = muy oscuro, 1 = muy claro)
+        float luma = 0.2126f * bg.r + 0.7152f * bg.g + 0.0722f * bg.b;
+
+        // luma 0  → factor 2   (doble de intensidad)
+        // luma 1  → factor 0.5 (mitad de intensidad)
+        float factor = Mathf.Lerp(2f, 0.5f, luma);
+
+        return new Color(
+            Mathf.Clamp01(bg.r * factor),
+            Mathf.Clamp01(bg.g * factor),
+            Mathf.Clamp01(bg.b * factor),
+            1f
+        );
+    }
+
     private Rect GetStyleRect()
     {
         float left = style.left.value.value;
@@ -159,7 +214,6 @@ public class BackdropFrameView : GraphElement
         return new Rect(left, top, width, height);
     }
 
-    // Aplica un rect sin disparar guardado (para cuando cargamos desde el asset)
     public void SetRectSilently(Rect r)
     {
         _suppressAutoSave = true;
@@ -168,18 +222,15 @@ public class BackdropFrameView : GraphElement
         style.width = Mathf.Max(MinW, r.width);
         style.height = Mathf.Max(MinH, r.height);
 
-        // Rehabilitar guardado tras el siguiente layout
         this.schedule.Execute(() => _suppressAutoSave = false);
     }
 
-    // Guardado hacia el Data.rect usando los valores crudos
     private void SaveRect()
     {
         if (_suppressAutoSave) return;
         Data.rect = GetStyleRect();
     }
 
-    // (1d) Usa valores crudos en lugar de resolvedStyle (evita “derrape” por redondeos)
     public override Rect GetPosition()
     {
         return GetStyleRect();
@@ -209,7 +260,6 @@ public class BackdropFrameView : GraphElement
         Add(GripElement(Grip.SE));
         Add(GripElement(Grip.SW));
 
-        // Recolocar grips cuando cambie el tamaño
         RegisterCallback<GeometryChangedEvent>(_ => LayoutGrips());
     }
 
@@ -222,7 +272,6 @@ public class BackdropFrameView : GraphElement
         ve.style.height = Handle;
         ve.style.backgroundColor = new Color(0, 0, 0, 0.15f);
 
-        // Cursor por tipo
         switch (g)
         {
             case Grip.N:
@@ -243,7 +292,6 @@ public class BackdropFrameView : GraphElement
                 break;
         }
 
-        // Lógica de arrastre
         Vector2 startMouse = default;
         Rect startRect = default;
         bool dragging = false;
@@ -294,7 +342,7 @@ public class BackdropFrameView : GraphElement
             if (!dragging) return;
             dragging = false;
             ve.ReleasePointer(e.pointerId);
-            SaveRect(); // (1c) persistir al soltar
+            SaveRect();
             e.StopImmediatePropagation();
         });
 

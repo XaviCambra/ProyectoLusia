@@ -11,11 +11,9 @@ public class DialogueGraph : ScriptableObject
 {
     [SerializeField] private List<DialogueNodeData> nodes = new();
     [SerializeField] private List<EdgeData> edges = new();
+    [SerializeField] private List<BackdropFrameData> frames = new();
 
-    // NUEVO: datos de marcos de fondo
-    private List<BackdropFrameData> frames = new();
     public IReadOnlyList<BackdropFrameData> Frames => frames;
-
     public IReadOnlyList<DialogueNodeData> Nodes => nodes;
     public IReadOnlyList<EdgeData> Edges => edges;
 
