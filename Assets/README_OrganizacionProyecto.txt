@@ -1,13 +1,27 @@
+Normas de escritura de carpetas/archivos
+	 - Usar formato CamelCase para archivos y carpetas
+	 - Usar el singular siempre
+
+
 Carpetas:
 Code: Codigo del juego
 	- Archivos permitidos:
 		- .cs
 	- Organizado por carpetas segun la función. Ej.
-		- Dialogos
-		- Movimiento personajes
+		- Dialogue
+		- Character Movement
 		- Inputs
-		- Combate
-Exports: Objetos usados solo para la plataforma (creo)
+		- Combat
+	- Las carpetas de interfaces, tests, etc. deben estar dentro de la misma. Ej.
+		- Dialogue
+			- Interface
+			- Editor
+			- Test
+		- Combat
+			- Interface
+			- Editor
+			- Test
+Export: Objetos usados solo para la plataforma (creo)
 	- Archivos permitidos:
 		- .prefab
 Narrative (No estoy seguro de que esta carpeta tenga que ser general)
