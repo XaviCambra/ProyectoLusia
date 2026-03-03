@@ -1,18 +1,21 @@
 using System.Threading.Tasks;
 
+/// <summary>
+/// Extensi贸n opcional de <see cref="IPortraitController"/> que expone
+/// puntos de control durante la animaci贸n de colocaci贸n del retrato.
+/// </summary>
 public interface IPortraitPlacementMilestones
 {
     public readonly struct Milestones
     {
-        public readonly Task Mid;       // se completa al ~50% de la colocaci髇
-        public readonly Task Complete;  // se completa al final de la colocaci髇
+        public readonly Task Mid;      // se completa al ~50% de la colocaci贸n
+        public readonly Task Complete; // se completa al final de la colocaci贸n
         public Milestones(Task mid, Task complete) { Mid = mid; Complete = complete; }
     }
 
     /// <summary>
-    /// Inicia la aplicaci髇 visual del nodo (sprite, tintes, escalas y colocaci髇)
-    /// y devuelve Tasks para esperar a "mitad" y "completado".
-    /// Importante: este m閠odo NO espera a que termine la colocaci髇.
+    /// Inicia la aplicaci贸n visual del m贸dulo de retrato y devuelve Tasks para
+    /// esperar a "mitad" y "completado". Este m茅todo NO espera a que termine la colocaci贸n.
     /// </summary>
-    Milestones ApplyWithMilestones(DialogueNodeData node);
+    Milestones ApplyWithMilestones(PortraitModule module);
 }

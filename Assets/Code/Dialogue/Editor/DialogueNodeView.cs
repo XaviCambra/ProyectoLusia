@@ -5,1138 +5,350 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using EditorObjectField = UnityEditor.UIElements.ObjectField;
 
+/// <summary>
+/// Nodo visual del grafo de diálogos.
+/// Contiene una lista reordenable de módulos (<see cref="IDialogueModule"/>)
+/// y genera puertos de salida dinámicamente según el <see cref="ChoiceModule"/> presente.
+/// </summary>
 public class DialogueNodeView : Node
 {
-    // ------------------------------
-    // Public / Data
-    // ------------------------------
+    // ─── Datos ────────────────────────────────────────────────────────────────
     public readonly DialogueNodeData Data;
-    public readonly Vector2 MinSize = new(480, 144);
-    public readonly Vector2 MaxSize = new(480, 1080);
-    public Vector2 DefaultSize => new(320, 200);
+    public Vector2 DefaultSize => new(400, 200);
 
-    // ------------------------------
-    // Private UI refs
-    // ------------------------------
-    private Port _input;
-    private bool _didFirstAutosize;
-
-    // Localization UI
-    private Toggle _locToggle;
-    private TextField _textField;       // Texto literal
-    private TextField _locKeyField;     // Clave de localización
-
-    // Typewriter UI
-    private Toggle _twEnableToggle;
-    private FloatField _twSecondsPerCharField;
-    private FloatField _twGlobalSpeedField;
-    private Toggle _twRespectRichTextToggle;
-    private Toggle _twWhitespaceDelayToggle;
-    private FloatField _twCommaPauseField;
-    private FloatField _twPeriodPauseField;
-    private FloatField _twEllipsisPauseField;
-
-    // Special Animation UI
-    private Toggle _specialAnimToggle;
-    private ObjectField _specialAnimClipField;
-    private FloatField _specialAnimSpeedField;
-    private Toggle _specialAnimLoopToggle;
-
-    // Events (payload dinámico)
-    private VisualElement _payloadValueContainer;
-
-    // Start node field (visible-condicional)
-    private TextField _startIdField;
-
-    // Fábrica para payloads de evento
-    private Dictionary<EventPayloadType, Func<VisualElement>> _eventFieldFactory;
-
-    // Notificación al exterior cuando cambian datos persistentes del nodo
+    // ─── Callback externo ─────────────────────────────────────────────────────
+    /// <summary>Se invoca cada vez que algún dato del nodo cambia (para marcar asset dirty).</summary>
     public Action OnDataChanged;
 
-    // ------------------------------
-    // Ctor
-    // ------------------------------
+    // ─── UI interna ───────────────────────────────────────────────────────────
+    private Port _input;
+    private VisualElement _moduleListContainer;
+
+    // ─── Constructor ──────────────────────────────────────────────────────────
     public DialogueNodeView(DialogueNodeData data)
     {
         Data = data;
 
-        ConfigureNodeChrome();
-        BuildHeaderButtons();
-
-        Debug.LogWarning("RECUERDA ENCAPSULARLO EN UN MATODO Y HACERLO PARAMETRICO ARRIBA EN AJUSTES");
-        titleContainer.style.backgroundColor = new Color(0.0f, 0.0f, 0.0f, 0.25f);
-        inputContainer.style.backgroundColor = new Color(0.0f, 0.0f, 0.0f, 0.1f);
-        outputContainer.style.backgroundColor = new Color(0.0f, 0.0f, 0.0f, 0.15f);
-
-        // --- NUEVO ORDEN / ESTRUCTURA ---
-        AddDivider(DialogueEditorTexts.FoldoutProfileAndBackground);
-        BuildProfileAndBackgroundFoldout();   // Foldout: Color fondo + Perfil + Retrato
-
-        AddDivider(DialogueEditorTexts.FoldoutTextAndLocalization);
-        BuildTextAndLocalizationFoldout();    // Foldout: Nombre + Localización + Texto/LocKey
-
-        AddDivider(DialogueEditorTexts.FoldoutAppearanceAndAnimation);
-        BuildAppearanceAndAnimation(); // Aparición / Move / Fade / Animación especial
-
-        AddDivider(DialogueEditorTexts.FoldoutSpecialAnimation);
-        BuildSpecialAnimationFoldout(); // Foldout independiente para la animación especial
-
-        AddDivider(DialogueEditorTexts.FoldoutTypewriter);
-        BuildTypewriterFoldout();     // (foldout)
-
-        AddDivider(DialogueEditorTexts.FoldoutDialogueFlow);
-        BuildDialogueFlowFoldout();           // Foldout: Start + Choice
-
-        AddDivider(DialogueEditorTexts.FoldoutEvents);
-        BuildEventsFoldout();                 // Foldout: Event key + payload + probar
-
-        BuildInputPort();             // Puertos
-        RebuildOutputs();
-
-        RegisterCallback<GeometryChangedEvent>(OnGeometryChangedOnce);
-        SetPosition(Data.nodeRect);
-        tooltip = $"GUID: {Data.GUID}";
-    }
-
-    // ------------------------------
-    // Chrome / Layout
-    // ------------------------------
-    private void ConfigureNodeChrome()
-    {
-        title = DialogueEditorTexts.NodeTitleName;
-        titleContainer.Q("collapse-button")?.RemoveFromHierarchy();
-        viewDataKey = Data.GUID;
-
-        // Caja principal
-        mainContainer.style.paddingLeft = 6;
-        mainContainer.style.paddingRight = 6;
-        mainContainer.style.paddingBottom = 6;
-
-        mainContainer.style.overflow = Overflow.Visible;
-
-        style.flexDirection = FlexDirection.Column;
-        style.minWidth = MinSize.x;
-        style.minHeight = MinSize.y;
-        style.maxWidth = MaxSize.x;
-        //style.maxHeight = MaxSize.y;
-
-        // Fondo y borde
-        var bg = Data.bgColor;
-        mainContainer.style.backgroundColor = new StyleColor(bg);
-        mainContainer.style.borderTopLeftRadius = 4;
-        mainContainer.style.borderTopRightRadius = 4;
-        mainContainer.style.borderBottomLeftRadius = 4;
-        mainContainer.style.borderBottomRightRadius = 4;
-
-        var border = new Color(0, 0, 0, 0.25f);
-        mainContainer.style.borderLeftWidth = 0;
-        mainContainer.style.borderRightWidth = 0;
-        mainContainer.style.borderTopWidth = 0;
-        mainContainer.style.borderBottomWidth = 4;
-        mainContainer.style.borderLeftColor = border;
-        mainContainer.style.borderRightColor = border;
-        mainContainer.style.borderTopColor = border;
-        mainContainer.style.borderBottomColor = border;
-
-        // Clases para estilado por USS (opcional)
-        mainContainer.AddToClassList("dlg-node");
-    }
-
-    private void BuildHeaderButtons()
-    {
-        var delBtn = new Button(DeleteSelf) { text = DialogueEditorTexts.ButtonDeleteNode };
-        titleButtonContainer.Add(delBtn);
-    }
-
-    // ---------- Helpers visuales ----------
-    private void AddDivider(string title = null)
-    {
-        if (!string.IsNullOrEmpty(title))
-        {
-            var label = new Label(title);
-            label.style.unityFontStyleAndWeight = FontStyle.Bold;
-            label.style.marginTop = 8;
-            label.style.marginBottom = 4;
-            mainContainer.Add(label);
-        }
-
-        var line = new VisualElement();
-        line.style.height = 1;
-        line.style.marginBottom = 6;
-        line.style.backgroundColor = new Color(0, 0, 0, 0.10f);
-        mainContainer.Add(line);
-    }
-
-    // Línea fina reutilizable para cualquier contenedor (p.ej., outputContainer)
-    private static void AddThinDividerTo(VisualElement container, float alpha = 0.10f)
-    {
-        var line = new VisualElement();
-        line.style.height = 1;
-        line.style.marginTop = 4;
-        line.style.marginBottom = 4;
-        line.style.backgroundColor = new Color(0, 0, 0, alpha);
-        line.style.flexGrow = 1;
-        container.Add(line);
-    }
-
-    // ------------------------------
-    // Perfil y color de fondo (foldout independiente)
-    // ------------------------------
-    private void BuildProfileAndBackgroundFoldout()
-    {
-        var fold = new Foldout { text = DialogueEditorTexts.FoldoutProfileAndBackground };
-        fold.viewDataKey = Data.GUID + "_PROFILE_BG";
-        fold.style.unityFontStyleAndWeight = FontStyle.Italic;
-        fold.style.marginBottom = 3;
-
-        // --- Color de fondo (paleta) ---
-        {
-            var paletteNames = DialogueNodeData.NodePalette.Select(p => p.name).ToList();
-            int safeIndex = Mathf.Clamp(Data.bgColorIndex, 0, Mathf.Max(0, paletteNames.Count - 1));
-
-            Data.bgColorIndex = safeIndex;
-            if (paletteNames.Count > 0)
-            {
-                Data.bgColor = DialogueNodeData.NodePalette[safeIndex].color;
-                mainContainer.style.backgroundColor = new StyleColor(Data.bgColor);
-            }
-
-            var paletteDropdown = new DropdownField(DialogueEditorTexts.LabelBackgroundColor, paletteNames, safeIndex);
-            paletteDropdown.style.marginBottom = 3;
-            paletteDropdown.RegisterValueChangedCallback(e =>
-            {
-                int idx = paletteNames.IndexOf(e.newValue);
-                if (idx < 0) return;
-
-                Data.bgColorIndex = idx;
-                Data.bgColor = DialogueNodeData.NodePalette[idx].color;
-                mainContainer.style.backgroundColor = new StyleColor(Data.bgColor);
-                ScheduleAutoSize();
-            });
-            fold.Add(paletteDropdown);
-        }
-
-        // --- Perfil (SO) ---
-        {
-            var profileField = new EditorObjectField(DialogueEditorTexts.LabelProfileAsset)
-            {
-                objectType = typeof(CharacterProfile),
-                allowSceneObjects = false
-            };
-
-            profileField.tooltip = DialogueEditorTexts.TooltipProfileAsset;
-            profileField.value = Data.profileRef != null ? Data.profileRef : FindProfileById(Data.profileId);
-            profileField.style.marginBottom = 3;
-
-            profileField.RegisterValueChangedCallback(e =>
-            {
-                var so = e.newValue as CharacterProfile;
-                Data.profileRef = so;
-                Data.profileId = so ? so.ProfileId : null;
-                OnDataChanged?.Invoke();
-            });
-
-#if UNITY_EDITOR
-            if (Data.profileRef == null && !string.IsNullOrEmpty(Data.profileId))
-            {
-                var guids = AssetDatabase.FindAssets("t:CharacterProfile");
-                foreach (var g in guids)
-                {
-                    var path = AssetDatabase.GUIDToAssetPath(g);
-                    var so = AssetDatabase.LoadAssetAtPath<CharacterProfile>(path);
-                    if (so != null && so.ProfileId == Data.profileId)
-                    {
-                        Data.profileRef = so;
-                        break;
-                    }
-                }
-            }
-            profileField.value = Data.profileRef;
-#endif
-
-            fold.Add(profileField);
-        }
-
-        // --- Retrato (key) ---
-        {
-            var portraitKeyField = new TextField(DialogueEditorTexts.LabelPortraitKey) { value = Data.portraitKey };
-            portraitKeyField.tooltip = DialogueEditorTexts.TooltipPortraitKey;
-            portraitKeyField.RegisterValueChangedCallback(e => Data.portraitKey = e.newValue);
-            fold.Add(portraitKeyField);
-        }
-
-        mainContainer.Add(fold);
-    }
-
-    // ------------------------------
-    // Texto y localización (foldout independiente)
-    // ------------------------------
-    private void BuildTextAndLocalizationFoldout()
-    {
-        var fold = new Foldout { text = DialogueEditorTexts.FoldoutTextAndLocalization };
-        fold.viewDataKey = Data.GUID + "_TEXT_LOC";
-        fold.style.unityFontStyleAndWeight = FontStyle.Italic;
-        fold.style.marginBottom = 3;
-
-        // Nombre del hablante
-        fold.Add(new TextField().BindText(DialogueEditorTexts.LabelSpeakerName, Data.speakerName, v => Data.speakerName = v));
-
-        // Toggle Localización
-        _locToggle = new Toggle(DialogueEditorTexts.LabelLocalizationToggle)
-        {
-            tooltip = DialogueEditorTexts.TooltipLocalizationToggleNode,
-            value = Data.localization
-        };
-        _locToggle.style.marginTop = 3;
-        _locToggle.style.marginBottom = 3;
-        _locToggle.RegisterValueChangedCallback(e =>
-        {
-            Data.localization = e.newValue;
-            UpdateLocalizationVisibility();
-            ScheduleAutoSize();
-        });
-        fold.Add(_locToggle);
-
-        // Texto literal
-        _textField = new TextField(DialogueEditorTexts.LabelLiteralText) { multiline = true, value = Data.lineText };
-        _textField.RegisterValueChangedCallback(e => Data.lineText = e.newValue);
-        fold.Add(_textField);
-
-        // Clave de localización
-        _locKeyField = new TextField(DialogueEditorTexts.LabelNodeLocalizationKey) { value = Data.locKey };
-        _locKeyField.RegisterValueChangedCallback(e => Data.locKey = e.newValue);
-        fold.Add(_locKeyField);
-
-        UpdateLocalizationVisibility();
-        mainContainer.Add(fold);
-    }
-
-    // ------------------------------
-    // Flujo del diálogo (foldout independiente)
-    // ------------------------------
-    private void BuildDialogueFlowFoldout()
-    {
-        var fold = new Foldout { text = DialogueEditorTexts.FoldoutDialogueFlow };
-        fold.viewDataKey = Data.GUID + "_FLOW";
-        fold.style.unityFontStyleAndWeight = FontStyle.Italic;
-        fold.style.marginBottom = 3;
-
-        // Toggle: es nodo inicio
-        var isStartToggle = new Toggle(DialogueEditorTexts.LabelIsStartNode) { value = Data.isStart };
-        isStartToggle.tooltip = DialogueEditorTexts.TooltipIsStartNode;
-        isStartToggle.RegisterValueChangedCallback(evt =>
-        {
-            Data.isStart = evt.newValue;
-            RebuildOutputs();
-            if (_startIdField != null)
-                _startIdField.style.display = evt.newValue ? DisplayStyle.Flex : DisplayStyle.None;
-        });
-        fold.Add(isStartToggle);
-
-        // Start Id (visible solo si es nodo inicio)
-        _startIdField = new TextField(DialogueEditorTexts.LabelStartId)
-        {
-            value = Data.startId ?? string.Empty,
-            style = { display = Data.isStart ? DisplayStyle.Flex : DisplayStyle.None }
-        };
-        _startIdField.style.marginBottom = 3;
-        _startIdField.RegisterValueChangedCallback(e => Data.startId = e.newValue);
-        fold.Add(_startIdField);
-
-        // Nodo de elección
-        fold.Add(new Toggle().BindToggle(DialogueEditorTexts.LabelIsChoiceNode, Data.isChoiceNode, v =>
-        {
-            tooltip = DialogueEditorTexts.TooltipIsChoiceNode;
-            Data.isChoiceNode = v;
-            RebuildOutputs();
-        }));
-
-        mainContainer.Add(fold);
-    }
-
-    // ------------------------------
-    // Eventos (foldout independiente)
-    // ------------------------------
-    private void BuildEventsFoldout()
-    {
-        var fold = new Foldout { text = DialogueEditorTexts.FoldoutEvents };
-        fold.viewDataKey = Data.GUID + "_EVENTS";
-        fold.style.unityFontStyleAndWeight = FontStyle.Italic;
-        fold.style.marginBottom = 3;
-
-        // Event Key
-        var eventKeyField = new TextField(DialogueEditorTexts.LabelEventKey) { value = Data.eventKey };
-        eventKeyField.style.marginBottom = 3;
-        eventKeyField.RegisterValueChangedCallback(evt =>
-        {
-            Data.eventKey = evt.newValue;
-            ScheduleAutoSize();
-        });
-        fold.Add(eventKeyField);
-
-        // Selector de tipo
-        var typeField = new EnumField(DialogueEditorTexts.LabelEventPayloadType, Data.eventPayloadType);
-        typeField.style.marginBottom = 3;
-        typeField.Init(Data.eventPayloadType);
-        typeField.RegisterValueChangedCallback(evt =>
-        {
-            Data.eventPayloadType = (EventPayloadType)evt.newValue;
-            RebuildEventValueField();
-            ScheduleAutoSize();
-        });
-        fold.Add(typeField);
-
-        // Contenedor dinámico (queda en foldout)
-        _payloadValueContainer = new VisualElement { name = "payload-value-container" };
-        fold.Add(_payloadValueContainer);
-
-        // Fábrica + primer pintado
-        InitEventFieldFactory();
-        RebuildEventValueField();
-
-        // Botón de prueba
-        var testBtn = new Button(() =>
-        {
-            if (!string.IsNullOrEmpty(Data.eventKey))
-            {
-                var payload = Data.BuildEventPayload();
-                GlobalDialogueEvents.Fire(payload);
-                Debug.Log($"[DialogueNodeView] Probar evento -> {payload}");
-            }
-        })
-        { text = DialogueEditorTexts.LabelEventButtonTest };
-        testBtn.style.marginRight = 2.5f;
-        testBtn.style.marginLeft = 4;
-        fold.Add(testBtn);
-
-        mainContainer.Add(fold);
-    }
-
-    //private void BuildPalettePicker()
-    //{
-    //    var paletteNames = DialogueNodeData.NodePalette.Select(p => p.name).ToList();
-    //    int safeIndex = Mathf.Clamp(Data.bgColorIndex, 0, Mathf.Max(0, paletteNames.Count - 1));
-
-    //    Data.bgColorIndex = safeIndex;
-    //    if (paletteNames.Count > 0)
-    //    {
-    //        Data.bgColor = DialogueNodeData.NodePalette[safeIndex].color;
-    //        mainContainer.style.backgroundColor = new StyleColor(Data.bgColor);
-    //    }
-
-    //    var paletteDropdown = new DropdownField("Color de fondo", paletteNames, safeIndex);
-    //    paletteDropdown.style.marginBottom = 3;
-    //    paletteDropdown.RegisterValueChangedCallback(e =>
-    //    {
-    //        int idx = paletteNames.IndexOf(e.newValue);
-    //        if (idx < 0) return;
-
-    //        Data.bgColorIndex = idx;
-    //        Data.bgColor = DialogueNodeData.NodePalette[idx].color;
-    //        mainContainer.style.backgroundColor = new StyleColor(Data.bgColor);
-    //        ScheduleAutoSize();
-    //    });
-
-    //    mainContainer.Add(paletteDropdown);
-    //}
-
-//    private void BuildProfileSection()
-//    {
-//        var profileField = new EditorObjectField("Perfil (SO)")
-//        {
-//            objectType = typeof(CharacterProfile),
-//            allowSceneObjects = false
-//        };
-
-//        // Prioriza referencia directa; si no existe, intenta localizar por profileId
-//        profileField.value = Data.profileRef != null ? Data.profileRef : FindProfileById(Data.profileId);
-
-//        profileField.style.marginBottom = 3;
-
-//        profileField.RegisterValueChangedCallback(e =>
-//        {
-//            var so = e.newValue as CharacterProfile;
-
-//            Data.profileRef = so;
-//            Data.profileId = so ? so.ProfileId : null;
-
-//            OnDataChanged?.Invoke();
-//        });
-
-//#if UNITY_EDITOR
-//        // Rehidratación del ObjectField en editor si solo tenemos el ID
-//        if (Data.profileRef == null && !string.IsNullOrEmpty(Data.profileId))
-//        {
-//            var guids = AssetDatabase.FindAssets("t:CharacterProfile");
-//            foreach (var g in guids)
-//            {
-//                var path = AssetDatabase.GUIDToAssetPath(g);
-//                var so = AssetDatabase.LoadAssetAtPath<CharacterProfile>(path);
-//                if (so != null && so.ProfileId == Data.profileId)
-//                {
-//                    Data.profileRef = so;
-//                    break;
-//                }
-//            }
-//        }
-//        profileField.value = Data.profileRef;
-//#endif
-
-//        mainContainer.Add(profileField);
-//    }
-
-    private CharacterProfile FindProfileById(string id)
-    {
-#if UNITY_EDITOR
-        if (string.IsNullOrEmpty(id)) return null;
-        var guids = AssetDatabase.FindAssets("t:CharacterProfile");
-        foreach (var g in guids)
-        {
-            var path = AssetDatabase.GUIDToAssetPath(g);
-            var so = AssetDatabase.LoadAssetAtPath<CharacterProfile>(path);
-            if (so != null && so.ProfileId == id)
-                return so;
-        }
-#endif
-        return null;
-    }
-
-    private void BuildPortraitKey()
-    {
-        var portraitKeyField = new TextField("Retrato (key)") { value = Data.portraitKey };
-        portraitKeyField.RegisterValueChangedCallback(e => Data.portraitKey = e.newValue);
-        mainContainer.Add(portraitKeyField);
-    }
-
-    private void UpdateLocalizationVisibility()
-    {
-        if (_textField != null)
-            _textField.style.display = Data.localization ? DisplayStyle.None : DisplayStyle.Flex;
-
-        if (_locKeyField != null)
-            _locKeyField.style.display = Data.localization ? DisplayStyle.Flex : DisplayStyle.None;
-    }
-
-    // ------------------------------
-    // Apariencia y Animación (foldout)
-    // ------------------------------
-    private void BuildAppearanceAndAnimation()
-    {
-        var extrasFold = new Foldout { text = DialogueEditorTexts.FoldoutAppearanceAndAnimation };
-        extrasFold.viewDataKey = Data.GUID + "_EXTRAS";
-        extrasFold.value = Data.showExtrasBox;
-        extrasFold.style.unityFontStyleAndWeight = FontStyle.Italic;
-        extrasFold.style.marginBottom = 3;
-        extrasFold.RegisterValueChangedCallback(e => { Data.showExtrasBox = e.newValue; });
-        mainContainer.Add(extrasFold);
-
-        // Aparición
-        var appearanceField = new EnumField(DialogueEditorTexts.LabelEnterMode, Data.appearance);
-        appearanceField.tooltip = DialogueEditorTexts.TooltipEnterMode;
-        appearanceField.style.marginBottom = 3;
-        appearanceField.Init(Data.appearance);
-        appearanceField.RegisterValueChangedCallback(e => Data.appearance = (AppearanceMode)e.newValue);
-        extrasFold.Add(appearanceField);
-
-        // Origin (Spot) / Target (Spot)
-        var originField = new EnumField(DialogueEditorTexts.LabelEnterOrigin, Data.origin);
-        originField.style.marginBottom = 3;
-        originField.Init(Data.origin);
-        originField.RegisterValueChangedCallback(e => Data.origin = (Spot)e.newValue);
-        extrasFold.Add(originField);
-
-        var targetField = new EnumField(DialogueEditorTexts.LabelEnterTarget, Data.target);
-        targetField.style.marginBottom = 3;
-        targetField.Init(Data.target);
-        targetField.RegisterValueChangedCallback(e => Data.target = (Spot)e.newValue);
-        extrasFold.Add(targetField);
-
-        // Move speed
-        var moveSpeedField = new FloatField(DialogueEditorTexts.LabelEnterMoveSpeed) { value = Data.moveSpeed };
-        moveSpeedField.style.marginBottom = 3;
-        moveSpeedField.RegisterValueChangedCallback(e => Data.moveSpeed = Mathf.Max(0f, e.newValue));
-        extrasFold.Add(moveSpeedField);
-
-        // Inicio del texto
-        var textStartField = new EnumField(DialogueEditorTexts.LabelTextStartPosition, Data.textStart);
-        textStartField.style.marginBottom = 3;
-        textStartField.Init(Data.textStart);
-        textStartField.RegisterValueChangedCallback(e => Data.textStart = (TextStartTiming)e.newValue);
-        extrasFold.Add(textStartField);
-
-        // Fade + opacidades
-        var useFadeToggle = new Toggle(DialogueEditorTexts.LabelUseFade) { value = Data.useFade };
-        useFadeToggle.RegisterValueChangedCallback(e => Data.useFade = e.newValue);
-        extrasFold.Add(useFadeToggle);
-
-        var enterFrom = new IntegerField(DialogueEditorTexts.LabelEnterFromOpacity) { value = Data.enterFromOpacity };
-        enterFrom.style.marginBottom = 3;
-        enterFrom.RegisterValueChangedCallback(e => Data.enterFromOpacity = Mathf.Clamp(e.newValue, 0, 100));
-        extrasFold.Add(enterFrom);
-
-        var enterTo = new IntegerField(DialogueEditorTexts.LabelEnterToOpacity) { value = Data.enterToOpacity };
-        enterTo.style.marginBottom = 3;
-        enterTo.RegisterValueChangedCallback(e => Data.enterToOpacity = Mathf.Clamp(e.newValue, 0, 100));
-        extrasFold.Add(enterTo);
-    }
-
-    // ------------------------------
-    // Animación especial (foldout independiente)
-    // ------------------------------
-    private void BuildSpecialAnimationFoldout()
-    {
-        var saFold = new Foldout { text = DialogueEditorTexts.FoldoutSpecialAnimation };
-        saFold.value = false;
-        // Usamos viewDataKey para persistir el estado del plegado sin tocar el modelo de datos
-        saFold.viewDataKey = Data.GUID + "_SPECIAL_ANIM";
-        saFold.style.unityFontStyleAndWeight = FontStyle.Italic;
-        saFold.style.marginBottom = 3;
-
-        // Toggle principal: activar/desactivar animación especial
-        _specialAnimToggle = new Toggle(DialogueEditorTexts.LabelSpecialAnimToggle) { value = Data.playSpecialAnimation };
-        _specialAnimToggle.tooltip = DialogueEditorTexts.TooltipSpecialAnim;
-        _specialAnimToggle.RegisterValueChangedCallback(e => Data.playSpecialAnimation = e.newValue);
-        saFold.Add(_specialAnimToggle);
-
-        // Clip de animación
-        _specialAnimClipField = new EditorObjectField
-        {
-            label = DialogueEditorTexts.LabelSpecialAnimClip,
-            objectType = typeof(AnimationClip),
-            value = Data.specialAnimation
-        };
-        _specialAnimClipField.style.marginBottom = 3;
-        _specialAnimClipField.RegisterValueChangedCallback(e =>
-        {
-            Data.specialAnimation = e.newValue as AnimationClip;
-        });
-        saFold.Add(_specialAnimClipField);
-
-        // Velocidad
-        _specialAnimSpeedField = new FloatField(DialogueEditorTexts.LabelSpecialAnimSpeed) { value = Data.specialAnimSpeed };
-        _specialAnimSpeedField.style.marginBottom = 3;
-        _specialAnimSpeedField.RegisterValueChangedCallback(e =>
-        {
-            Data.specialAnimSpeed = Mathf.Max(0f, e.newValue);
-        });
-        saFold.Add(_specialAnimSpeedField);
-
-        // Loop
-        _specialAnimLoopToggle = new Toggle(DialogueEditorTexts.LabelSpecialAnimLoop) { value = Data.specialAnimLoop };
-        _specialAnimLoopToggle.RegisterValueChangedCallback(e => Data.specialAnimLoop = e.newValue);
-        saFold.Add(_specialAnimLoopToggle);
-
-        // Momento de inicio de la animación especial
-        var specialStartField = new EnumField(DialogueEditorTexts.LabelSpecialAnimStart, Data.specialStart);
-        specialStartField.style.marginBottom = 3;
-        specialStartField.Init(Data.specialStart);
-        specialStartField.RegisterValueChangedCallback(e =>
-        {
-            Data.specialStart = (SpecialStartTiming)e.newValue;
-        });
-        saFold.Add(specialStartField);
-
-        // Finalmente añadimos el foldout al contenedor principal
-        mainContainer.Add(saFold);
-    }
-
-    // ------------------------------
-    // Typewriter (foldout)
-    // ------------------------------
-    private void BuildTypewriterFoldout()
-    {
-        var typewriterFold = new Foldout { text = DialogueEditorTexts.FoldoutTypewriter };
-        typewriterFold.viewDataKey = Data.GUID + "_TW";
-        typewriterFold.value = Data.showTypewriterBox;
-        typewriterFold.style.unityFontStyleAndWeight = FontStyle.Italic;
-        typewriterFold.style.marginBottom = 3;
-        typewriterFold.RegisterValueChangedCallback(e => { Data.showTypewriterBox = e.newValue; });
-        mainContainer.Add(typewriterFold);
-
-        _twEnableToggle = new Toggle(DialogueEditorTexts.LabelTypewriterToggle) { tooltip = DialogueEditorTexts.TooltipTypewriterToggle, value = Data.useTypewriter };
-        _twEnableToggle.RegisterValueChangedCallback(e =>
-        {
-            Data.useTypewriter = e.newValue;
-            ScheduleAutoSize();
-        });
-        typewriterFold.Add(_twEnableToggle);
-
-        _twSecondsPerCharField = new FloatField(DialogueEditorTexts.LabelSecondsPerChar) { value = Mathf.Clamp(Data.tw.secondsPerChar, 0.001f, 0.2f) };
-        _twSecondsPerCharField.tooltip = DialogueEditorTexts.TooltipSecondsPerChar;
-        _twSecondsPerCharField.style.marginBottom = 3;
-        _twSecondsPerCharField.RegisterValueChangedCallback(e => Data.tw.secondsPerChar = Mathf.Clamp(e.newValue, 0.001f, 0.2f));
-        typewriterFold.Add(_twSecondsPerCharField);
-
-        _twGlobalSpeedField = new FloatField(DialogueEditorTexts.LabelGlobalTypewriterSpeed) { value = Mathf.Clamp(Data.tw.globalSpeed, 0.1f, 3f) };
-        _twGlobalSpeedField.tooltip = DialogueEditorTexts.TooltipGlobalTypewriterSpeed;
-        _twGlobalSpeedField.style.marginBottom = 3;
-        _twGlobalSpeedField.RegisterValueChangedCallback(e => Data.tw.globalSpeed = Mathf.Clamp(e.newValue, 0.1f, 3f));
-        typewriterFold.Add(_twGlobalSpeedField);
-    }
-
-    private void InitEventFieldFactory()
-    {
-        _eventFieldFactory = new Dictionary<EventPayloadType, Func<VisualElement>>
-        {
-            [EventPayloadType.None] = () => null,
-            [EventPayloadType.Int] = () =>
-            {
-                var f = new IntegerField(DialogueEditorTexts.LabelEventIntValue) { value = Data.eventInt };
-                f.style.marginBottom = 3;
-                f.RegisterValueChangedCallback(e => Data.eventInt = e.newValue);
-                return f;
-            },
-            [EventPayloadType.Float] = () =>
-            {
-                var f = new FloatField(DialogueEditorTexts.LabelEventFloatValue) { value = Data.eventFloat };
-                f.style.marginBottom = 3;
-                f.RegisterValueChangedCallback(e => Data.eventFloat = e.newValue);
-                return f;
-            },
-            [EventPayloadType.String] = () =>
-            {
-                var f = new TextField(DialogueEditorTexts.LabelEventStringValue) { value = Data.eventString };
-                f.style.marginBottom = 3;
-                f.RegisterValueChangedCallback(e => Data.eventString = e.newValue);
-                return f;
-            },
-            [EventPayloadType.Bool] = () =>
-            {
-                var f = new Toggle(DialogueEditorTexts.LabelEventBoolValue) { value = Data.eventBool };
-                f.style.marginBottom = 3;
-                f.RegisterValueChangedCallback(e => Data.eventBool = e.newValue);
-                return f;
-            },
-            [EventPayloadType.Char] = () =>
-            {
-                var initial = string.IsNullOrEmpty(Data.eventString) ? "" : Data.eventString.Substring(0, 1);
-                var f = new TextField(DialogueEditorTexts.LabelEventCharValue) { maxLength = 1, value = initial };
-                f.style.marginBottom = 3;
-                f.RegisterValueChangedCallback(e =>
-                {
-                    Data.eventString = string.IsNullOrEmpty(e.newValue) ? "" : e.newValue.Substring(0, 1);
-                });
-                return f;
-            },
-        };
-    }
-
-    private void RebuildEventValueField()
-    {
-        _payloadValueContainer.Clear();
-        if (_eventFieldFactory == null) InitEventFieldFactory();
-
-        if (_eventFieldFactory.TryGetValue(Data.eventPayloadType, out var maker))
-            _payloadValueContainer.Add(maker());
-
+        SetupChrome();
+        BuildInputPort();
+        BuildNodeHeader();
+        BuildModuleList();
+        RebuildOutputPorts();
         ScheduleAutoSize();
     }
 
-    // ------------------------------
-    // Puertos
-    // ------------------------------
+    // ─── Setup visual básico ──────────────────────────────────────────────────
+    private void SetupChrome()
+    {
+        style.minWidth  = 380;
+        style.maxWidth  = 420;
+
+        // Color de fondo según paleta
+        if (DialogueNodeData.NodePalette != null && DialogueNodeData.NodePalette.Count > 0)
+        {
+            var col = DialogueNodeData.NodePalette[
+                Mathf.Clamp(Data.bgColorIndex, 0, DialogueNodeData.NodePalette.Count - 1)].color;
+            style.backgroundColor = col;
+        }
+
+        titleContainer.style.backgroundColor = new Color(0f, 0f, 0f, 0.25f);
+        inputContainer.style.backgroundColor  = new Color(0f, 0f, 0f, 0.10f);
+        outputContainer.style.backgroundColor = new Color(0f, 0f, 0f, 0.15f);
+
+        // Botón eliminar en la cabecera
+        var deleteBtn = new Button(DeleteSelf) { text = "✕" };
+        deleteBtn.style.width  = 20;
+        deleteBtn.style.height = 20;
+        titleContainer.Add(deleteBtn);
+    }
+
+    // ─── Puerto de entrada ────────────────────────────────────────────────────
     private void BuildInputPort()
     {
         _input = PortUtils.CreatePort(this, Direction.Input, Port.Capacity.Multi, "In");
         inputContainer.Add(_input);
     }
 
-    private void ClearOutputs()
+    // ─── Cabecera del nodo (palette + isStart) ────────────────────────────────
+    private void BuildNodeHeader()
     {
-        var children = new List<VisualElement>(outputContainer.Children());
-        foreach (var c in children) outputContainer.Remove(c);
-        outputContainer.Clear();
+        var header = new VisualElement();
+        header.style.paddingLeft = 6;
+        header.style.paddingTop  = 4;
+
+        // Selector de color de paleta
+        var paletteRow = new VisualElement();
+        paletteRow.style.flexDirection = FlexDirection.Row;
+        paletteRow.style.flexWrap      = Wrap.Wrap;
+
+        if (DialogueNodeData.NodePalette != null)
+        {
+            for (int i = 0; i < DialogueNodeData.NodePalette.Count; i++)
+            {
+                int capturedIndex = i;
+                var swatch = new Button(() =>
+                {
+                    Data.bgColorIndex = capturedIndex;
+                    Data.OnValidate();
+                    style.backgroundColor = Data.bgColor;
+                    Notify();
+                });
+                swatch.style.width           = 16;
+                swatch.style.height          = 16;
+                swatch.style.backgroundColor = DialogueNodeData.NodePalette[i].color;
+                swatch.style.marginRight     = 2;
+                swatch.style.marginBottom    = 2;
+                paletteRow.Add(swatch);
+            }
+        }
+        header.Add(paletteRow);
+
+        // Nodo de inicio
+        var startToggle = new Toggle("Start Node") { value = Data.isStart };
+        startToggle.RegisterValueChangedCallback(e =>
+        {
+            Data.isStart = e.newValue;
+            startIdField.style.display = e.newValue ? DisplayStyle.Flex : DisplayStyle.None;
+            Notify();
+        });
+        header.Add(startToggle);
+
+        startIdField = new TextField("Start ID") { value = Data.startId };
+        startIdField.style.display = Data.isStart ? DisplayStyle.Flex : DisplayStyle.None;
+        startIdField.RegisterValueChangedCallback(e => { Data.startId = e.newValue; Notify(); });
+        header.Add(startIdField);
+
+        mainContainer.Insert(0, header);
+    }
+    private TextField startIdField;
+
+    // ─── Lista de módulos ─────────────────────────────────────────────────────
+    private void BuildModuleList()
+    {
+        var wrapper = new VisualElement();
+        wrapper.style.paddingLeft   = 4;
+        wrapper.style.paddingRight  = 4;
+        wrapper.style.paddingBottom = 4;
+
+        // Contenedor de items
+        _moduleListContainer = new VisualElement();
+        wrapper.Add(_moduleListContainer);
+
+        // Botón "+ Add Module" con dropdown
+        var addBtn = new Button(() => ShowAddModuleMenu()) { text = "+ Add Module" };
+        addBtn.style.marginTop = 6;
+        wrapper.Add(addBtn);
+
+        mainContainer.Add(wrapper);
+        RefreshModuleList();
     }
 
-    private void RebuildOutputs()
+    private void RefreshModuleList()
     {
-        ClearOutputs();
+        _moduleListContainer.Clear();
 
-        if (!Data.isChoiceNode)
+        for (int i = 0; i < Data.modules.Count; i++)
         {
-            // Nodo normal: un único "Next"
-            var next = PortUtils.CreatePort(this, Direction.Output, Port.Capacity.Single, "Next");
-            outputContainer.Add(next);
+            var module = Data.modules[i];
+            if (module == null) continue;
+            int capturedIndex = i;
+            _moduleListContainer.Add(BuildModuleItem(module, capturedIndex));
+        }
+    }
+
+    private VisualElement BuildModuleItem(IDialogueModule module, int index)
+    {
+        var item = new VisualElement();
+        item.style.borderBottomWidth = 1;
+        item.style.borderBottomColor = new Color(0.25f, 0.25f, 0.25f, 1f);
+        item.style.marginBottom      = 2;
+
+        // ── Header ──
+        var header = new VisualElement();
+        header.style.flexDirection  = FlexDirection.Row;
+        header.style.alignItems     = Align.Center;
+        header.style.backgroundColor = new Color(0f, 0f, 0f, 0.15f);
+        header.style.paddingLeft    = 4;
+
+        // Flechas de reorden
+        var upBtn = new Button(() =>
+        {
+            if (index > 0)
+            {
+                var tmp = Data.modules[index - 1];
+                Data.modules[index - 1] = Data.modules[index];
+                Data.modules[index] = tmp;
+                RefreshModuleList();
+                RebuildOutputPorts();
+                Notify();
+            }
+        }) { text = "▲" };
+        upBtn.style.width  = 20;
+        upBtn.style.height = 20;
+
+        var downBtn = new Button(() =>
+        {
+            if (index < Data.modules.Count - 1)
+            {
+                var tmp = Data.modules[index + 1];
+                Data.modules[index + 1] = Data.modules[index];
+                Data.modules[index] = tmp;
+                RefreshModuleList();
+                RebuildOutputPorts();
+                Notify();
+            }
+        }) { text = "▼" };
+        downBtn.style.width  = 20;
+        downBtn.style.height = 20;
+
+        // Nombre del módulo
+        var nameLabel = new Label(module.DisplayName);
+        nameLabel.style.flexGrow  = 1;
+        nameLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+        nameLabel.style.marginLeft = 4;
+
+        // Toggle Blocks (excepto ChoiceModule que siempre bloquea)
+        VisualElement blocksElement;
+        if (module is ChoiceModule)
+        {
+            var fixedLabel = new Label("Blocks ✓");
+            fixedLabel.style.color  = new Color(0.6f, 0.6f, 0.6f, 1f);
+            fixedLabel.style.fontSize = 10;
+            fixedLabel.style.width = 70;
+            blocksElement = fixedLabel;
         }
         else
         {
-            // Nodo de elección: contador + filas (TextField + Port)
-            Data.choiceCount = Mathf.Clamp(Data.choiceCount, 2, 4);
+            var blocksToggle = new Toggle { value = module.Blocks, label = "Blocks" };
+            blocksToggle.style.width = 70;
+            blocksToggle.RegisterValueChangedCallback(e => { module.Blocks = e.newValue; Notify(); });
+            blocksElement = blocksToggle;
+        }
 
-            while (Data.choices.Count < Data.choiceCount)
-                Data.choices.Add(new DialogueNodeData.ChoiceData
-                {
-                    choiceText = DialogueEditorTexts.LabelChoiceBase,
-                    portName = Guid.NewGuid().ToString("N").Substring(0, 6)
-                });
+        // Botón eliminar
+        var deleteBtn = new Button(() =>
+        {
+            Data.modules.RemoveAt(index);
+            RefreshModuleList();
+            RebuildOutputPorts();
+            Notify();
+        }) { text = "✕" };
+        deleteBtn.style.width  = 22;
+        deleteBtn.style.height = 22;
 
-            while (Data.choices.Count > Data.choiceCount)
-                Data.choices.RemoveAt(Data.choices.Count - 1);
+        header.Add(upBtn);
+        header.Add(downBtn);
+        header.Add(nameLabel);
+        header.Add(blocksElement);
+        header.Add(deleteBtn);
+        item.Add(header);
 
-            var countField = new IntegerField(DialogueEditorTexts.LabelChoiceCount) { value = Data.choiceCount };
-            countField.style.marginBottom = 3;
-            countField.RegisterValueChangedCallback(e =>
+        // ── Body (drawer) ──
+        var foldout = new Foldout { value = true };
+        foldout.style.paddingLeft = 8;
+
+        Action onChanged = () =>
+        {
+            // Si el módulo es ChoiceModule, reconstruimos los puertos
+            if (module is ChoiceModule)
+                RebuildOutputPorts();
+            Notify();
+        };
+
+        foldout.Add(ModuleDrawerRegistry.Draw(module, onChanged));
+        item.Add(foldout);
+        return item;
+    }
+
+    // ─── Puertos de salida dinámicos ──────────────────────────────────────────
+    public void RebuildOutputPorts()
+    {
+        outputContainer.Clear();
+
+        var choiceModule = Data.GetChoiceModule();
+
+        if (choiceModule != null)
+        {
+            // Un puerto por choice
+            foreach (var choice in choiceModule.choices)
             {
-                Data.choiceCount = Mathf.Clamp(e.newValue, 2, 4);
-                RebuildOutputs();
-            });
-            outputContainer.Add(countField);
+                if (choice == null) continue;
+                var portName = string.IsNullOrEmpty(choice.portName)
+                    ? $"choice_{choiceModule.choices.IndexOf(choice)}"
+                    : choice.portName;
 
-            // Toggle: Mostrar opciones bloqueadas (debajo del número de opciones)
-            var showBlockedToggle = new Toggle(DialogueEditorTexts.LabelShowBlockedChoices)
-            {
-                tooltip = DialogueEditorTexts.TooltipShowBlockedChoices,
-                value = Data.showBlockedChoices
-            };
-            showBlockedToggle.style.marginBottom = 3;
-            showBlockedToggle.RegisterValueChangedCallback(e =>
-            {
-                Data.showBlockedChoices = e.newValue;
-            });
-            outputContainer.Add(showBlockedToggle);
+                var port = PortUtils.CreatePort(this, Direction.Output, Port.Capacity.Single, portName);
 
-            for (int i = 0; i < Data.choiceCount; i++)
-            {
-                // --- Separador antes de cada opción (incluida la primera) ---
-                AddThinDividerTo(outputContainer, 0.12f);
+                var label = new Label(string.IsNullOrEmpty(choice.choiceText) ? portName : choice.choiceText);
+                label.style.marginRight = 4;
 
-                int idx = i;
-
-                // ===================== REQUISITOS (Foldout) =====================
-                var reqFold = new Foldout
-                {
-                    text = DialogueEditorTexts.LabelRequirements
-                };
-                // Recuerda el estado por opción
-                reqFold.viewDataKey = $"{Data.GUID}_REQ_{i}";
-                reqFold.style.unityFontStyleAndWeight = FontStyle.Italic;
-                reqFold.style.marginTop = 2;
-                reqFold.style.marginBottom = 2;
-
-                // ---------- AFINIDAD ----------
-                var affinityColumn = new VisualElement
-                {
-                    style = { flexDirection = FlexDirection.Column }
-                };
-
-                // 1) Cabecera Afinidad (toggle)
-                var headerRow = new VisualElement
-                {
-                    style = { flexDirection = FlexDirection.Row, alignItems = Align.Center }
-                };
-                var reqToggle = new Toggle(DialogueEditorTexts.LabelAffinityRequirementToggle)
-                {
-                    tooltip = DialogueEditorTexts.TooltipAffinityRequirementToggle,
-                    value = Data.choices[idx].requiresAffinity
-                };
-                reqToggle.style.minWidth = 0;
-                headerRow.Add(reqToggle);
-                affinityColumn.Add(headerRow);
-
-                // 2) Parámetros Afinidad (clave + valor + bajo afinidad)
-                var paramsRow = new VisualElement
-                {
-                    style = { flexDirection = FlexDirection.Column }
-                };
-
-                var affinityKeyField = new TextField(DialogueEditorTexts.LabelAffinityKey)
-                {
-                    value = Data.choices[idx].affinityKey
-                };
-                affinityKeyField.style.marginBottom = 3;
-                paramsRow.Add(affinityKeyField);
-                affinityKeyField.RegisterValueChangedCallback(e => Data.choices[idx].affinityKey = e.newValue);
-
-                var affinityValueField = new FloatField(DialogueEditorTexts.LabelAffinityValue)
-                {
-                    value = Data.choices[idx].requiredAffinity
-                };
-                affinityValueField.style.marginBottom = 3;
-                paramsRow.Add(affinityValueField);
-                affinityValueField.RegisterValueChangedCallback(e => Data.choices[idx].requiredAffinity = e.newValue);
-
-                var invertToggle = new Toggle(DialogueEditorTexts.LabelAffinityInvert)
-                {
-                    tooltip = DialogueEditorTexts.TooltipAffinityInvert,
-                    value = Data.choices[idx].invertRequirement
-                };
-                invertToggle.style.marginBottom = 3;
-                paramsRow.Add(invertToggle);
-                invertToggle.RegisterValueChangedCallback(e => Data.choices[idx].invertRequirement = e.newValue);
-
-                // Mostrar/ocultar parámetros de afinidad
-                void SetAffinityParamsVisible(bool on)
-                {
-                    paramsRow.style.display = on ? DisplayStyle.Flex : DisplayStyle.None;
-                }
-                SetAffinityParamsVisible(Data.choices[idx].requiresAffinity);
-                reqToggle.RegisterValueChangedCallback(e =>
-                {
-                    Data.choices[idx].requiresAffinity = e.newValue;
-                    SetAffinityParamsVisible(e.newValue);
-                });
-
-                affinityColumn.Add(paramsRow);
-
-                // ---------- PROGRESO ----------
-                var progressColumn = new VisualElement
-                {
-                    style = { flexDirection = FlexDirection.Column }
-                };
-
-                // 1) Cabecera Progreso (toggle)
-                var progHeaderRow = new VisualElement
-                {
-                    style = { flexDirection = FlexDirection.Row, alignItems = Align.Center }
-                };
-                var progToggle = new Toggle(DialogueEditorTexts.LabelProgressRequirementToggle)
-                {
-                    tooltip = DialogueEditorTexts.TooltipProgressRequirementToggle,
-                    value = Data.choices[idx].requiresProgress
-                };
-                progHeaderRow.Add(progToggle);
-                progressColumn.Add(progHeaderRow);
-
-                // 2) Parámetros Progreso (método + tipo + valor dinámico)
-                var progParamsRow = new VisualElement
-                {
-                    style = { flexDirection = FlexDirection.Column }
-                };
-
-                // Método (string) — dejamos tu configuración de antes (sin tocar el input interno)
-                var methodField = new TextField(DialogueEditorTexts.LabelProgressMethod)
-                {
-                    tooltip = DialogueEditorTexts.TooltipProgressMethod,
-                    value = Data.choices[idx].progressMethod
-                };
-                methodField.style.marginBottom = 3;
-                methodField.RegisterValueChangedCallback(e => Data.choices[idx].progressMethod = e.newValue);
-                progParamsRow.Add(methodField);
-
-                // Tipo (enum)
-                var argTypeField = new EnumField(DialogueEditorTexts.LabelProgressArgType, Data.choices[idx].progressArgType);
-                argTypeField.style.marginBottom = 3;
-                argTypeField.Init(Data.choices[idx].progressArgType);
-                progParamsRow.Add(argTypeField);
-
-                // Contenedor dinámico del valor
-                var argValueContainer = new VisualElement();
-                progParamsRow.Add(argValueContainer);
-
-                // Fábrica del campo según tipo
-                void RebuildProgressArgField()
-                {
-                    argValueContainer.Clear();
-                    switch (Data.choices[idx].progressArgType)
-                    {
-                        case ProgressArgType.None:
-                            break;
-                        case ProgressArgType.Int:
-                            {
-                                var f = new IntegerField(DialogueEditorTexts.LabelProgressIntValue) { value = Data.choices[idx].progressArgInt };
-                                f.style.marginBottom = 3;
-                                f.RegisterValueChangedCallback(v => Data.choices[idx].progressArgInt = v.newValue);
-                                argValueContainer.Add(f);
-                                break;
-                            }
-                        case ProgressArgType.Float:
-                            {
-                                var f = new FloatField(DialogueEditorTexts.LabelProgressFloatValue) { value = Data.choices[idx].progressArgFloat };
-                                f.style.marginBottom = 3;
-                                f.RegisterValueChangedCallback(v => Data.choices[idx].progressArgFloat = v.newValue);
-                                argValueContainer.Add(f);
-                                break;
-                            }
-                        case ProgressArgType.String:
-                            {
-                                var f = new TextField(DialogueEditorTexts.LabelProgressStringValue) { value = Data.choices[idx].progressArgString };
-                                f.style.marginBottom = 3;
-                                f.RegisterValueChangedCallback(v => Data.choices[idx].progressArgString = v.newValue);
-                                argValueContainer.Add(f);
-                                break;
-                            }
-                    }
-                }
-
-                // Estado inicial
-                RebuildProgressArgField();
-
-                // Mostrar/ocultar parámetros de progreso
-                void SetProgressParamsVisible(bool on)
-                {
-                    progParamsRow.style.display = on ? DisplayStyle.Flex : DisplayStyle.None;
-                }
-                SetProgressParamsVisible(Data.choices[idx].requiresProgress);
-
-                // Callbacks Progreso
-                progToggle.RegisterValueChangedCallback(e =>
-                {
-                    Data.choices[idx].requiresProgress = e.newValue;
-                    SetProgressParamsVisible(e.newValue);
-                });
-                argTypeField.RegisterValueChangedCallback(e =>
-                {
-                    Data.choices[idx].progressArgType = (ProgressArgType)e.newValue;
-                    RebuildProgressArgField();
-                });
-
-                progressColumn.Add(progParamsRow);
-
-                // Separador entre requisitos
-                var line = new VisualElement();
-                line.style.height = 1;
-                line.style.marginTop = 3;
-                line.style.marginBottom = 6;
-                line.style.backgroundColor = new Color(0, 0, 0, 0.10f);
-
-                // ---------- Montaje dentro del Foldout ----------
-                reqFold.Add(affinityColumn);
-                reqFold.Add(line);
-                reqFold.Add(progressColumn);
-
-                // Añade el foldout al contenedor de outputs
-                outputContainer.Add(reqFold);
-
-                // Contenedor vertical de la sección de opción
-                var optSection = new VisualElement();
-                optSection.style.flexDirection = FlexDirection.Column;
-                optSection.style.alignItems = Align.Stretch;
-
-                // Campos que alternan (literal vs clave)
-                var choiceTextField = new TextField($"{DialogueEditorTexts.LabelChoiceBase} {idx + 1}")
-                {
-                    value = Data.choices[idx].choiceText
-                };
-                choiceTextField.style.flexGrow = 1;
-
-                var choiceLocKeyField = new TextField($"{DialogueEditorTexts.LabelChoiceLocalizationKey} {idx + 1}")
-                {
-                    tooltip = DialogueEditorTexts.TooltipChoiceLocalizationToggle,
-                    value = Data.choices[idx].choiceLocKey
-                };
-                choiceLocKeyField.style.flexGrow = 1;
-
-                // Fila horizontal: campo visible + puerto
                 var row = new VisualElement();
                 row.style.flexDirection = FlexDirection.Row;
-                row.style.alignItems = Align.Center;
-
-                // Puerto
-                var port = PortUtils.CreatePort(this, Direction.Output, Port.Capacity.Single, Data.choices[idx].portName);
-
-                // Helper tooltip
-                System.Action updatePortTooltip = () =>
-                {
-                    if (Data.choices[idx].choiceUseLocalization)
-                        port.tooltip = string.IsNullOrEmpty(Data.choices[idx].choiceLocKey)
-                            ? "(loc: vacío)"
-                            : $"loc: {Data.choices[idx].choiceLocKey}";
-                    else
-                        port.tooltip = Data.choices[idx].choiceText;
-                };
-
-                // Callbacks campos
-                choiceTextField.RegisterValueChangedCallback(e =>
-                {
-                    Data.choices[idx].choiceText = e.newValue;
-                    if (!Data.choices[idx].choiceUseLocalization) updatePortTooltip();
-                });
-                choiceLocKeyField.RegisterValueChangedCallback(e =>
-                {
-                    Data.choices[idx].choiceLocKey = e.newValue;
-                    if (Data.choices[idx].choiceUseLocalization) updatePortTooltip();
-                });
-
-                // Toggle justo DEBAJO del foldout de requisitos
-                var choiceLocToggle = new Toggle(DialogueEditorTexts.LabelChoiceLocalizationToggle)
-                {
-                    value = Data.choices[idx].choiceUseLocalization
-                };
-                choiceLocToggle.tooltip = DialogueEditorTexts.TooltipLocalizationToggleNode;
-                choiceLocToggle.RegisterValueChangedCallback(e =>
-                {
-                    Data.choices[idx].choiceUseLocalization = e.newValue;
-                    choiceTextField.style.display = e.newValue ? DisplayStyle.None : DisplayStyle.Flex;
-                    choiceLocKeyField.style.display = e.newValue ? DisplayStyle.Flex : DisplayStyle.None;
-                    updatePortTooltip();
-                });
-
-                // Estado inicial + montaje
-                choiceTextField.style.display = Data.choices[idx].choiceUseLocalization ? DisplayStyle.None : DisplayStyle.Flex;
-                choiceLocKeyField.style.display = Data.choices[idx].choiceUseLocalization ? DisplayStyle.Flex : DisplayStyle.None;
-                updatePortTooltip();
-
-                // Orden pedido: (1) Requisitos (ya añadido) -> (2) Toggle loc -> (3) Fila de opción
-                optSection.Add(choiceLocToggle);
-                row.Add(choiceTextField);
-                row.Add(choiceLocKeyField);
+                row.style.alignItems    = Align.Center;
+                row.Add(label);
                 row.Add(port);
-                optSection.Add(row);
-
-                // Añade sección completa
-                outputContainer.Add(optSection);
-
-                // === Finalmente, la fila principal (texto + puerto) ===
                 outputContainer.Add(row);
             }
         }
-
-        RefreshExpandedState();
-        RefreshPorts();
-        ScheduleAutoSize();
-    }
-
-    // ------------------------------
-    // Autosize / Geometry
-    // ------------------------------
-    private void OnGeometryChangedOnce(GeometryChangedEvent evt)
-    {
-        if (_didFirstAutosize) return;
-        _didFirstAutosize = true;
-
-        // Primer ajuste al construirse
-        ScheduleAutoSize();
-    }
-
-    private void ScheduleAutoSize()
-    {
-        // Un pequeño debounce visual para no recalcular varias veces en el mismo frame
-        schedule.Execute(() =>
+        else
         {
-            var r = GetPosition();
+            // Puerto único "Next"
+            var nextPort = PortUtils.CreatePort(this, Direction.Output, Port.Capacity.Single, "Next");
+            outputContainer.Add(nextPort);
+        }
 
-            // Altura: usa el contenido y añade margen
-            float contentH = mainContainer.layout.height + inputContainer.layout.height + outputContainer.layout.height;
-            float targetH = Mathf.Clamp(contentH + 20f, MinSize.y, MaxSize.y);
-
-            // Anchura: calcula la mayor anchura de los contenedores (contentRect) + padding
-            float contentW = Mathf.Max(
-                mainContainer.contentRect.width,
-                inputContainer.contentRect.width,
-                outputContainer.contentRect.width
-            );
-
-            float padding = 24f;
-            float targetW = Mathf.Clamp(Mathf.Max(r.width, contentW + padding, MinSize.x), MinSize.x, MaxSize.x);
-
-            SetPosition(new Rect(r.x, r.y, targetW, targetH));
-        }).ExecuteLater(0);
+        RefreshPorts();
     }
 
+    // ─── Menú "Add Module" ─────────────────────────────────────────────────────
+    private void ShowAddModuleMenu()
+    {
+        var menu = new GenericMenu();
+        foreach (var kv in ModuleDrawerRegistry.AvailableModuleTypes)
+        {
+            var displayName  = kv.Key;
+            var moduleType   = kv.Value;
+            menu.AddItem(new GUIContent(displayName), false, () =>
+            {
+                var instance = (IDialogueModule)Activator.CreateInstance(moduleType);
+                Data.modules.Add(instance);
+                RefreshModuleList();
+                RebuildOutputPorts();
+                Notify();
+            });
+        }
+        menu.ShowAsContext();
+    }
+
+    // ─── Eliminar nodo ────────────────────────────────────────────────────────
+    private void DeleteSelf()
+    {
+        if (GetFirstAncestorOfType<DialogueGraphView>() is { } graphView)
+            graphView.DeleteElements(new[] { this });
+    }
+
+    // ─── Notify ───────────────────────────────────────────────────────────────
+    private void Notify() => OnDataChanged?.Invoke();
+
+    // ─── Posicionamiento ──────────────────────────────────────────────────────
     public override void SetPosition(Rect newPos)
     {
-        newPos.width = Mathf.Clamp(newPos.width, MinSize.x, MaxSize.x);
-        newPos.height = Mathf.Clamp(newPos.height, MinSize.y, MaxSize.y);
         base.SetPosition(newPos);
         Data.nodeRect = newPos;
     }
 
-    private void DeleteSelf() => RemoveFromHierarchy();
+    private void ScheduleAutoSize()
+    {
+        schedule.Execute(() =>
+        {
+            var rect = Data.nodeRect;
+            if (rect.width <= 1f) rect.width  = 400f;
+            if (rect.height <= 1f) rect.height = 200f;
+            base.SetPosition(rect);
+        }).ExecuteLater(0);
+    }
 }
 #endif

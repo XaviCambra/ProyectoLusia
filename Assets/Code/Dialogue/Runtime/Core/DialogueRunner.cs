@@ -1,72 +1,73 @@
-﻿using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// Orquesta la ejecución de nodos de diálogo.
+/// Cada nodo contiene una lista ordenada de módulos (<see cref="IDialogueModule"/>)
+/// que se ejecutan secuencialmente a través de sus executors registrados.
+/// El runner no conoce el contenido de los módulos: solo itera y despacha.
+/// </summary>
 [DisallowMultipleComponent]
 public sealed class DialogueRunner : MonoBehaviour
 {
     [Header("Graph")]
     [SerializeField] private DialogueGraph graph;
 
-    [Header("Servicios (inyecta MonoBehaviours que implementen las interfaces)")]
-    [SerializeField] private MonoBehaviour navigatorBehaviour;   // IGraphNavigator
-    [SerializeField] private MonoBehaviour portraitsBehaviour;   // IPortraitController
-    [SerializeField] private MonoBehaviour typewriterBehaviour;  // ITypewriterPresenter
-    [SerializeField] private MonoBehaviour choicesBehaviour;     // IChoiceUIController
-    [SerializeField] private MonoBehaviour conditionsBehaviour;  // IConditionEvaluator
+    [Header("Navegación")]
+    [SerializeField] private MonoBehaviour navigatorBehaviour; // IGraphNavigator
 
-    private IGraphNavigator navigator;
-    private IPortraitController portraits;
-    private IPortraitPlacementMilestones portraitsMilestones;
-    private ITypewriterPresenter typewriter;
-    private IChoiceUIController choices;
-    private IConditionEvaluator conditions;
+    [Header("Executors de módulos")]
+    [SerializeField] private TextModuleExecutor    textExecutor;
+    [SerializeField] private PortraitModuleExecutor portraitExecutor;
+    [SerializeField] private EventModuleExecutor   eventExecutor;
+    [SerializeField] private AudioModuleExecutor   audioExecutor;
+    [SerializeField] private ChoiceModuleExecutor  choiceExecutor;
 
     [Header("Controles")]
     [SerializeField] private KeyCode advanceKey = KeyCode.N;
 
-    [Header("UI")]
-    [SerializeField] private TextMeshProUGUI speakerText;
-    [SerializeField] private TextMeshProUGUI bodyText;
+    // Servicios internos
+    private IGraphNavigator _navigator;
+    private readonly Dictionary<Type, IModuleExecutor> _executors = new();
 
-    // Estado
+    // Estado del runner
     private DialogueNodeData _current;
-    private bool _waitingChoice;
-    private bool _nodeReadyToAdvance; // texto mostrado (y colocación hecha) en nodo NO-choices
+    private bool             _nodeReadyToAdvance;
+    private IModuleExecutor  _activeBlockingExecutor;
+    private CancellationTokenSource _cts;
 
     private void Awake()
     {
-        if (graph == null)
-        {
-            Debug.LogError("[DialogueRunner] Falta DialogueGraph.");
-            enabled = false; return;
-        }
+        _navigator = navigatorBehaviour as IGraphNavigator;
 
-        // Casting de dependencias con fallback a búsqueda local/escena
-        navigator = navigatorBehaviour as IGraphNavigator;
-        portraits = portraitsBehaviour as IPortraitController;
-        portraitsMilestones = portraitsBehaviour as IPortraitPlacementMilestones; // ← NUEVO
-        typewriter = typewriterBehaviour as ITypewriterPresenter;
-        choices = choicesBehaviour as IChoiceUIController;
-        conditions = conditionsBehaviour as IConditionEvaluator;
+        if (graph == null)      { Debug.LogError("[DialogueRunner] Falta DialogueGraph.");       enabled = false; return; }
+        if (_navigator == null) { Debug.LogError("[DialogueRunner] Falta IGraphNavigator.");      enabled = false; return; }
 
-        // Validación mínima
-        if (navigator == null) { Debug.LogError("[DialogueRunner] Falta IGraphNavigator (o componente no implementa la interfaz)."); enabled = false; return; }
-        if (portraits == null) { Debug.LogError("[DialogueRunner] Falta IPortraitController (o componente no implementa la interfaz)."); enabled = false; return; }
-        if (typewriter == null) { Debug.LogError("[DialogueRunner] Falta ITypewriterPresenter (o componente no implementa la interfaz)."); enabled = false; return; }
-        if (choices == null) { Debug.LogError("[DialogueRunner] Falta IChoiceUIController (o componente no implementa la interfaz)."); enabled = false; return; }
-        if (conditions == null) { Debug.LogError("[DialogueRunner] Falta IConditionEvaluator."); enabled = false; return; }
+        // Registrar executors
+        RegisterExecutor(textExecutor);
+        RegisterExecutor(portraitExecutor);
+        RegisterExecutor(eventExecutor);
+        RegisterExecutor(audioExecutor);
+        RegisterExecutor(choiceExecutor);
 
-        // Init de módulos
-        navigator.Init(graph);
-        portraits.Init(graph);
-        typewriter.Init(bodyText);
-        choices.Init();
+        // Suscribirse al evento de choice seleccionada
+        if (choiceExecutor != null)
+            choiceExecutor.OnChoiceSelected += OnChoiceSelected;
+
+        // Inicializar executor que lo necesitan (ej. PortraitController necesita el grafo)
+        foreach (var executor in _executors.Values)
+            executor.Initialize(graph);
+
+        _navigator.Init(graph);
     }
 
     private void Start()
     {
-        _current = navigator.StartNode();
+        _current = _navigator.StartNode();
         _ = ShowNodeAsync(_current);
     }
 
@@ -74,106 +75,77 @@ public sealed class DialogueRunner : MonoBehaviour
     {
         if (_current == null) return;
 
-        // Hotkeys de elección (si estamos esperando elección)
-        if (_waitingChoice && choices.TryConsumeHotkey(out var chosenPort))
-        {
-            OnChoiceSelected(chosenPort);
-            return;
-        }
+        // Hotkeys de choice (1-4)
+        if (choiceExecutor != null && choiceExecutor.TryConsumeHotkey(out _))
+            return; // choiceExecutor ya dispara OnChoiceSelected
 
         if (Input.GetKeyDown(advanceKey))
         {
-            // 1) Si hay typewriter activo, lo completamos y NO avanzamos aún
-            if (typewriter.FastForwardOrIgnore()) return;
-
-            // 2) Si no hay elecciones y el nodo ya está listo para avanzar, pasamos al siguiente
-            if (!_waitingChoice && _nodeReadyToAdvance)
-            {
-                AdvanceToNext();
+            // Intentar fast-forward en el executor activo (ej. skip typewriter)
+            if (_activeBlockingExecutor != null && _activeBlockingExecutor.TryFastForward())
                 return;
-            }
+
+            if (_nodeReadyToAdvance)
+                AdvanceToNext();
         }
     }
 
     private async Task ShowNodeAsync(DialogueNodeData node)
     {
-        _waitingChoice = false;
-        _nodeReadyToAdvance = false;
-
-        choices.BeginNode();
+        _nodeReadyToAdvance     = false;
+        _activeBlockingExecutor = null;
 
         if (node == null) { EndDialogue(); return; }
 
-        // 1) Eventos de entrada
-        navigator.RaiseEnterEvents(node);
+        _cts = new CancellationTokenSource();
+        var ctx = new ModuleExecutionContext(node.GUID, _cts.Token);
 
-        // 2) Speaker
-        if (speakerText) speakerText.text = navigator.ResolveSpeaker(node);
+        // Notificar inicio de nodo a todos los executors
+        foreach (var executor in _executors.Values)
+            executor.OnNodeBegin();
 
-        // 3) Texto + retrato con timings finos
-        var resolvedText = navigator.ResolveBody(node);
-
-        // Construimos un TypewriterProfile solo si el nodo lo requiere
-        TypewriterProfile twProfile = null;
-        if (node.useTypewriter)
+        // Ejecutar módulos en orden
+        foreach (var module in node.modules)
         {
-            twProfile = ScriptableObject.CreateInstance<TypewriterProfile>();
-            twProfile.secondsPerChar = node.tw.secondsPerChar;
-            twProfile.globalSpeed = node.tw.globalSpeed;
-        }
-
-        // 4) Lanzar retrato con hitos y disparar texto según TextStartTiming
-        if (portraitsMilestones != null)
-        {
-            // Nuevo flujo con hitos de colocación
-            var ms = portraitsMilestones.ApplyWithMilestones(node);
-
-            switch (node.textStart)
+            if (module == null) continue;
+            if (!_executors.TryGetValue(module.GetType(), out var executor))
             {
-                case TextStartTiming.OnEnterStart:
-                    portraits.OnTextStart(node);                         // dispara especiales "WithTextStart"
-                    await typewriter.ShowAsync(resolvedText, twProfile); // empieza YA el texto
-                    await ms.Complete;                                   // asegura que la colocación acabe antes de elecciones
-                    break;
+                Debug.LogWarning($"[DialogueRunner] Sin executor para módulo tipo '{module.GetType().Name}'. Saltando.");
+                continue;
+            }
 
-                case TextStartTiming.OnEnterMid:
-                    await ms.Mid;                                        // espera a ~50% de la colocación
-                    portraits.OnTextStart(node);
-                    await typewriter.ShowAsync(resolvedText, twProfile);
-                    await ms.Complete;                                   // garantiza fin de colocación antes de elecciones
-                    break;
+            if (_cts.IsCancellationRequested) break;
 
-                case TextStartTiming.OnEnterComplete:
-                default:
-                    await ms.Complete;                                   // comportamiento clásico
-                    portraits.OnTextStart(node);
-                    await typewriter.ShowAsync(resolvedText, twProfile);
-                    break;
+            if (module.Blocks)
+            {
+                _activeBlockingExecutor = executor;
+                try
+                {
+                    await executor.ExecuteAsync(module, ctx);
+                }
+                catch (OperationCanceledException) { break; }
+                finally { _activeBlockingExecutor = null; }
+            }
+            else
+            {
+                // Fire and forget — no bloqueamos el loop de módulos
+                var capturedModule   = module;
+                var capturedExecutor = executor;
+                _ = capturedExecutor.ExecuteAsync(capturedModule, ctx);
             }
         }
-        else
-        {
-            // Fallback retro-compatible: sin hitos → como antes (espera a terminar)
-            await portraits.ApplyAsync(node);
-            portraits.OnTextStart(node);
-            await typewriter.ShowAsync(resolvedText, twProfile);
-        }
 
-        // Limpieza del perfil temporal
-        if (twProfile != null) Destroy(twProfile);
-
-        // 5) Elecciones o listo para avanzar (delegación REAL a la UI)
-        _waitingChoice = choices.Show(node, node.choices, OnChoiceSelected);
-        // Si la UI decide no mostrar nada, quedamos listos para avanzar
-        _nodeReadyToAdvance = !_waitingChoice;
+        // Si el nodo no tiene ChoiceModule, quedamos listos para avanzar
+        if (!node.IsChoiceNode)
+            _nodeReadyToAdvance = true;
     }
 
-    private void OnChoiceSelected(string fromPort)
+    private void OnChoiceSelected(string portName)
     {
-        _waitingChoice = false;
-        choices.Hide();
+        _nodeReadyToAdvance = false;
+        _cts?.Cancel();
 
-        var next = navigator.NextFrom(_current, fromPort);
+        var next = _navigator.NextFrom(_current, portName);
         if (next != null)
         {
             _current = next;
@@ -187,7 +159,10 @@ public sealed class DialogueRunner : MonoBehaviour
 
     private void AdvanceToNext()
     {
-        var next = navigator.NextFrom(_current);
+        _nodeReadyToAdvance = false;
+        _cts?.Cancel();
+
+        var next = _navigator.NextFrom(_current);
         if (next != null)
         {
             _current = next;
@@ -201,21 +176,23 @@ public sealed class DialogueRunner : MonoBehaviour
 
     private void EndDialogue()
     {
-        ResetUiAndState();
-        if (bodyText) bodyText.text = "<i>(Fin del diálogo)</i>";
-        if (speakerText) speakerText.text = string.Empty;
+        _nodeReadyToAdvance     = false;
+        _activeBlockingExecutor = null;
         _current = null;
+
+        portraitExecutor?.ResetAll();
     }
 
-    private void ResetUiAndState()
+    private void OnDestroy()
     {
-        // Apagar visuales
-        portraits.ResetAll();
-        typewriter.Cancel();
-        choices.Hide();
+        _cts?.Cancel();
+        if (choiceExecutor != null)
+            choiceExecutor.OnChoiceSelected -= OnChoiceSelected;
+    }
 
-        // Resetear estado interno
-        _waitingChoice = false;
-        _nodeReadyToAdvance = false;
+    private void RegisterExecutor(IModuleExecutor executor)
+    {
+        if (executor == null) return;
+        _executors[executor.ModuleType] = executor;
     }
 }
