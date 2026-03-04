@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      GuilleConFrio_0: -231025027876387116
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

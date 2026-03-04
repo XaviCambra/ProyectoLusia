@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      SoraGacha_0: 7279494265541373513
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

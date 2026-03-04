@@ -8,13 +8,13 @@ using UnityEngine.Playables;
 using UnityEngine.UI;
 
 // =============================================================
-// PortraitController — implementa IPortraitController y IPortraitPlacementMilestones
+// PortraitController — implementa IPortraitController
 // Gestiona: pool de retratos por perfil, orden visual, tinte/escala, y
 // animaciones de colocación (Cut/Fade/Slide) + animaciones especiales (Playables).
 // =============================================================
 
 [DisallowMultipleComponent]
-public sealed class PortraitController : MonoBehaviour, IPortraitController, IPortraitPlacementMilestones
+public sealed class PortraitController : MonoBehaviour, IPortraitController
 {
     #region Inspector
 
@@ -108,40 +108,17 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController, IPo
 
         _pendingSpecialByProfile.Remove(module.ProfileId);
 
-        if (module.playSpecialAnimation && module.specialAnimation)
-        {
-            switch (module.specialStart)
-            {
-                case SpecialStartTiming.Immediate:
-                case SpecialStartTiming.WithPlacementStart:
-                    PlaySpecial(img, module.specialAnimation, module.specialAnimSpeed, module.specialAnimLoop);
-                    break;
-
-                case SpecialStartTiming.WithTextStart:
-                    // En el sistema modular, el módulo de texto sigue al de retrato.
-                    // Tratamos WithTextStart como WithPlacementComplete para mantener
-                    // un comportamiento coherente con la secuencia de módulos.
-                    StopSpecial(img);
-                    break;
-
-                case SpecialStartTiming.WithPlacementComplete:
-                    StopSpecial(img);
-                    break;
-            }
-        }
+        if (module.playSpecialAnimation && module.specialAnimation
+            && module.specialStart == SpecialStartTiming.WithPlacementStart)
+            PlaySpecial(img, module.specialAnimation, module.specialAnimSpeed, module.specialAnimLoop);
         else
-        {
             StopSpecial(img);
-        }
 
         await RunPlacementAsync(module, rootRt);
 
-        if (module.playSpecialAnimation && module.specialAnimation &&
-            (module.specialStart == SpecialStartTiming.WithPlacementComplete ||
-             module.specialStart == SpecialStartTiming.WithTextStart))
-        {
+        if (module.playSpecialAnimation && module.specialAnimation
+            && module.specialStart == SpecialStartTiming.WithPlacementComplete)
             PlaySpecial(img, module.specialAnimation, module.specialAnimSpeed, module.specialAnimLoop);
-        }
     }
 
     public void ResetAll()
@@ -506,75 +483,6 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController, IPo
         var endScale = rt.localScale;
 
         return new Pose(endPos, toAlpha, endScale);
-    }
-
-    #endregion
-
-    #region IPortraitPlacementMilestones
-
-    public IPortraitPlacementMilestones.Milestones ApplyWithMilestones(PortraitModule module)
-    {
-        var midTcs = new TaskCompletionSource<bool>();
-        var endTcs = new TaskCompletionSource<bool>();
-
-        _ = ApplyWithProgressAsync(module,
-            progress => { if (progress >= 0.5f) midTcs.TrySetResult(true); },
-            onComplete: () => endTcs.TrySetResult(true));
-
-        return new IPortraitPlacementMilestones.Milestones(midTcs.Task, endTcs.Task);
-    }
-
-    private async Task ApplyWithProgressAsync(PortraitModule module, System.Action<float> onProgress, System.Action onComplete)
-    {
-        if (module == null || string.IsNullOrEmpty(module.ProfileId)
-            || !_rootByProfile.TryGetValue(module.ProfileId, out var rootRt))
-        {
-            if (resetSpecialsWithStaticPoseOnNodeChange) ResetSpecialsToStaticPose();
-            onProgress?.Invoke(1f);
-            onComplete?.Invoke();
-            return;
-        }
-
-        if (resetSpecialsWithStaticPoseOnNodeChange) ResetSpecialsToStaticPose();
-
-        var img = _portraitByProfile[module.ProfileId];
-        SetSpriteForModule(img, module);
-        BringOnTop(module.ProfileId);
-        UpdateTint(module.ProfileId);
-        UpdateScale(module.ProfileId);
-        _pendingSpecialByProfile.Remove(module.ProfileId);
-
-        if (module.playSpecialAnimation && module.specialAnimation)
-        {
-            switch (module.specialStart)
-            {
-                case SpecialStartTiming.Immediate:
-                case SpecialStartTiming.WithPlacementStart:
-                    PlaySpecial(img, module.specialAnimation, module.specialAnimSpeed, module.specialAnimLoop);
-                    break;
-                default:
-                    StopSpecial(img);
-                    break;
-            }
-        }
-        else
-        {
-            StopSpecial(img);
-        }
-
-        await RunPlacementAsync(module, rootRt, onProgress);
-
-        if (module.playSpecialAnimation && module.specialAnimation &&
-            (module.specialStart == SpecialStartTiming.WithPlacementComplete ||
-             module.specialStart == SpecialStartTiming.WithTextStart))
-        {
-            PlaySpecial(img, module.specialAnimation, module.specialAnimSpeed, module.specialAnimLoop);
-        }
-
-        if (!(module.playSpecialAnimation && module.specialAnimation))
-            StopSpecial(img);
-
-        onComplete?.Invoke();
     }
 
     #endregion
