@@ -13,7 +13,7 @@ public class AudioModule : DialogueModuleBase
 
     public AudioModule()
     {
-        blocks = false; // Por defecto no bloquea
+        runMode = ModuleRunMode.FireAndForget; // Por defecto no bloquea
     }
 
     [Tooltip("Clip de audio a reproducir.")]

@@ -1,8 +1,29 @@
 /// <summary>
+/// Controla cómo el runner gestiona la ejecución de un módulo
+/// en relación con los módulos anteriores y siguientes.
+/// </summary>
+public enum ModuleRunMode
+{
+    /// <summary>Arranca y el runner continúa de inmediato. La task no se trackea.</summary>
+    FireAndForget,
+
+    /// <summary>
+    /// Arranca y el runner continúa de inmediato, pero la task queda trackeada.
+    /// El siguiente módulo Blocking esperará a que todos los Parallel pendientes terminen.
+    /// </summary>
+    Parallel,
+
+    /// <summary>
+    /// Primero espera a todos los módulos Parallel pendientes y luego espera este módulo.
+    /// Actúa como punto de sincronización.
+    /// </summary>
+    Blocking,
+}
+
+/// <summary>
 /// Contrato base para todos los módulos de un nodo de diálogo.
 /// Los módulos son unidades de funcionalidad independiente que se
-/// ejecutan secuencialmente dentro de un nodo, en el orden que
-/// el diseñador establezca.
+/// ejecutan dentro de un nodo en el orden que el diseñador establezca.
 /// </summary>
 public interface IDialogueModule
 {
@@ -10,9 +31,8 @@ public interface IDialogueModule
     string DisplayName { get; }
 
     /// <summary>
-    /// Si es true, el runner espera a que este módulo termine
-    /// antes de pasar al siguiente. Si es false, se ejecuta en
-    /// paralelo y el runner continúa de inmediato.
+    /// Controla cuándo arranca este módulo y si el runner espera a que termine
+    /// antes de pasar al siguiente.
     /// </summary>
-    bool Blocks { get; set; }
+    ModuleRunMode RunMode { get; set; }
 }

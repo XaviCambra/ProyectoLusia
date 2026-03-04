@@ -97,14 +97,18 @@ public sealed class DialogueRunner : MonoBehaviour
 
         if (node == null) { EndDialogue(); return; }
 
+        _cts?.Dispose();
         _cts = new CancellationTokenSource();
-        var ctx = new ModuleExecutionContext(node.GUID, _cts.Token);
+        var localCts = _cts; // captura local: protege contra reemplazos por nueva llamada
+        var ctx = new ModuleExecutionContext(node.GUID, localCts.Token);
 
         // Notificar inicio de nodo a todos los executors
         foreach (var executor in _executors.Values)
             executor.OnNodeBegin();
 
         // Ejecutar módulos en orden
+        var pendingParallel = new List<Task>();
+
         foreach (var module in node.modules)
         {
             if (module == null) continue;
@@ -114,29 +118,42 @@ public sealed class DialogueRunner : MonoBehaviour
                 continue;
             }
 
-            if (_cts.IsCancellationRequested) break;
+            if (localCts.IsCancellationRequested) goto done;
 
-            if (module.Blocks)
+            switch (module.RunMode)
             {
-                _activeBlockingExecutor = executor;
-                try
-                {
-                    await executor.ExecuteAsync(module, ctx);
-                }
-                catch (OperationCanceledException) { break; }
-                finally { _activeBlockingExecutor = null; }
-            }
-            else
-            {
-                // Fire and forget — no bloqueamos el loop de módulos
-                var capturedModule   = module;
-                var capturedExecutor = executor;
-                _ = capturedExecutor.ExecuteAsync(capturedModule, ctx);
+                case ModuleRunMode.FireAndForget:
+                    _ = executor.ExecuteAsync(module, ctx);
+                    break;
+
+                case ModuleRunMode.Parallel:
+                    // Arranca y trackea — el runner continúa de inmediato
+                    pendingParallel.Add(executor.ExecuteAsync(module, ctx));
+                    break;
+
+                case ModuleRunMode.Blocking:
+                    // Primero sincroniza todos los Parallel pendientes
+                    if (pendingParallel.Count > 0)
+                    {
+                        try { await Task.WhenAll(pendingParallel); }
+                        catch (OperationCanceledException) { goto done; }
+                        pendingParallel.Clear();
+                    }
+
+                    if (localCts.IsCancellationRequested) goto done;
+
+                    // Luego espera este módulo
+                    _activeBlockingExecutor = executor;
+                    try { await executor.ExecuteAsync(module, ctx); }
+                    catch (OperationCanceledException) { goto done; }
+                    finally { _activeBlockingExecutor = null; }
+                    break;
             }
         }
 
-        // Si el nodo no tiene ChoiceModule, quedamos listos para avanzar
-        if (!node.IsChoiceNode)
+        done:
+        // Solo marcamos listo si este ShowNodeAsync sigue siendo el activo (no fue cancelado)
+        if (!node.IsChoiceNode && !localCts.IsCancellationRequested)
             _nodeReadyToAdvance = true;
     }
 
@@ -186,6 +203,8 @@ public sealed class DialogueRunner : MonoBehaviour
     private void OnDestroy()
     {
         _cts?.Cancel();
+        _cts?.Dispose();
+        _cts = null;
         if (choiceExecutor != null)
             choiceExecutor.OnChoiceSelected -= OnChoiceSelected;
     }

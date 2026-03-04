@@ -13,10 +13,10 @@ public class ChoiceModule : DialogueModuleBase
 {
     public override string DisplayName => "Choices";
 
-    // Las choices SIEMPRE bloquean — no tiene sentido continuar sin una selección
-    public new bool Blocks
+    // Las choices SIEMPRE son Blocking — no tiene sentido continuar sin una selección
+    public new ModuleRunMode RunMode
     {
-        get => true;
+        get => ModuleRunMode.Blocking;
         set { } // No-op: ignoramos asignaciones externas
     }
 

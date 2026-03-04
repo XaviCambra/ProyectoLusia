@@ -3,20 +3,20 @@ using UnityEngine;
 
 /// <summary>
 /// Clase base serializable para todos los módulos de diálogo.
-/// Gestiona el campo <c>blocks</c> que controla si el runner
-/// espera a que este módulo complete antes de ejecutar el siguiente.
+/// Gestiona el campo <c>runMode</c> que controla cómo el runner
+/// gestiona la ejecución de este módulo.
 /// </summary>
 [Serializable]
 public abstract class DialogueModuleBase : IDialogueModule
 {
     [SerializeField]
-    [Tooltip("Si está activo, el runner espera a que este módulo termine antes de continuar con el siguiente.")]
-    protected bool blocks = true;
+    [Tooltip("FireAndForget: arranca y no espera.\nParallel: arranca junto al siguiente, se trackea.\nBlocking: espera todos los Parallel pendientes y luego espera este módulo.")]
+    protected ModuleRunMode runMode = ModuleRunMode.Blocking;
 
-    public bool Blocks
+    public ModuleRunMode RunMode
     {
-        get => blocks;
-        set => blocks = value;
+        get => runMode;
+        set => runMode = value;
     }
 
     public abstract string DisplayName { get; }

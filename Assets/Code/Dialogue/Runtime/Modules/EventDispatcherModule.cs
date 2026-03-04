@@ -13,7 +13,7 @@ public class EventDispatcherModule : DialogueModuleBase
 
     public EventDispatcherModule()
     {
-        blocks = false; // Los eventos no bloquean por defecto
+        runMode = ModuleRunMode.FireAndForget; // Los eventos no bloquean por defecto
     }
 
     [Tooltip("Clave del evento. Los sistemas de juego escuchan esta clave.")]

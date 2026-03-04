@@ -210,22 +210,38 @@ public class DialogueNodeView : Node
         nameLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
         nameLabel.style.marginLeft = 4;
 
-        // Toggle Blocks (excepto ChoiceModule que siempre bloquea)
+        // RunMode (excepto ChoiceModule que siempre es Blocking)
         VisualElement blocksElement;
         if (module is ChoiceModule)
         {
-            var fixedLabel = new Label("Blocks ✓");
-            fixedLabel.style.color  = new Color(0.6f, 0.6f, 0.6f, 1f);
+            var fixedLabel = new Label("Blocking ✓");
+            fixedLabel.style.color    = new Color(0.6f, 0.6f, 0.6f, 1f);
             fixedLabel.style.fontSize = 10;
-            fixedLabel.style.width = 70;
+            fixedLabel.style.width    = 90;
             blocksElement = fixedLabel;
         }
         else
         {
-            var blocksToggle = new Toggle { value = module.Blocks, label = "Blocks" };
-            blocksToggle.style.width = 70;
-            blocksToggle.RegisterValueChangedCallback(e => { module.Blocks = e.newValue; Notify(); });
-            blocksElement = blocksToggle;
+            var runModeBtn = new Button();
+            runModeBtn.text = module.RunMode.ToString();
+            runModeBtn.style.width  = 110;
+            runModeBtn.style.height = 20;
+            runModeBtn.clicked += () =>
+            {
+                var menu = new GenericMenu();
+                foreach (ModuleRunMode mode in Enum.GetValues(typeof(ModuleRunMode)))
+                {
+                    var capturedMode = mode;
+                    menu.AddItem(new GUIContent(mode.ToString()), module.RunMode == mode, () =>
+                    {
+                        module.RunMode    = capturedMode;
+                        runModeBtn.text   = capturedMode.ToString();
+                        Notify();
+                    });
+                }
+                menu.ShowAsContext();
+            };
+            blocksElement = runModeBtn;
         }
 
         // Botón eliminar

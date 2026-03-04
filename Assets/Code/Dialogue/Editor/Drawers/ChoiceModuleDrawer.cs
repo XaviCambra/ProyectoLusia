@@ -37,7 +37,7 @@ public static class ChoiceModuleDrawer
             m.choices.Add(new ChoiceModule.ChoiceData
             {
                 choiceText = $"Option {m.choices.Count + 1}",
-                portName   = UnityEngine.Random.Range(10000, 99999).ToString("X")
+                portName   = System.Guid.NewGuid().ToString("N")[..8]
             });
             RebuildChoiceList();
             onChanged?.Invoke();

@@ -90,8 +90,8 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController, IPo
 
     public async Task ApplyAsync(PortraitModule module)
     {
-        if (module == null || string.IsNullOrEmpty(module.profileId)
-            || !_rootByProfile.TryGetValue(module.profileId, out var rootRt))
+        if (module == null || string.IsNullOrEmpty(module.ProfileId)
+            || !_rootByProfile.TryGetValue(module.ProfileId, out var rootRt))
         {
             if (resetSpecialsWithStaticPoseOnNodeChange) ResetSpecialsToStaticPose();
             return;
@@ -99,14 +99,14 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController, IPo
 
         if (resetSpecialsWithStaticPoseOnNodeChange) ResetSpecialsToStaticPose();
 
-        var img = _portraitByProfile[module.profileId];
+        var img = _portraitByProfile[module.ProfileId];
         SetSpriteForModule(img, module);
 
-        BringOnTop(module.profileId);
-        UpdateTint(module.profileId);
-        UpdateScale(module.profileId);
+        BringOnTop(module.ProfileId);
+        UpdateTint(module.ProfileId);
+        UpdateScale(module.ProfileId);
 
-        _pendingSpecialByProfile.Remove(module.profileId);
+        _pendingSpecialByProfile.Remove(module.ProfileId);
 
         if (module.playSpecialAnimation && module.specialAnimation)
         {
@@ -186,8 +186,8 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController, IPo
         var uniqueProfiles = _graph.Nodes
             .Where(n => n?.modules != null)
             .SelectMany(n => n.modules.OfType<PortraitModule>())
-            .Where(m => !string.IsNullOrEmpty(m.profileId))
-            .Select(m => m.profileId)
+            .Where(m => !string.IsNullOrEmpty(m.ProfileId))
+            .Select(m => m.ProfileId)
             .Distinct();
 
         foreach (var pid in uniqueProfiles)
@@ -224,9 +224,9 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController, IPo
         if (!img || module == null || profileDatabase == null) return;
 
         Sprite sprite = null;
-        if (!string.IsNullOrEmpty(module.profileId))
+        if (!string.IsNullOrEmpty(module.ProfileId))
         {
-            var profile = profileDatabase.FindById(module.profileId);
+            var profile = profileDatabase.FindById(module.ProfileId);
             if (profile != null)
                 sprite = profile.GetSprite(module.portraitKey);
         }
@@ -333,7 +333,7 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController, IPo
             case AppearanceMode.Cut:
                 rootRt.position = to.pos;
                 cg.alpha        = to.alpha;
-                _stateByProfile[module.profileId] = new PortraitState(rootRt.position);
+                _stateByProfile[module.ProfileId] = new PortraitState(rootRt.position);
                 return;
 
             case AppearanceMode.Slide:
@@ -341,11 +341,11 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController, IPo
                 {
                     rootRt.position = to.pos;
                     cg.alpha        = to.alpha;
-                    _stateByProfile[module.profileId] = new PortraitState(rootRt.position);
+                    _stateByProfile[module.ProfileId] = new PortraitState(rootRt.position);
                     return;
                 }
                 await RunAsTask(CoPlace(rootRt, cg, from, to, module.moveSpeed, onProgress));
-                _stateByProfile[module.profileId] = new PortraitState(rootRt.position);
+                _stateByProfile[module.ProfileId] = new PortraitState(rootRt.position);
                 return;
 
             default:
@@ -526,8 +526,8 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController, IPo
 
     private async Task ApplyWithProgressAsync(PortraitModule module, System.Action<float> onProgress, System.Action onComplete)
     {
-        if (module == null || string.IsNullOrEmpty(module.profileId)
-            || !_rootByProfile.TryGetValue(module.profileId, out var rootRt))
+        if (module == null || string.IsNullOrEmpty(module.ProfileId)
+            || !_rootByProfile.TryGetValue(module.ProfileId, out var rootRt))
         {
             if (resetSpecialsWithStaticPoseOnNodeChange) ResetSpecialsToStaticPose();
             onProgress?.Invoke(1f);
@@ -537,12 +537,12 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController, IPo
 
         if (resetSpecialsWithStaticPoseOnNodeChange) ResetSpecialsToStaticPose();
 
-        var img = _portraitByProfile[module.profileId];
+        var img = _portraitByProfile[module.ProfileId];
         SetSpriteForModule(img, module);
-        BringOnTop(module.profileId);
-        UpdateTint(module.profileId);
-        UpdateScale(module.profileId);
-        _pendingSpecialByProfile.Remove(module.profileId);
+        BringOnTop(module.ProfileId);
+        UpdateTint(module.ProfileId);
+        UpdateScale(module.ProfileId);
+        _pendingSpecialByProfile.Remove(module.ProfileId);
 
         if (module.playSpecialAnimation && module.specialAnimation)
         {
