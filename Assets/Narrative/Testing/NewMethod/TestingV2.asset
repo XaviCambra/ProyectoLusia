@@ -19,7 +19,7 @@ MonoBehaviour:
       x: -306
       y: 286
       width: 380
-      height: 578
+      height: 616
     bgColorIndex: 5
     bgColor: {r: 0.3, g: 0.4, b: 0.28, a: 1}
     isStart: 1
@@ -33,7 +33,7 @@ MonoBehaviour:
       x: 223
       y: 185
       width: 380
-      height: 651
+      height: 559
     bgColorIndex: 0
     bgColor: {r: 0.22, g: 0.22, b: 0.22, a: 1}
     isStart: 0
@@ -46,14 +46,14 @@ MonoBehaviour:
     fromPortName: Next
     toNodeGUID: 763de03d-c252-48f0-95e4-eefb97441312
   frames:
-  - title: Frame
-    color: {r: 0.2, g: 0.6, b: 1, a: 0.15}
+  - title: Testing
+    color: {r: 0.4273318, g: 0.9192322, b: 0.9339623, a: 0.15}
     rect:
       serializedVersion: 2
-      x: -503
-      y: 72.5
-      width: 1424
-      height: 900
+      x: -546
+      y: 52.5
+      width: 1481
+      height: 963
   references:
     version: 2
     RefIds:
@@ -73,8 +73,8 @@ MonoBehaviour:
       data:
         runMode: 2
         profileRef: {fileID: 11400000, guid: 0adfa58d0167f2249a978446e07c322b, type: 2}
-        profileId: 
-        portraitKey: idleSora
+        profileId: 557aa130789447358f1010d7d7629857
+        portraitKey: SoraGacha
         appearance: 1
         origin: 0
         target: 3
@@ -91,7 +91,7 @@ MonoBehaviour:
       type: {class: TextModule, ns: , asm: Assembly-CSharp}
       data:
         runMode: 2
-        speakerName: Sora
+        speakerName: Guille
         useLocalization: 0
         text: Yayayayayaya
         locKey: 
@@ -104,15 +104,15 @@ MonoBehaviour:
         runMode: 2
         profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
         profileId: bc17ed2360684d68b5e7a55be922310b
-        portraitKey: idle
+        portraitKey: GuilleFeli
         appearance: 1
-        origin: 0
-        target: 1
-        moveSpeed: 600
-        useFade: 0
+        origin: 1
+        target: 3
+        moveSpeed: 50
+        useFade: 1
         enterFromOpacity: 0
         enterToOpacity: 100
-        playSpecialAnimation: 0
+        playSpecialAnimation: 1
         specialAnimation: {fileID: 0}
         specialAnimSpeed: 1
         specialAnimLoop: 0

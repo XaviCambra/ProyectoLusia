@@ -15,5 +15,7 @@ MonoBehaviour:
   profileId: 557aa130789447358f1010d7d7629857
   displayName: Sora
   portraits:
-  - key: idleSora
-    sprite: {fileID: -8801421864487500016, guid: 2a45c73618918754e99526016925e309, type: 3}
+  - key: SoraGacha
+    sprite: {fileID: 7279494265541373513, guid: 59423d3ff44dcd64c867b3a3d6ef51c6, type: 3}
+  - key: SoraNormal
+    sprite: {fileID: -2104986425262294201, guid: 0ae7225c61cadb44a8d66153f2384a0e, type: 3}
