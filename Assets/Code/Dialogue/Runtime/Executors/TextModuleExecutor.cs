@@ -18,6 +18,7 @@ public sealed class TextModuleExecutor : MonoBehaviour, IModuleExecutor
     [Header("Servicios")]
     [SerializeField] private MonoBehaviour typewriterRef;      // ITypewriterPresenter
     [SerializeField] private MonoBehaviour localizationRef;    // ILocalizationService (opcional)
+    [SerializeField] private TypewriterProfile defaultProfile; // Perfil base de puntuación y opciones
 
     private ITypewriterPresenter _typewriter;
     private ILocalizationService _loc;
@@ -54,12 +55,9 @@ public sealed class TextModuleExecutor : MonoBehaviour, IModuleExecutor
 
         if (m.useTypewriter && _typewriter != null)
         {
-            var profile = ScriptableObject.CreateInstance<TypewriterProfile>();
-            profile.secondsPerChar = m.secondsPerChar;
-
+            var profile = m.profileOverride ?? defaultProfile;
             using var reg = ctx.Token.Register(() => _typewriter?.Cancel());
             await _typewriter.ShowAsync(text, profile);
-            Destroy(profile);
         }
         else
         {
@@ -68,8 +66,14 @@ public sealed class TextModuleExecutor : MonoBehaviour, IModuleExecutor
     }
 
     public void Cancel() => _typewriter?.Cancel();
-
     public bool TryFastForward() => _typewriter != null && _typewriter.FastForwardOrIgnore();
+
+    public void ResetAll()
+    {
+        _typewriter?.Cancel();
+        if (speakerText) speakerText.text = string.Empty;
+        if (bodyText)    bodyText.text    = string.Empty;
+    }
 
     private string ResolveText(TextModule m)
     {

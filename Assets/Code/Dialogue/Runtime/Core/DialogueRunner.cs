@@ -33,7 +33,8 @@ public sealed class DialogueRunner : MonoBehaviour
 
     // Servicios internos
     private IGraphNavigator _navigator;
-    private readonly Dictionary<Type, IModuleExecutor> _executors = new();
+    private readonly Dictionary<Type, IModuleExecutor> _executors     = new();
+    private readonly List<IModuleExecutor>             _executorList  = new(); // para iteraciones sin alloc
 
     // Estado del runner
     private DialogueNodeData _current;
@@ -61,7 +62,7 @@ public sealed class DialogueRunner : MonoBehaviour
             choiceExecutor.OnChoiceSelected += OnChoiceSelected;
 
         // Inicializar executor que lo necesitan (ej. PortraitController necesita el grafo)
-        foreach (var executor in _executors.Values)
+        foreach (var executor in _executorList)
             executor.Initialize(graph);
 
         _navigator.Init(graph);
@@ -105,7 +106,7 @@ public sealed class DialogueRunner : MonoBehaviour
         var ctx = new ModuleExecutionContext(node.GUID, localCts.Token);
 
         // Notificar inicio de nodo a todos los executors
-        foreach (var executor in _executors.Values)
+        foreach (var executor in _executorList)
             executor.OnNodeBegin();
 
         // Ejecutar módulos en orden
@@ -199,7 +200,8 @@ public sealed class DialogueRunner : MonoBehaviour
         _activeBlockingExecutor = null;
         _current = null;
 
-        portraitExecutor?.ResetAll();
+        foreach (var executor in _executorList)
+            executor.ResetAll();
     }
 
     private void OnDestroy()
@@ -215,5 +217,6 @@ public sealed class DialogueRunner : MonoBehaviour
     {
         if (executor == null) return;
         _executors[executor.ModuleType] = executor;
+        _executorList.Add(executor);
     }
 }

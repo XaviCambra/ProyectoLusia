@@ -2250,6 +2250,7 @@ GameObject:
   - component: {fileID: 2059072037}
   - component: {fileID: 2059072038}
   - component: {fileID: 2059072039}
+  - component: {fileID: 2059072040}
   m_Layer: 0
   m_Name: DialogueSystem
   m_TagString: Untagged
@@ -2289,7 +2290,7 @@ MonoBehaviour:
   textExecutor: {fileID: 2059072037}
   portraitExecutor: {fileID: 2059072038}
   emoteExecutor: {fileID: 2059072039}
-  eventExecutor: {fileID: 0}
+  eventExecutor: {fileID: 2059072040}
   audioExecutor: {fileID: 0}
   choiceExecutor: {fileID: 2059072036}
   advanceKey: 110
@@ -2460,6 +2461,7 @@ MonoBehaviour:
   bodyText: {fileID: 991279808}
   typewriterRef: {fileID: 2059072033}
   localizationRef: {fileID: 465389642}
+  defaultProfile: {fileID: 11400000, guid: 501e777cbf71604448e0784b77ea7b3c, type: 2}
 --- !u!114 &2059072038
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2486,6 +2488,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portraitControllerRef: {fileID: 2059072034}
+--- !u!114 &2059072040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2059072028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc126fa357bb6a44aac71e2e026543e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2146046527
 GameObject:
   m_ObjectHideFlags: 0

@@ -282,13 +282,34 @@ public class DialogueNodeView : Node
     // ─── Puertos de salida dinámicos ──────────────────────────────────────────
     public void RebuildOutputPorts()
     {
+        var graphView = GetFirstAncestorOfType<DialogueGraphView>();
+
+        // 1. Capturar conexiones existentes por nombre de puerto (portName → puerto de entrada destino)
+        var preserved = new Dictionary<string, Port>();
+        var edgesToRemove = new List<Edge>();
+        foreach (var child in outputContainer.Children())
+        {
+            var outPort = child as Port
+                ?? (child as VisualElement)?.Children().OfType<Port>().FirstOrDefault();
+            if (outPort == null) continue;
+            foreach (var edge in outPort.connections)
+            {
+                if (edge.input != null)
+                    preserved[outPort.portName] = edge.input;
+                edgesToRemove.Add(edge);
+            }
+        }
+
+        // 2. Eliminar edges huérfanos del GraphView antes de limpiar los puertos
+        if (graphView != null && edgesToRemove.Count > 0)
+            graphView.DeleteElements(edgesToRemove);
+
         outputContainer.Clear();
 
+        // 3. Reconstruir puertos
         var choiceModule = Data.GetChoiceModule();
-
         if (choiceModule != null)
         {
-            // Un puerto por choice
             foreach (var choice in choiceModule.choices)
             {
                 if (choice == null) continue;
@@ -311,9 +332,23 @@ public class DialogueNodeView : Node
         }
         else
         {
-            // Puerto único "Next"
             var nextPort = PortUtils.CreatePort(this, Direction.Output, Port.Capacity.Single, "Next");
             outputContainer.Add(nextPort);
+        }
+
+        // 4. Restaurar conexiones por nombre de puerto
+        if (graphView != null && preserved.Count > 0)
+        {
+            foreach (var child in outputContainer.Children())
+            {
+                var outPort = child as Port
+                    ?? (child as VisualElement)?.Children().OfType<Port>().FirstOrDefault();
+                if (outPort == null) continue;
+                if (!preserved.TryGetValue(outPort.portName, out var targetInput)) continue;
+
+                var newEdge = outPort.ConnectTo(targetInput);
+                graphView.AddElement(newEdge);
+            }
         }
 
         RefreshPorts();

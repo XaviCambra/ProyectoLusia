@@ -69,6 +69,7 @@ public sealed class ChoiceModuleExecutor : MonoBehaviour, IModuleExecutor
     }
 
     public bool TryFastForward() => false;
+    public void ResetAll() => Cancel();
 
     /// <summary>
     /// Intenta consumir una tecla numérica (1-4) como hotkey de elección.

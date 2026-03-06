@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 /// <summary>Drawer del editor para <see cref="TextModule"/>.</summary>
@@ -76,15 +77,18 @@ public static class TextModuleDrawer
     {
         var container = new VisualElement();
 
-        var spcField = new FloatField("Seconds/Char") { value = m.secondsPerChar };
-        spcField.RegisterValueChangedCallback(e =>
+        var profileField = new ObjectField("Profile Override")
         {
-            m.secondsPerChar = UnityEngine.Mathf.Clamp(e.newValue, 0.001f, 0.2f);
-            spcField.SetValueWithoutNotify(m.secondsPerChar);
+            objectType = typeof(TypewriterProfile),
+            value      = m.profileOverride
+        };
+        profileField.RegisterValueChangedCallback(e =>
+        {
+            m.profileOverride = e.newValue as TypewriterProfile;
             onChanged?.Invoke();
         });
 
-        container.Add(spcField);
+        container.Add(profileField);
         return container;
     }
 }

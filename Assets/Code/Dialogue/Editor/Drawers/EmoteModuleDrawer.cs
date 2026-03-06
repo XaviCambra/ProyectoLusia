@@ -26,26 +26,12 @@ public static class EmoteModuleDrawer
         });
         root.Add(profileField);
 
-        // --- Stop toggle ---
-        var stopToggle = new Toggle("Stop Animation") { value = m.stopAnimation };
-        var animFields = BuildAnimFields(m, onChanged);
-        animFields.style.display = m.stopAnimation ? DisplayStyle.None : DisplayStyle.Flex;
+        // --- Clip (sin clip = stop) ---
+        var stopLabel   = new Label("Sin clip: detiene el emote activo") { style = { color = new UnityEngine.Color(1f, 0.6f, 0.2f) } };
+        var playFields  = BuildPlayFields(m, onChanged);
 
-        stopToggle.RegisterValueChangedCallback(e =>
-        {
-            m.stopAnimation = e.newValue;
-            animFields.style.display = e.newValue ? DisplayStyle.None : DisplayStyle.Flex;
-            onChanged?.Invoke();
-        });
-        root.Add(stopToggle);
-        root.Add(animFields);
-
-        return root;
-    }
-
-    private static VisualElement BuildAnimFields(EmoteModule m, Action onChanged)
-    {
-        var c = new VisualElement();
+        stopLabel.style.display  = m.clip == null ? DisplayStyle.Flex : DisplayStyle.None;
+        playFields.style.display = m.clip != null ? DisplayStyle.Flex : DisplayStyle.None;
 
         var clipField = new ObjectField("Clip")
         {
@@ -55,8 +41,22 @@ public static class EmoteModuleDrawer
         clipField.RegisterValueChangedCallback(e =>
         {
             m.clip = e.newValue as UnityEngine.AnimationClip;
+            bool hasClip = m.clip != null;
+            stopLabel.style.display  = hasClip ? DisplayStyle.None : DisplayStyle.Flex;
+            playFields.style.display = hasClip ? DisplayStyle.Flex : DisplayStyle.None;
             onChanged?.Invoke();
         });
+
+        root.Add(clipField);
+        root.Add(stopLabel);
+        root.Add(playFields);
+
+        return root;
+    }
+
+    private static VisualElement BuildPlayFields(EmoteModule m, Action onChanged)
+    {
+        var c = new VisualElement();
 
         var speedField = new FloatField("Speed") { value = m.speed };
         speedField.RegisterValueChangedCallback(e =>
@@ -69,9 +69,12 @@ public static class EmoteModuleDrawer
         var loopToggle = new Toggle("Loop") { value = m.loop };
         loopToggle.RegisterValueChangedCallback(e => { m.loop = e.newValue; onChanged?.Invoke(); });
 
-        c.Add(clipField);
+        var persistentToggle = new Toggle("Persistent") { value = m.persistent };
+        persistentToggle.RegisterValueChangedCallback(e => { m.persistent = e.newValue; onChanged?.Invoke(); });
+
         c.Add(speedField);
         c.Add(loopToggle);
+        c.Add(persistentToggle);
         return c;
     }
 }

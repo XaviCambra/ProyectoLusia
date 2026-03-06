@@ -16,6 +16,7 @@ public sealed class EventModuleExecutor : MonoBehaviour, IModuleExecutor
     public void OnNodeBegin() { }
     public void Cancel() { }
     public bool TryFastForward() => false;
+    public void ResetAll() { }
 
     public Task ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
     {

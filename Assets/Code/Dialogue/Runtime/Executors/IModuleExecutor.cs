@@ -35,4 +35,10 @@ public interface IModuleExecutor
     /// Devuelve <c>false</c> si no había operación activa.
     /// </summary>
     bool TryFastForward();
+
+    /// <summary>
+    /// Limpieza al finalizar el diálogo completo.
+    /// Los executors que gestionan recursos persistentes (retratos, UI) los ocultan/liberan aquí.
+    /// </summary>
+    void ResetAll();
 }

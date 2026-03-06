@@ -27,11 +27,16 @@ public class DialogueGraphView : GraphView
         graphViewChanged = (change) =>
         {
             if (change.movedElements != null)
-            {
                 foreach (var el in change.movedElements)
                     if (el is DialogueNodeView nv)
                         nv.Data.nodeRect = nv.GetPosition();
-            }
+
+            // Persist edges whenever connections are added or removed
+            bool edgesChanged = (change.edgesToCreate?.Count > 0)
+                             || (change.elementsToRemove?.Any(e => e is Edge) == true);
+            if (edgesChanged)
+                EditorWindow.MarkAssetDirtyAndSave();
+
             return change;
         };
     }

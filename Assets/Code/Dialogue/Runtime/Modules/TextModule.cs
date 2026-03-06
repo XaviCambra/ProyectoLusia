@@ -26,7 +26,6 @@ public class TextModule : DialogueModuleBase
     [Tooltip("Si está activo, el texto se revela carácter a carácter.")]
     public bool useTypewriter = true;
 
-    [Range(0.001f, 0.2f)]
-    [Tooltip("Segundos entre cada carácter revelado.")]
-    public float secondsPerChar = 0.03f;
+    [Tooltip("Perfil de typewriter específico para este nodo. Si está asignado, anula el perfil global del executor.")]
+    public TypewriterProfile profileOverride;
 }

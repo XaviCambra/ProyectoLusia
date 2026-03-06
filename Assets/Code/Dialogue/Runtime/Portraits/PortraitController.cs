@@ -57,7 +57,8 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
 
     private readonly Dictionary<string, Image>         _portraitByProfile = new();
     private readonly Dictionary<string, RectTransform> _rootByProfile     = new();
-    private readonly Dictionary<Image, PlayableGraph>  _specialGraphs     = new();
+    private readonly Dictionary<Image, SpecialAnimState> _specialGraphs    = new();
+    private readonly HashSet<Image>                    _persistentEmotes  = new();
     private readonly Dictionary<RectTransform, Coroutine> _placementCo = new();
     private readonly Dictionary<RectTransform, Coroutine> _scaleCo     = new();
 
@@ -73,6 +74,16 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         public float   alpha;
         public Vector3 scale;
         public Pose(Vector3 p, float a, Vector3 s) { pos = p; alpha = a; scale = s; }
+    }
+
+    private readonly struct SpecialAnimState
+    {
+        public readonly PlayableGraph          Graph;
+        public readonly AnimationClipPlayable  Playable;
+        public readonly AnimationClip          Clip;
+        public readonly float                  Speed;
+        public SpecialAnimState(PlayableGraph g, AnimationClipPlayable p, AnimationClip c, float s)
+        { Graph = g; Playable = p; Clip = c; Speed = s; }
     }
 
     private readonly Dictionary<string, PortraitState> _stateByProfile = new();
@@ -108,16 +119,19 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         await RunPlacementAsync(module, rootRt);
     }
 
-    public void PlaySpecialAnimation(string profileId, AnimationClip clip, float speed, bool loop)
+    public void PlaySpecialAnimation(string profileId, AnimationClip clip, float speed, bool loop, bool persistent = false)
     {
         if (!_portraitByProfile.TryGetValue(profileId, out var img) || !img) return;
+        if (persistent) _persistentEmotes.Add(img);
+        else            _persistentEmotes.Remove(img);
         PlaySpecial(img, clip, speed, loop);
     }
 
     public void StopSpecialAnimation(string profileId)
     {
         if (!_portraitByProfile.TryGetValue(profileId, out var img) || !img) return;
-        StopSpecial(img);
+        _persistentEmotes.Remove(img);
+        StopSpecial(img, graceful: true);
     }
 
     public void ResetAll()
@@ -126,8 +140,9 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         _placementCo.Clear();
         foreach (var kv in _scaleCo) if (kv.Value != null) StopCoroutine(kv.Value);
         _scaleCo.Clear();
-        foreach (var kv in _specialGraphs) if (kv.Value.IsValid()) kv.Value.Destroy();
+        foreach (var kv in _specialGraphs) if (kv.Value.Graph.IsValid()) kv.Value.Graph.Destroy();
         _specialGraphs.Clear();
+        _persistentEmotes.Clear();
         foreach (var kv in _portraitByProfile)
         {
             if (!kv.Value) continue;
@@ -147,7 +162,7 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         _placementCo.Clear();
         foreach (var kv in _scaleCo) if (kv.Value != null) StopCoroutine(kv.Value);
         _scaleCo.Clear();
-        foreach (var kv in _specialGraphs) if (kv.Value.IsValid()) kv.Value.Destroy();
+        foreach (var kv in _specialGraphs) if (kv.Value.Graph.IsValid()) kv.Value.Graph.Destroy();
         _specialGraphs.Clear();
         foreach (var kv in _portraitByProfile) if (kv.Value) Destroy(kv.Value.gameObject);
         _portraitByProfile.Clear();
@@ -385,50 +400,76 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         var animator = img.GetComponent<Animator>();
         if (!animator) animator = img.gameObject.AddComponent<Animator>();
 
-        var graph = PlayableGraph.Create($"DG_SpecialAnim_{img.name}");
+        var graph        = PlayableGraph.Create($"DG_SpecialAnim_{img.name}");
         graph.SetTimeUpdateMode(DirectorUpdateMode.GameTime);
 
-        var output      = AnimationPlayableOutput.Create(graph, "AnimOutput", animator);
+        var output       = AnimationPlayableOutput.Create(graph, "AnimOutput", animator);
         var clipPlayable = AnimationClipPlayable.Create(graph, clip);
         clipPlayable.SetSpeed(Mathf.Approximately(speed, 0f) ? 0f : speed);
         clipPlayable.SetApplyFootIK(false);
 
         output.SetSourcePlayable(clipPlayable);
         graph.Play();
-        _specialGraphs[img] = graph;
+        _specialGraphs[img] = new SpecialAnimState(graph, clipPlayable, clip, speed);
 
         if (!loop && clip.length > 0f && speed > 0f)
-            StartCoroutine(StopGraphWhenDone(graph, (float)(clip.length / speed)));
+            StartCoroutine(FinishAndReset(graph, img, clip.length / speed));
     }
 
-    private IEnumerator StopGraphWhenDone(PlayableGraph g, float delay)
+    // Espera a que acabe el tiempo indicado (fin de clip o fin de loop actual), destruye el grafo y resetea la pose.
+    private IEnumerator FinishAndReset(PlayableGraph g, Image img, float delay)
     {
         float t = 0f;
         while (t < delay && g.IsValid()) { t += Time.deltaTime; yield return null; }
         if (g.IsValid()) g.Destroy();
+        _specialGraphs.Remove(img);
+        ResetPortraitPose(img);
     }
 
-    private void StopSpecial(Image img)
+    // graceful=true: completa el loop actual antes de parar. graceful=false: corte inmediato.
+    private void StopSpecial(Image img, bool graceful = false)
     {
         if (!img) return;
-        if (_specialGraphs.TryGetValue(img, out var g))
+        if (!_specialGraphs.TryGetValue(img, out var state)) return;
+        _specialGraphs.Remove(img);
+        if (!state.Graph.IsValid()) return;
+
+        if (graceful && state.Clip && state.Speed > 0f)
         {
-            if (g.IsValid()) g.Destroy();
-            _specialGraphs.Remove(img);
+            float elapsed   = (float)state.Playable.GetTime();
+            float loopLen   = state.Clip.length / state.Speed;
+            float remaining = loopLen - (elapsed % loopLen);
+            StartCoroutine(FinishAndReset(state.Graph, img, remaining));
+        }
+        else
+        {
+            state.Graph.Destroy();
+            ResetPortraitPose(img);
+        }
+    }
+
+    private void ResetPortraitPose(Image img)
+    {
+        if (!img) return;
+        if (specialStaticPoseClip)
+            specialStaticPoseClip.SampleAnimation(img.gameObject, 0f);
+        else
+        {
+            img.rectTransform.localPosition = Vector3.zero;
+            img.rectTransform.localRotation = Quaternion.identity;
+            img.rectTransform.localScale    = Vector3.one;
         }
     }
 
     private void ResetSpecialsToStaticPose()
     {
-        if (!resetSpecialsWithStaticPoseOnNodeChange || !specialStaticPoseClip) return;
+        if (!resetSpecialsWithStaticPoseOnNodeChange) return;
         if (_specialGraphs.Count == 0) return;
 
-        var imgs = _specialGraphs.Keys.ToList();
-        foreach (var img in imgs)
+        foreach (var img in _specialGraphs.Keys.ToList())
         {
-            StopSpecial(img);
-            var go = img ? img.gameObject : null;
-            if (go) specialStaticPoseClip.SampleAnimation(go, 0f);
+            if (_persistentEmotes.Contains(img)) continue;
+            StopSpecial(img); // inmediato + reset de pose
         }
     }
 
@@ -493,7 +534,8 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         _placementCo.Clear();
         foreach (var co in _scaleCo.Values) if (co != null) StopCoroutine(co);
         _scaleCo.Clear();
-        foreach (var kv in _specialGraphs) if (kv.Value.IsValid()) kv.Value.Destroy();
+        foreach (var kv in _specialGraphs) if (kv.Value.Graph.IsValid()) kv.Value.Graph.Destroy();
         _specialGraphs.Clear();
+        _persistentEmotes.Clear();
     }
 }

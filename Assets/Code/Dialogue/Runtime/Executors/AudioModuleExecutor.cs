@@ -25,6 +25,7 @@ public sealed class AudioModuleExecutor : MonoBehaviour, IModuleExecutor
 
     public void Initialize(DialogueGraph graph) { }
     public void OnNodeBegin() { }
+    public void ResetAll() => Cancel();
 
     public void Cancel()
     {

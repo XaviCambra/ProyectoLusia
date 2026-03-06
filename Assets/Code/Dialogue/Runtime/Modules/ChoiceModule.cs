@@ -14,7 +14,7 @@ public class ChoiceModule : DialogueModuleBase
     public override string DisplayName => "Choices";
 
     // Las choices SIEMPRE son Blocking — no tiene sentido continuar sin una selección
-    public new ModuleRunMode RunMode
+    public override ModuleRunMode RunMode
     {
         get => ModuleRunMode.Blocking;
         set { } // No-op: ignoramos asignaciones externas

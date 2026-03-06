@@ -37,13 +37,8 @@ public class DialogueGraphEditorWindow : EditorWindow
 
     public void MarkAssetDirtyAndSave()
     {
-#if UNITY_EDITOR
-        if (_asset != null)
-        {
-            EditorUtility.SetDirty(_asset);
-            AssetDatabase.SaveAssets();
-        }
-#endif
+        if (_asset != null && _graphView != null)
+            DialogueGraphSaveUtility.SaveGraph(_graphView, _asset);
     }
 
     private void GenerateToolbar()

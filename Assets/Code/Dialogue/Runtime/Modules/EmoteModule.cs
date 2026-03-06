@@ -22,10 +22,7 @@ public class EmoteModule : DialogueModuleBase
     public string ProfileId => profileRef != null ? profileRef.ProfileId : profileId;
 
     // --- Animación ---
-    [Tooltip("Si está activo, detiene el emote del personaje en lugar de iniciarlo.")]
-    public bool stopAnimation = false;
-
-    [Tooltip("Clip de animación a reproducir.")]
+    [Tooltip("Clip de animación a reproducir. Sin clip asignado, detiene el emote activo del personaje.")]
     public AnimationClip clip;
 
     [Tooltip("Velocidad de reproducción.")]
@@ -33,4 +30,7 @@ public class EmoteModule : DialogueModuleBase
 
     [Tooltip("Si está activo, la animación se repite en bucle.")]
     public bool loop = false;
+
+    [Tooltip("Si está activo, la animación no se interrumpe al cambiar de nodo. Se detiene con otro EmoteModule sin clip.")]
+    public bool persistent = false;
 }

@@ -26,7 +26,7 @@ public interface IPortraitController
     /// <summary>
     /// Inicia la animación especial (Playable) en el portrait del perfil indicado.
     /// </summary>
-    void PlaySpecialAnimation(string profileId, UnityEngine.AnimationClip clip, float speed, bool loop);
+    void PlaySpecialAnimation(string profileId, UnityEngine.AnimationClip clip, float speed, bool loop, bool persistent = false);
 
     /// <summary>
     /// Detiene la animación especial del portrait del perfil indicado.
