@@ -21,11 +21,12 @@ public sealed class DialogueRunner : MonoBehaviour
     [SerializeField] private MonoBehaviour navigatorBehaviour; // IGraphNavigator
 
     [Header("Executors de módulos")]
-    [SerializeField] private TextModuleExecutor    textExecutor;
-    [SerializeField] private PortraitModuleExecutor portraitExecutor;
-    [SerializeField] private EventModuleExecutor   eventExecutor;
-    [SerializeField] private AudioModuleExecutor   audioExecutor;
-    [SerializeField] private ChoiceModuleExecutor  choiceExecutor;
+    [SerializeField] private TextModuleExecutor             textExecutor;
+    [SerializeField] private PortraitModuleExecutor          portraitExecutor;
+    [SerializeField] private EmoteModuleExecutor             emoteExecutor;
+    [SerializeField] private EventModuleExecutor             eventExecutor;
+    [SerializeField] private AudioModuleExecutor             audioExecutor;
+    [SerializeField] private ChoiceModuleExecutor            choiceExecutor;
 
     [Header("Controles")]
     [SerializeField] private KeyCode advanceKey = KeyCode.N;
@@ -50,6 +51,7 @@ public sealed class DialogueRunner : MonoBehaviour
         // Registrar executors
         RegisterExecutor(textExecutor);
         RegisterExecutor(portraitExecutor);
+        RegisterExecutor(emoteExecutor);
         RegisterExecutor(eventExecutor);
         RegisterExecutor(audioExecutor);
         RegisterExecutor(choiceExecutor);

@@ -58,7 +58,6 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
     private readonly Dictionary<string, Image>         _portraitByProfile = new();
     private readonly Dictionary<string, RectTransform> _rootByProfile     = new();
     private readonly Dictionary<Image, PlayableGraph>  _specialGraphs     = new();
-    private readonly Dictionary<string, (AnimationClip clip, float speed, bool loop)> _pendingSpecialByProfile = new();
     private readonly Dictionary<RectTransform, Coroutine> _placementCo = new();
     private readonly Dictionary<RectTransform, Coroutine> _scaleCo     = new();
 
@@ -106,19 +105,19 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         UpdateTint(module.ProfileId);
         UpdateScale(module.ProfileId);
 
-        _pendingSpecialByProfile.Remove(module.ProfileId);
-
-        if (module.playSpecialAnimation && module.specialAnimation
-            && module.specialStart == SpecialStartTiming.WithPlacementStart)
-            PlaySpecial(img, module.specialAnimation, module.specialAnimSpeed, module.specialAnimLoop);
-        else
-            StopSpecial(img);
-
         await RunPlacementAsync(module, rootRt);
+    }
 
-        if (module.playSpecialAnimation && module.specialAnimation
-            && module.specialStart == SpecialStartTiming.WithPlacementComplete)
-            PlaySpecial(img, module.specialAnimation, module.specialAnimSpeed, module.specialAnimLoop);
+    public void PlaySpecialAnimation(string profileId, AnimationClip clip, float speed, bool loop)
+    {
+        if (!_portraitByProfile.TryGetValue(profileId, out var img) || !img) return;
+        PlaySpecial(img, clip, speed, loop);
+    }
+
+    public void StopSpecialAnimation(string profileId)
+    {
+        if (!_portraitByProfile.TryGetValue(profileId, out var img) || !img) return;
+        StopSpecial(img);
     }
 
     public void ResetAll()
@@ -129,8 +128,6 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         _scaleCo.Clear();
         foreach (var kv in _specialGraphs) if (kv.Value.IsValid()) kv.Value.Destroy();
         _specialGraphs.Clear();
-        _pendingSpecialByProfile.Clear();
-
         foreach (var kv in _portraitByProfile)
         {
             if (!kv.Value) continue;

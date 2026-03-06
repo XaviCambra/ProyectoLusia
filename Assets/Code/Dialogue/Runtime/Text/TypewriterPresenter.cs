@@ -42,7 +42,6 @@ public sealed class TypewriterPresenter : MonoBehaviour, ITypewriterPresenter
         _isTyping = true;
         try
         {
-            // Firma esperada según tu código anterior: RunAsync(string, TypewriterProfile, TMP, object, CancellationToken)
             await _service.RunAsync(_lastFullText, profileOrNull, target, null, _cts.Token);
         }
         catch (OperationCanceledException)

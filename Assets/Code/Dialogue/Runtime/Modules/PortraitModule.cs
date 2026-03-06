@@ -51,19 +51,4 @@ public class PortraitModule : DialogueModuleBase
     [Tooltip("Opacidad final del fade.")]
     public int enterToOpacity = 100;
 
-    // --- Animación especial ---
-    [Tooltip("Si está activo, reproduce una AnimationClip personalizada.")]
-    public bool playSpecialAnimation = false;
-
-    [Tooltip("Clip de animación a reproducir.")]
-    public AnimationClip specialAnimation;
-
-    [Tooltip("Velocidad de reproducción de la animación especial.")]
-    public float specialAnimSpeed = 1f;
-
-    [Tooltip("Si está activo, la animación especial se repite en bucle.")]
-    public bool specialAnimLoop = false;
-
-    [Tooltip("Momento en que se inicia la animación especial.")]
-    public SpecialStartTiming specialStart = SpecialStartTiming.WithPlacementComplete;
 }

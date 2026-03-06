@@ -84,16 +84,7 @@ public static class TextModuleDrawer
             onChanged?.Invoke();
         });
 
-        var speedField = new FloatField("Global Speed") { value = m.globalSpeed };
-        speedField.RegisterValueChangedCallback(e =>
-        {
-            m.globalSpeed = UnityEngine.Mathf.Clamp(e.newValue, 0.1f, 3f);
-            speedField.SetValueWithoutNotify(m.globalSpeed);
-            onChanged?.Invoke();
-        });
-
         container.Add(spcField);
-        container.Add(speedField);
         return container;
     }
 }

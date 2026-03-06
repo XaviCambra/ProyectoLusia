@@ -24,6 +24,8 @@ public sealed class PortraitModuleExecutor : MonoBehaviour, IModuleExecutor
 
     public void Initialize(DialogueGraph graph)
     {
+        if (_controller == null)
+            _controller = portraitControllerRef as IPortraitController;
         _controller?.Init(graph);
     }
 

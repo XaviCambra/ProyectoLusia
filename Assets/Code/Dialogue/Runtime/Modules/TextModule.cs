@@ -29,8 +29,4 @@ public class TextModule : DialogueModuleBase
     [Range(0.001f, 0.2f)]
     [Tooltip("Segundos entre cada carácter revelado.")]
     public float secondsPerChar = 0.03f;
-
-    [Range(0.1f, 3f)]
-    [Tooltip("Multiplicador global de velocidad del typewriter.")]
-    public float globalSpeed = 1f;
 }

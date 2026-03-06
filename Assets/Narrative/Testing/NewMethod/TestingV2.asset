@@ -13,27 +13,13 @@ MonoBehaviour:
   m_Name: TestingV2
   m_EditorClassIdentifier: 
   nodes:
-  - GUID: 0d012364-a784-443e-bbc8-e3939f4b9574
-    nodeRect:
-      serializedVersion: 2
-      x: -306
-      y: 286
-      width: 380
-      height: 616
-    bgColorIndex: 5
-    bgColor: {r: 0.3, g: 0.4, b: 0.28, a: 1}
-    isStart: 1
-    startId: testingNode
-    modules:
-    - rid: 4079482912282771456
-    - rid: 4079482875762704456
   - GUID: 763de03d-c252-48f0-95e4-eefb97441312
     nodeRect:
       serializedVersion: 2
-      x: 223
-      y: 185
+      x: 498
+      y: 122
       width: 380
-      height: 559
+      height: 500
     bgColorIndex: 0
     bgColor: {r: 0.22, g: 0.22, b: 0.22, a: 1}
     isStart: 0
@@ -41,19 +27,51 @@ MonoBehaviour:
     modules:
     - rid: 4079482900060307527
     - rid: 4079482900060307528
+  - GUID: 40b85c1f-725d-45c5-9b49-ac7fe41e7b49
+    nodeRect:
+      serializedVersion: 2
+      x: 27
+      y: 275
+      width: 420
+      height: 513
+    bgColorIndex: 0
+    bgColor: {r: 0.22, g: 0.22, b: 0.22, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 4079482942335746126
+    - rid: 4079482942335746127
+  - GUID: 0d012364-a784-443e-bbc8-e3939f4b9574
+    nodeRect:
+      serializedVersion: 2
+      x: -459
+      y: 275
+      width: 380
+      height: 701
+    bgColorIndex: 5
+    bgColor: {r: 0.3, g: 0.4, b: 0.28, a: 1}
+    isStart: 1
+    startId: 
+    modules:
+    - rid: 4079482912282771456
+    - rid: 4079482875762704456
+    - rid: 4079482942335746148
   edges:
-  - fromNodeGUID: 0d012364-a784-443e-bbc8-e3939f4b9574
+  - fromNodeGUID: 40b85c1f-725d-45c5-9b49-ac7fe41e7b49
     fromPortName: Next
     toNodeGUID: 763de03d-c252-48f0-95e4-eefb97441312
+  - fromNodeGUID: 0d012364-a784-443e-bbc8-e3939f4b9574
+    fromPortName: Next
+    toNodeGUID: 40b85c1f-725d-45c5-9b49-ac7fe41e7b49
   frames:
   - title: Testing
     color: {r: 0.4273318, g: 0.9192322, b: 0.9339623, a: 0.15}
     rect:
       serializedVersion: 2
-      x: -546
-      y: 52.5
-      width: 1481
-      height: 963
+      x: -556.494
+      y: 15.77087
+      width: 2623.127
+      height: 1989.825
   references:
     version: 2
     RefIds:
@@ -62,12 +80,11 @@ MonoBehaviour:
       data:
         runMode: 2
         speakerName: Guille
-        useLocalization: 0
+        useLocalization: 1
         text: QUE PASA MI GENTE
-        locKey: 
+        locKey: 100100001
         useTypewriter: 1
-        secondsPerChar: 0.03
-        globalSpeed: 1
+        secondsPerChar: 0.1
     - rid: 4079482900060307527
       type: {class: PortraitModule, ns: , asm: Assembly-CSharp}
       data:
@@ -82,22 +99,16 @@ MonoBehaviour:
         useFade: 0
         enterFromOpacity: 0
         enterToOpacity: 100
-        playSpecialAnimation: 0
-        specialAnimation: {fileID: 0}
-        specialAnimSpeed: 1
-        specialAnimLoop: 0
-        specialStart: 1
     - rid: 4079482900060307528
       type: {class: TextModule, ns: , asm: Assembly-CSharp}
       data:
         runMode: 2
-        speakerName: Guille
+        speakerName: Sora
         useLocalization: 0
-        text: Yayayayayaya
+        text: CULOoooooo
         locKey: 
         useTypewriter: 1
         secondsPerChar: 0.03
-        globalSpeed: 1
     - rid: 4079482912282771456
       type: {class: PortraitModule, ns: , asm: Assembly-CSharp}
       data:
@@ -106,14 +117,43 @@ MonoBehaviour:
         profileId: bc17ed2360684d68b5e7a55be922310b
         portraitKey: GuilleFeli
         appearance: 1
-        origin: 1
-        target: 3
-        moveSpeed: 50
+        origin: 0
+        target: 5
+        moveSpeed: 500
         useFade: 1
         enterFromOpacity: 0
+        enterToOpacity: 75
+    - rid: 4079482942335746126
+      type: {class: PortraitModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 0
+        profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+        profileId: bc17ed2360684d68b5e7a55be922310b
+        portraitKey: GuilleConFrio
+        appearance: 1
+        origin: 5
+        target: 1
+        moveSpeed: 700
+        useFade: 0
+        enterFromOpacity: 0
         enterToOpacity: 100
-        playSpecialAnimation: 1
-        specialAnimation: {fileID: 0}
-        specialAnimSpeed: 1
-        specialAnimLoop: 0
-        specialStart: 1
+    - rid: 4079482942335746127
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Guille
+        useLocalization: 0
+        text: BIM BARABUM MR WORLDWIDE ONE STEP ONE ROOM, DALE ESA JEBITA TIENE TREMENDO...
+        locKey: 
+        useTypewriter: 1
+        secondsPerChar: 0.03
+    - rid: 4079482942335746148
+      type: {class: EmoteModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 0
+        profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+        profileId: bc17ed2360684d68b5e7a55be922310b
+        stopAnimation: 0
+        clip: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
+        speed: 0.2
+        loop: 1

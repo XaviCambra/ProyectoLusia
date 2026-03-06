@@ -19,6 +19,7 @@ public static class ModuleDrawerRegistry
     {
         Register<TextModule>(TextModuleDrawer.Draw);
         Register<PortraitModule>(PortraitModuleDrawer.Draw);
+        Register<EmoteModule>(EmoteModuleDrawer.Draw);
         Register<EventDispatcherModule>(EventModuleDrawer.Draw);
         Register<AudioModule>(AudioModuleDrawer.Draw);
         Register<ChoiceModule>(ChoiceModuleDrawer.Draw);
@@ -50,11 +51,12 @@ public static class ModuleDrawerRegistry
 
     private static readonly Dictionary<string, Type> _available = new()
     {
-        ["Text"]      = typeof(TextModule),
-        ["Portrait"]  = typeof(PortraitModule),
-        ["Event"]     = typeof(EventDispatcherModule),
-        ["Audio"]     = typeof(AudioModule),
-        ["Choices"]   = typeof(ChoiceModule),
+        ["Text"]              = typeof(TextModule),
+        ["Portrait"]          = typeof(PortraitModule),
+        ["Emote"]             = typeof(EmoteModule),
+        ["Event"]             = typeof(EventDispatcherModule),
+        ["Audio"]             = typeof(AudioModule),
+        ["Choices"]           = typeof(ChoiceModule),
     };
 }
 #endif

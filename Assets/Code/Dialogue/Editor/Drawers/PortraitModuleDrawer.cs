@@ -68,22 +68,6 @@ public static class PortraitModuleDrawer
         root.Add(fadeToggle);
         root.Add(fadeFields);
 
-        // --- Animación especial ---
-        root.Add(MakeSeparator("Special Animation"));
-
-        var specialToggle = new Toggle("Play Special Anim") { value = m.playSpecialAnimation };
-        var specialFields = BuildSpecialAnimFields(m, onChanged);
-        specialFields.style.display = m.playSpecialAnimation ? DisplayStyle.Flex : DisplayStyle.None;
-
-        specialToggle.RegisterValueChangedCallback(e =>
-        {
-            m.playSpecialAnimation = e.newValue;
-            specialFields.style.display = e.newValue ? DisplayStyle.Flex : DisplayStyle.None;
-            onChanged?.Invoke();
-        });
-        root.Add(specialToggle);
-        root.Add(specialFields);
-
         return root;
     }
 
@@ -109,37 +93,6 @@ public static class PortraitModuleDrawer
 
         c.Add(fromField);
         c.Add(toField);
-        return c;
-    }
-
-    private static VisualElement BuildSpecialAnimFields(PortraitModule m, Action onChanged)
-    {
-        var c = new VisualElement();
-
-        var clipField = new ObjectField("Clip")
-        {
-            objectType = typeof(UnityEngine.AnimationClip),
-            value      = m.specialAnimation
-        };
-        clipField.RegisterValueChangedCallback(e =>
-        {
-            m.specialAnimation = e.newValue as UnityEngine.AnimationClip;
-            onChanged?.Invoke();
-        });
-
-        var speedField = new FloatField("Speed") { value = m.specialAnimSpeed };
-        speedField.RegisterValueChangedCallback(e => { m.specialAnimSpeed = e.newValue; onChanged?.Invoke(); });
-
-        var loopToggle = new Toggle("Loop") { value = m.specialAnimLoop };
-        loopToggle.RegisterValueChangedCallback(e => { m.specialAnimLoop = e.newValue; onChanged?.Invoke(); });
-
-        var startField = new EnumField("Start Timing", m.specialStart);
-        startField.RegisterValueChangedCallback(e => { m.specialStart = (SpecialStartTiming)e.newValue; onChanged?.Invoke(); });
-
-        c.Add(clipField);
-        c.Add(speedField);
-        c.Add(loopToggle);
-        c.Add(startField);
         return c;
     }
 

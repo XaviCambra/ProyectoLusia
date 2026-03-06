@@ -75,4 +75,3 @@ public enum AppearanceMode   { Cut, Slide, None }
 public enum Spot             { LeftOffscreen, Left, CenterLeft, Center, CenterRight, Right, RightOffscreen }
 public enum EventPayloadType { None, Int, Float, String, Bool, Char }
 public enum ProgressArgType  { None, Int, Float, String }
-public enum SpecialStartTiming { WithPlacementStart, WithPlacementComplete }

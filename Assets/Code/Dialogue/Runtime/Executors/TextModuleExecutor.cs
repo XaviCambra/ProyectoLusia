@@ -56,7 +56,6 @@ public sealed class TextModuleExecutor : MonoBehaviour, IModuleExecutor
         {
             var profile = ScriptableObject.CreateInstance<TypewriterProfile>();
             profile.secondsPerChar = m.secondsPerChar;
-            profile.globalSpeed    = m.globalSpeed;
 
             using var reg = ctx.Token.Register(() => _typewriter?.Cancel());
             await _typewriter.ShowAsync(text, profile);

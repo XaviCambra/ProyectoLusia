@@ -22,4 +22,14 @@ public interface IPortraitController
     /// Detiene y limpia toda animación activa, oculta retratos y restablece el estado inicial.
     /// </summary>
     void ResetAll();
+
+    /// <summary>
+    /// Inicia la animación especial (Playable) en el portrait del perfil indicado.
+    /// </summary>
+    void PlaySpecialAnimation(string profileId, UnityEngine.AnimationClip clip, float speed, bool loop);
+
+    /// <summary>
+    /// Detiene la animación especial del portrait del perfil indicado.
+    /// </summary>
+    void StopSpecialAnimation(string profileId);
 }
