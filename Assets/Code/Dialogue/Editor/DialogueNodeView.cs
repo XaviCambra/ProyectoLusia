@@ -54,9 +54,51 @@ public class DialogueNodeView : Node
             style.backgroundColor = col;
         }
 
+        // Ocultar el divisor gris entre título y contenido
+        var divider = this.Q("divider");
+        if (divider != null) divider.style.display = DisplayStyle.None;
+
+        // Eliminar el borde doble redondeado negro que añade Unity por defecto
+        var nodeBorder = this.Q("node-border");
+        if (nodeBorder != null)
+        {
+            nodeBorder.style.borderTopWidth    = 0;
+            nodeBorder.style.borderBottomWidth = 0;
+            nodeBorder.style.borderLeftWidth   = 0;
+            nodeBorder.style.borderRightWidth  = 0;
+        }
+
+        // Eliminar el padding que Unity añade al contenedor principal
+        mainContainer.style.paddingTop    = 0;
+        mainContainer.style.paddingBottom = 0;
+        mainContainer.style.paddingLeft   = 0;
+        mainContainer.style.paddingRight  = 0;
+        mainContainer.style.marginTop     = 0;
+        mainContainer.style.marginBottom  = 0;
+        mainContainer.style.marginLeft    = 0;
+        mainContainer.style.marginRight   = 0;
+
+        // Redondear esquinas del nodo y recortar hijos para que respeten el radio
+        const float r = 10f;
+        style.borderTopLeftRadius     = r;
+        style.borderTopRightRadius    = r;
+        style.borderBottomLeftRadius  = r;
+        style.borderBottomRightRadius = r;
+        style.overflow = Overflow.Hidden;
+
         titleContainer.style.backgroundColor = new Color(0f, 0f, 0f, 0.25f);
+        titleContainer.style.marginLeft      = 0;
+        titleContainer.style.marginRight     = 0;
         inputContainer.style.backgroundColor  = new Color(0f, 0f, 0f, 0.10f);
         outputContainer.style.backgroundColor = new Color(0f, 0f, 0f, 0.15f);
+
+        // Margen lateral al contenedor de puertos para que no quede pegado al borde
+        var topContainer = this.Q("top");
+        if (topContainer != null)
+        {
+            topContainer.style.marginLeft  = 0;
+            topContainer.style.marginRight = 0;
+        }
 
         // Botón eliminar en la cabecera
         var deleteBtn = new Button(DeleteSelf) { text = "✕" };
@@ -76,7 +118,7 @@ public class DialogueNodeView : Node
     private void BuildNodeHeader()
     {
         var header = new VisualElement();
-        header.style.paddingLeft = 6;
+        header.style.paddingLeft = 0;
         header.style.paddingTop  = 4;
 
         // Selector de color de paleta
