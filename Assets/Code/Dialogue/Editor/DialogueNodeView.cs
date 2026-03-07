@@ -19,6 +19,11 @@ public class DialogueNodeView : Node
     public readonly DialogueNodeData Data;
     public Vector2 DefaultSize => new(400, 200);
 
+    // ─── Dimensiones ──────────────────────────────────────────────────────────
+    // M corresponde a margin, P a padding y S a spacing.</summary>
+    private static float BottomMS = 4;
+    private static float BottomMSTextField = BottomMS + 1;
+
     // ─── Callback externo ─────────────────────────────────────────────────────
     /// <summary>Se invoca cada vez que algún dato del nodo cambia (para marcar asset dirty).</summary>
     public Action OnDataChanged;
@@ -43,8 +48,10 @@ public class DialogueNodeView : Node
     // ─── Setup visual básico ──────────────────────────────────────────────────
     private void SetupChrome()
     {
-        style.minWidth  = 380;
-        style.maxWidth  = 420;
+        var wNode  = 400;
+        style.width    = wNode;
+        style.minWidth = wNode;
+        style.maxWidth = wNode;
 
         // Color de fondo según paleta
         if (DialogueNodeData.NodePalette != null && DialogueNodeData.NodePalette.Count > 0)
@@ -69,14 +76,16 @@ public class DialogueNodeView : Node
         }
 
         // Eliminar el padding que Unity añade al contenedor principal
-        mainContainer.style.paddingTop    = 0;
-        mainContainer.style.paddingBottom = 0;
-        mainContainer.style.paddingLeft   = 0;
-        mainContainer.style.paddingRight  = 0;
-        mainContainer.style.marginTop     = 0;
-        mainContainer.style.marginBottom  = 0;
-        mainContainer.style.marginLeft    = 0;
-        mainContainer.style.marginRight   = 0;
+        var pContainer = 2;
+        var mContainer = 2;
+        mainContainer.style.paddingTop    = pContainer;
+        mainContainer.style.paddingBottom = pContainer;
+        mainContainer.style.paddingLeft   = pContainer;
+        mainContainer.style.paddingRight  = pContainer;
+        mainContainer.style.marginTop     = mContainer;
+        mainContainer.style.marginBottom  = mContainer;
+        mainContainer.style.marginLeft    = mContainer;
+        mainContainer.style.marginRight   = mContainer;
 
         // Redondear esquinas del nodo y recortar hijos para que respeten el radio
         const float r = 10f;
@@ -87,8 +96,8 @@ public class DialogueNodeView : Node
         style.overflow = Overflow.Hidden;
 
         titleContainer.style.backgroundColor = new Color(0f, 0f, 0f, 0.25f);
-        titleContainer.style.marginLeft      = 0;
-        titleContainer.style.marginRight     = 0;
+        titleContainer.style.marginLeft      = 4;
+        titleContainer.style.marginRight     = 4;
         inputContainer.style.backgroundColor  = new Color(0f, 0f, 0f, 0.10f);
         outputContainer.style.backgroundColor = new Color(0f, 0f, 0f, 0.15f);
 
@@ -96,8 +105,8 @@ public class DialogueNodeView : Node
         var topContainer = this.Q("top");
         if (topContainer != null)
         {
-            topContainer.style.marginLeft  = 0;
-            topContainer.style.marginRight = 0;
+            topContainer.style.marginLeft  = 4;
+            topContainer.style.marginRight = 4;
         }
 
         // Botón eliminar en la cabecera
@@ -138,12 +147,14 @@ public class DialogueNodeView : Node
                     style.backgroundColor = Data.bgColor;
                     Notify();
                 });
-                swatch.style.width           = 16;
-                swatch.style.height          = 16;
-                swatch.style.backgroundColor = DialogueNodeData.NodePalette[i].color;
-                swatch.style.marginRight     = 2;
-                swatch.style.marginBottom    = 2;
+                swatch.style.width             = 20;
+                swatch.style.height            = 20;
+                swatch.style.backgroundColor   = DialogueNodeData.NodePalette[i].color;
+                swatch.style.marginTop         = 0;
+                swatch.style.marginRight       = 0;
+                swatch.style.marginBottom      = 0;
                 paletteRow.Add(swatch);
+                paletteRow.style.marginBottom  = BottomMS;
             }
         }
         header.Add(paletteRow);
@@ -156,11 +167,13 @@ public class DialogueNodeView : Node
             startIdField.style.display = e.newValue ? DisplayStyle.Flex : DisplayStyle.None;
             Notify();
         });
+        startToggle.style.marginBottom = BottomMS;
         header.Add(startToggle);
 
         startIdField = new TextField("Start ID") { value = Data.startId };
         startIdField.style.display = Data.isStart ? DisplayStyle.Flex : DisplayStyle.None;
         startIdField.RegisterValueChangedCallback(e => { Data.startId = e.newValue; Notify(); });
+        startIdField.style.marginBottom = BottomMS+1;
         header.Add(startIdField);
 
         mainContainer.Insert(0, header);
@@ -305,8 +318,8 @@ public class DialogueNodeView : Node
         item.Add(header);
 
         // ── Body (drawer) ──
-        var foldout = new Foldout { value = true };
-        foldout.style.paddingLeft = 8;
+        var body = new VisualElement();
+        body.style.paddingLeft = 8;
 
         Action onChanged = () =>
         {
@@ -316,8 +329,8 @@ public class DialogueNodeView : Node
             Notify();
         };
 
-        foldout.Add(ModuleDrawerRegistry.Draw(module, onChanged));
-        item.Add(foldout);
+        body.Add(ModuleDrawerRegistry.Draw(module, onChanged));
+        item.Add(body);
         return item;
     }
 

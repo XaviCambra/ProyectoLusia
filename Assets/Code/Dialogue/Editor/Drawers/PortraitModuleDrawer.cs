@@ -30,9 +30,6 @@ public static class PortraitModuleDrawer
         keyField.RegisterValueChangedCallback(e => { m.portraitKey = e.newValue; onChanged?.Invoke(); });
         root.Add(keyField);
 
-        // --- Apariencia ---
-        root.Add(MakeSeparator("Appearance"));
-
         var appearField = new EnumField("Mode", m.appearance);
         appearField.RegisterValueChangedCallback(e => { m.appearance = (AppearanceMode)e.newValue; onChanged?.Invoke(); });
         root.Add(appearField);

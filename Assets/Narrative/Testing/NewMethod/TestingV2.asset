@@ -13,28 +13,13 @@ MonoBehaviour:
   m_Name: TestingV2
   m_EditorClassIdentifier: 
   nodes:
-  - GUID: 0d012364-a784-443e-bbc8-e3939f4b9574
-    nodeRect:
-      serializedVersion: 2
-      x: -459
-      y: 275
-      width: 380
-      height: 700
-    bgColorIndex: 1
-    bgColor: {r: 0.25, g: 0.27, b: 0.3, a: 1}
-    isStart: 1
-    startId: 
-    modules:
-    - rid: 4079482912282771456
-    - rid: 4079482875762704456
-    - rid: 4079482942335746148
   - GUID: 050e5960-0dd3-43f4-a674-3fc2ea07d2b3
     nodeRect:
       serializedVersion: 2
       x: 911
       y: 109
-      width: 380
-      height: 602
+      width: 400
+      height: 606
     bgColorIndex: 0
     bgColor: {r: 0.22, g: 0.22, b: 0.22, a: 1}
     isStart: 0
@@ -48,8 +33,8 @@ MonoBehaviour:
       serializedVersion: 2
       x: 505
       y: 122
-      width: 380
-      height: 499
+      width: 400
+      height: 503
     bgColorIndex: 0
     bgColor: {r: 0.22, g: 0.22, b: 0.22, a: 1}
     isStart: 0
@@ -60,10 +45,10 @@ MonoBehaviour:
   - GUID: 40b85c1f-725d-45c5-9b49-ac7fe41e7b49
     nodeRect:
       serializedVersion: 2
-      x: 27
-      y: 275
-      width: 420
-      height: 1134
+      x: 30
+      y: 281
+      width: 400
+      height: 1151
     bgColorIndex: 0
     bgColor: {r: 0.22, g: 0.22, b: 0.22, a: 1}
     isStart: 0
@@ -77,6 +62,21 @@ MonoBehaviour:
     - rid: 4079482957405093997
     - rid: 4079482957405093998
     - rid: 4079482957405093999
+  - GUID: 0d012364-a784-443e-bbc8-e3939f4b9574
+    nodeRect:
+      serializedVersion: 2
+      x: -481
+      y: 256
+      width: 400
+      height: 704
+    bgColorIndex: 4
+    bgColor: {r: 0.52, g: 0.33, b: 0.3, a: 1}
+    isStart: 1
+    startId: 
+    modules:
+    - rid: 4079482912282771456
+    - rid: 4079482875762704456
+    - rid: 4079482942335746148
   edges:
   - fromNodeGUID: 0d012364-a784-443e-bbc8-e3939f4b9574
     fromPortName: Next
@@ -106,7 +106,7 @@ MonoBehaviour:
         speakerName: Guille
         useLocalization: 1
         text: QUE PASA MI GENTE
-        locKey: 100100001
+        locKey: 
         useTypewriter: 1
         profileOverride: {fileID: 0}
     - rid: 4079482900060307527
