@@ -8,12 +8,12 @@ public static class ChoiceModuleDrawer
     public static VisualElement Draw(ChoiceModule m, Action onChanged)
     {
         var root = new VisualElement();
-        root.style.paddingLeft  = 4;
-        root.style.paddingRight = 4;
+        ModuleDrawerStyles.ApplyRootPadding(root);
 
         // Show blocked choices toggle
         var showBlockedToggle = new Toggle("Show Blocked Choices") { value = m.showBlockedChoices };
         showBlockedToggle.RegisterValueChangedCallback(e => { m.showBlockedChoices = e.newValue; onChanged?.Invoke(); });
+        ModuleDrawerStyles.ApplyToggleMargins(showBlockedToggle);
         root.Add(showBlockedToggle);
 
         // Lista de choices
@@ -46,6 +46,8 @@ public static class ChoiceModuleDrawer
         root.Add(addBtn);
 
         RebuildChoiceList();
+
+        ModuleDrawerStyles.AdjustFirstAndLastMargins(root);
         return root;
     }
 
@@ -89,8 +91,11 @@ public static class ChoiceModuleDrawer
 
         // Choice text / localization
         var locToggle = new Toggle("Use Localization") { value = choice.choiceUseLocalization };
+        ModuleDrawerStyles.ApplyToggleMargins(locToggle);
         var textField = new TextField("Text") { value = choice.choiceText };
+        ModuleDrawerStyles.ApplyFieldMargins(textField);
         var locField  = new TextField("Loc Key") { value = choice.choiceLocKey };
+        ModuleDrawerStyles.ApplyFieldMargins(locField);
 
         void UpdateLocVisibility()
         {
@@ -121,6 +126,7 @@ public static class ChoiceModuleDrawer
         var foldout = new Foldout { text = "Affinity Condition", value = false };
 
         var toggle = new Toggle("Requires Affinity") { value = c.requiresAffinity };
+        ModuleDrawerStyles.ApplyToggleMargins(toggle);
         var fields = new VisualElement();
         fields.style.display = c.requiresAffinity ? DisplayStyle.Flex : DisplayStyle.None;
 
@@ -133,12 +139,15 @@ public static class ChoiceModuleDrawer
 
         var keyField  = new TextField("Affinity Key") { value = c.affinityKey };
         keyField.RegisterValueChangedCallback(e => { c.affinityKey = e.newValue; onChanged?.Invoke(); });
+        ModuleDrawerStyles.ApplyFieldMargins(keyField);
 
         var valField  = new FloatField("Required Value") { value = c.requiredAffinity };
         valField.RegisterValueChangedCallback(e => { c.requiredAffinity = e.newValue; onChanged?.Invoke(); });
+        ModuleDrawerStyles.ApplyFieldMargins(valField);
 
         var invToggle = new Toggle("Invert") { value = c.invertRequirement };
         invToggle.RegisterValueChangedCallback(e => { c.invertRequirement = e.newValue; onChanged?.Invoke(); });
+        ModuleDrawerStyles.ApplyToggleMargins(invToggle);
 
         fields.Add(keyField);
         fields.Add(valField);
@@ -153,6 +162,7 @@ public static class ChoiceModuleDrawer
         var foldout = new Foldout { text = "Progress Condition", value = false };
 
         var toggle = new Toggle("Requires Progress") { value = c.requiresProgress };
+        ModuleDrawerStyles.ApplyToggleMargins(toggle);
         var fields = new VisualElement();
         fields.style.display = c.requiresProgress ? DisplayStyle.Flex : DisplayStyle.None;
 
@@ -165,8 +175,10 @@ public static class ChoiceModuleDrawer
 
         var methodField  = new TextField("Method Name") { value = c.progressMethod };
         methodField.RegisterValueChangedCallback(e => { c.progressMethod = e.newValue; onChanged?.Invoke(); });
+        ModuleDrawerStyles.ApplyFieldMargins(methodField);
 
         var argTypeField = new EnumField("Arg Type", c.progressArgType);
+        ModuleDrawerStyles.ApplyFieldMargins(argTypeField);
 
         var argContainer = new VisualElement();
 
@@ -178,16 +190,19 @@ public static class ChoiceModuleDrawer
                 case ProgressArgType.Int:
                     var intF = new IntegerField("Arg") { value = c.progressArgInt };
                     intF.RegisterValueChangedCallback(e => { c.progressArgInt = e.newValue; onChanged?.Invoke(); });
+                    ModuleDrawerStyles.ApplyFieldMargins(intF);
                     argContainer.Add(intF);
                     break;
                 case ProgressArgType.Float:
                     var floatF = new FloatField("Arg") { value = c.progressArgFloat };
                     floatF.RegisterValueChangedCallback(e => { c.progressArgFloat = e.newValue; onChanged?.Invoke(); });
+                    ModuleDrawerStyles.ApplyFieldMargins(floatF);
                     argContainer.Add(floatF);
                     break;
                 case ProgressArgType.String:
                     var strF = new TextField("Arg") { value = c.progressArgString };
                     strF.RegisterValueChangedCallback(e => { c.progressArgString = e.newValue; onChanged?.Invoke(); });
+                    ModuleDrawerStyles.ApplyFieldMargins(strF);
                     argContainer.Add(strF);
                     break;
             }

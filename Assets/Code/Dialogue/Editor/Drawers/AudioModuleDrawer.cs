@@ -9,8 +9,7 @@ public static class AudioModuleDrawer
     public static VisualElement Draw(AudioModule m, Action onChanged)
     {
         var root = new VisualElement();
-        root.style.paddingLeft  = 4;
-        root.style.paddingRight = 4;
+        ModuleDrawerStyles.ApplyRootPadding(root);
 
         var clipField = new ObjectField("Clip")
         {
@@ -22,6 +21,7 @@ public static class AudioModuleDrawer
             m.clip = e.newValue as UnityEngine.AudioClip;
             onChanged?.Invoke();
         });
+        ModuleDrawerStyles.ApplyFieldMargins(clipField);
         root.Add(clipField);
 
         var volField = new FloatField("Volume (0-1)") { value = m.volume };
@@ -31,12 +31,15 @@ public static class AudioModuleDrawer
             volField.SetValueWithoutNotify(m.volume);
             onChanged?.Invoke();
         });
+        ModuleDrawerStyles.ApplyFieldMargins(volField);
         root.Add(volField);
 
         var waitToggle = new Toggle("Wait for Completion") { value = m.waitForCompletion };
         waitToggle.RegisterValueChangedCallback(e => { m.waitForCompletion = e.newValue; onChanged?.Invoke(); });
+        ModuleDrawerStyles.ApplyToggleMargins(waitToggle);
         root.Add(waitToggle);
 
+        ModuleDrawerStyles.AdjustFirstAndLastMargins(root);
         return root;
     }
 }

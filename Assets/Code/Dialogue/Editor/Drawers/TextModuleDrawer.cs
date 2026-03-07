@@ -9,12 +9,12 @@ public static class TextModuleDrawer
     public static VisualElement Draw(TextModule m, Action onChanged)
     {
         var root = new VisualElement();
-        root.style.paddingLeft  = 4;
-        root.style.paddingRight = 4;
+        ModuleDrawerStyles.ApplyRootPadding(root);
 
         // Speaker Name
         var speakerField = new TextField("Speaker") { value = m.speakerName };
         speakerField.RegisterValueChangedCallback(e => { m.speakerName = e.newValue; onChanged?.Invoke(); });
+        ModuleDrawerStyles.ApplyFieldMargins(speakerField);
         root.Add(speakerField);
 
         // Localization toggle + text/locKey
@@ -34,6 +34,7 @@ public static class TextModuleDrawer
             UpdateLocVisibility();
             onChanged?.Invoke();
         });
+        ModuleDrawerStyles.ApplyToggleMargins(locToggle);
 
         root.Add(locToggle);
         root.Add(textArea);
@@ -51,10 +52,12 @@ public static class TextModuleDrawer
             twFields.style.display = e.newValue ? DisplayStyle.Flex : DisplayStyle.None;
             onChanged?.Invoke();
         });
+        ModuleDrawerStyles.ApplyToggleMargins(twToggle);
 
         root.Add(twToggle);
         root.Add(twFields);
 
+        ModuleDrawerStyles.AdjustFirstAndLastMargins(root);
         return root;
     }
 
@@ -63,6 +66,7 @@ public static class TextModuleDrawer
         var field = new TextField("Text") { value = m.text, multiline = true };
         field.style.whiteSpace = WhiteSpace.Normal;
         field.RegisterValueChangedCallback(e => { m.text = e.newValue; onChanged?.Invoke(); });
+        ModuleDrawerStyles.ApplyFieldMargins(field);
         return field;
     }
 
@@ -70,6 +74,7 @@ public static class TextModuleDrawer
     {
         var field = new TextField("Loc Key") { value = m.locKey };
         field.RegisterValueChangedCallback(e => { m.locKey = e.newValue; onChanged?.Invoke(); });
+        ModuleDrawerStyles.ApplyFieldMargins(field);
         return field;
     }
 
@@ -87,6 +92,7 @@ public static class TextModuleDrawer
             m.profileOverride = e.newValue as TypewriterProfile;
             onChanged?.Invoke();
         });
+        ModuleDrawerStyles.ApplyFieldMargins(profileField);
 
         container.Add(profileField);
         return container;

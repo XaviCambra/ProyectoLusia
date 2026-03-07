@@ -9,8 +9,7 @@ public static class EmoteModuleDrawer
     public static VisualElement Draw(EmoteModule m, Action onChanged)
     {
         var root = new VisualElement();
-        root.style.paddingLeft  = 4;
-        root.style.paddingRight = 4;
+        ModuleDrawerStyles.ApplyRootPadding(root);
 
         // --- Perfil ---
         var profileField = new ObjectField("Profile")
@@ -24,6 +23,7 @@ public static class EmoteModuleDrawer
             m.profileId  = m.profileRef != null ? m.profileRef.ProfileId : string.Empty;
             onChanged?.Invoke();
         });
+        ModuleDrawerStyles.ApplyFieldMargins(profileField);
         root.Add(profileField);
 
         // --- Clip (sin clip = stop) ---
@@ -46,11 +46,13 @@ public static class EmoteModuleDrawer
             playFields.style.display = hasClip ? DisplayStyle.Flex : DisplayStyle.None;
             onChanged?.Invoke();
         });
+        ModuleDrawerStyles.ApplyFieldMargins(clipField);
 
         root.Add(clipField);
         root.Add(stopLabel);
         root.Add(playFields);
 
+        ModuleDrawerStyles.AdjustFirstAndLastMargins(root);
         return root;
     }
 
@@ -65,12 +67,15 @@ public static class EmoteModuleDrawer
             speedField.SetValueWithoutNotify(m.speed);
             onChanged?.Invoke();
         });
+        ModuleDrawerStyles.ApplyFieldMargins(speedField);
 
         var loopToggle = new Toggle("Loop") { value = m.loop };
         loopToggle.RegisterValueChangedCallback(e => { m.loop = e.newValue; onChanged?.Invoke(); });
+        ModuleDrawerStyles.ApplyToggleMargins(loopToggle);
 
         var persistentToggle = new Toggle("Persistent") { value = m.persistent };
         persistentToggle.RegisterValueChangedCallback(e => { m.persistent = e.newValue; onChanged?.Invoke(); });
+        ModuleDrawerStyles.ApplyToggleMargins(persistentToggle);
 
         c.Add(speedField);
         c.Add(loopToggle);
