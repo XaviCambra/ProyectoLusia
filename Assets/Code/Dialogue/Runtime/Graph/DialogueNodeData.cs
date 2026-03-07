@@ -20,26 +20,20 @@ public class DialogueNodeData
 
     public static readonly List<PaletteEntry> NodePalette = new()
     {
-        new PaletteEntry { name = "Graphite",       color = new Color(0.15f, 0.17f, 0.19f, 1f) },
-        new PaletteEntry { name = "Ash Gray",       color = new Color(0.25f, 0.27f, 0.30f, 1f) },
+        new PaletteEntry { name = "Graphite",       color = new Color(0.22f, 0.23f, 0.25f, 1f) },
         new PaletteEntry { name = "Deep Coffee",    color = new Color(0.32f, 0.24f, 0.20f, 1f) },
         new PaletteEntry { name = "Rust Brown",     color = new Color(0.48f, 0.28f, 0.22f, 1f) },
-        new PaletteEntry { name = "Faded Clay",     color = new Color(0.52f, 0.33f, 0.30f, 1f) },
         new PaletteEntry { name = "Forest Olive",   color = new Color(0.30f, 0.40f, 0.28f, 1f) },
-        new PaletteEntry { name = "Deep Moss",      color = new Color(0.26f, 0.35f, 0.30f, 1f) },
         new PaletteEntry { name = "Muted Teal",     color = new Color(0.25f, 0.43f, 0.45f, 1f) },
         new PaletteEntry { name = "Storm Blue",     color = new Color(0.25f, 0.35f, 0.48f, 1f) },
-        new PaletteEntry { name = "Indigo Night",   color = new Color(0.23f, 0.30f, 0.46f, 1f) },
-        new PaletteEntry { name = "Royal Plum",     color = new Color(0.32f, 0.24f, 0.40f, 1f) },
-        new PaletteEntry { name = "Deep Lavender",  color = new Color(0.38f, 0.29f, 0.44f, 1f) },
-        new PaletteEntry { name = "Midnight Cyan",  color = new Color(0.20f, 0.35f, 0.40f, 1f) },
-        new PaletteEntry { name = "Dusty Burgundy", color = new Color(0.40f, 0.25f, 0.30f, 1f) },
         new PaletteEntry { name = "Smoky Navy",     color = new Color(0.18f, 0.25f, 0.36f, 1f) },
-        new PaletteEntry { name = "Obsidian Green", color = new Color(0.18f, 0.28f, 0.23f, 1f) }
+        new PaletteEntry { name = "Royal Plum",     color = new Color(0.32f, 0.24f, 0.40f, 1f) },
+        new PaletteEntry { name = "Dusty Burgundy", color = new Color(0.40f, 0.25f, 0.30f, 1f) },
+        new PaletteEntry { name = "Obsidian Green", color = new Color(0.18f, 0.28f, 0.23f, 1f) },
     };
 
     [Range(0, 99)] public int bgColorIndex = 0;
-    public Color bgColor = new Color(0.22f, 0.22f, 0.22f, 1f);
+    public Color bgColor = new Color(0.22f, 0.23f, 0.25f, 1f);
 
     // ---------- Nodo de inicio ----------
     public bool isStart = false;

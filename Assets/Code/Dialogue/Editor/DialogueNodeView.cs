@@ -35,9 +35,10 @@ public class DialogueNodeView : Node
     private const float PortsBottomMargin  = 4f;
 
     // Cabecera del nodo
-    private const float HeaderPaddingTop   = 4f;
-    private const float SwatchSize         = 20f;
-    private const float HeaderItemMarginBottom = 4f;
+    private const float HeaderPaddingTop        = 4f;
+    private const float SwatchSize              = 32f;
+    private const float HeaderItemMarginBottom  = 4f;
+    private const float StartIdFieldMarginTop   = 4f;
 
     // Wrapper de módulos
     private const float ModuleListPadding  = 4f;
@@ -198,6 +199,7 @@ public class DialogueNodeView : Node
                     Notify();
                 });
                 swatch.style.width           = SwatchSize;
+                swatch.style.marginRight     = 2;
                 swatch.style.height          = SwatchSize;
                 swatch.style.backgroundColor = DialogueNodeData.NodePalette[i].color;
                 paletteRow.Add(swatch);
@@ -220,6 +222,7 @@ public class DialogueNodeView : Node
         startIdField = new TextField("Start ID") { value = Data.startId };
         startIdField.style.display = Data.isStart ? DisplayStyle.Flex : DisplayStyle.None;
         startIdField.RegisterValueChangedCallback(e => { Data.startId = e.newValue; Notify(); });
+        startIdField.style.marginTop = StartIdFieldMarginTop;
         startIdField.style.marginBottom = HeaderItemMarginBottom;
         startIdField.style.marginRight = TitleSideMargin;
         header.Add(startIdField);
