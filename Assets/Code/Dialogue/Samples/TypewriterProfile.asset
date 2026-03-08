@@ -12,16 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbd023dbc88fe124899e717fd6c638db, type: 3}
   m_Name: TypewriterProfile
   m_EditorClassIdentifier: 
-  secondsPerChar: 0.0754
-  globalSpeed: 1
+  secondsPerChar: 0.07
   respectRichText: 1
-  minimalWhitespaceDelay: 1
   commaPct: 2
   periodPct: 3
   ellipsisPct: 5
-  questionPct: 3
-  exclaimPct: 3
-  semicolonPct: 2.5
   colonPct: 2.5
-  quotePct: 1.5
-  parenPct: 1.5
+  bracketPct: 1.5
+  whitespacePct: 1

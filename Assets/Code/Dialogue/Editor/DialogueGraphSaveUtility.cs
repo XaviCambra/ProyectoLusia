@@ -134,16 +134,17 @@ public static class DialogueGraphSaveUtility
 
     /// <summary>
     /// Busca un puerto de salida por nombre en un DialogueNodeView.
-    /// Soporta puertos directos ("Next") y puertos dentro de filas (nodos de elección).
+    /// Soporta el puerto "Next" (nodo lineal) y puertos de choice (dentro de filas).
     /// </summary>
     private static Port FindOutputPort(DialogueNodeView node, string portName)
     {
         foreach (var child in node.outputContainer.Children())
         {
+            // Puerto directo (ej. "Next")
             if (child is Port p && p.portName == portName)
                 return p;
 
-            // En nodos de elección, cada fila (row) contiene un TextField y un Port
+            // Puerto dentro de una fila (choice modules: Label + Port)
             if (child is VisualElement row)
             {
                 foreach (var sub in row.Children())

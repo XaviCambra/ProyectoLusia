@@ -15,5 +15,7 @@ MonoBehaviour:
   profileId: bc17ed2360684d68b5e7a55be922310b
   displayName: Guille
   portraits:
-  - key: idle
-    sprite: {fileID: 8019020588823736630, guid: 0799250051fd8a34cb924887144482db, type: 3}
+  - key: GuilleFeli
+    sprite: {fileID: -6043556727711267651, guid: 56017c2511deee74bb14f2bea37814ed, type: 3}
+  - key: GuilleConFrio
+    sprite: {fileID: -231025027876387116, guid: 52ce38ca7e9996649bfb602678f6e813, type: 3}

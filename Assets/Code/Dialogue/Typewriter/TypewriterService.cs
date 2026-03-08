@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TMPro;
@@ -15,11 +16,11 @@ public class TypewriterService
     {
         if (profile == null)
         {
-            Debug.LogWarning("[TypewriterService] No se asignó ningún perfil de configuración.");
+            Debug.LogWarning("[TypewriterService] No se asigno ningun perfil de configuracion.");
             return;
         }
 
-        string buffer = "";
+        var sb = new StringBuilder(text.Length);
         if (target) target.text = "";
 
         int i = 0;
@@ -27,35 +28,34 @@ public class TypewriterService
         {
             ct.ThrowIfCancellationRequested();
 
-            // Soporte RichText
+            // Soporte RichText: salta la etiqueta sin delay
             if (profile.respectRichText && text[i] == '<')
             {
                 int close = text.IndexOf('>', i + 1);
                 if (close != -1)
                 {
-                    string tag = text.Substring(i, close - i + 1);
-                    buffer += tag;
-                    target?.SetText(buffer);
+                    sb.Append(text, i, close - i + 1);
+                    target?.SetText(sb);
                     i = close + 1;
                     continue;
                 }
             }
 
-            // Detectar puntos suspensivos
+            // Puntos suspensivos: trata "..." como un solo token
             if (IsEllipsis(text, i))
             {
-                buffer += "...";
-                target?.SetText(buffer);
-                onTextUpdate?.Invoke(buffer);
+                sb.Append("...");
+                target?.SetText(sb);
+                onTextUpdate?.Invoke(sb.ToString());
                 i += 3;
                 await Delay(profile, profile.ellipsisPct, ct);
                 continue;
             }
 
             char c = text[i];
-            buffer += c;
-            target?.SetText(buffer);
-            onTextUpdate?.Invoke(buffer);
+            sb.Append(c);
+            target?.SetText(sb);
+            onTextUpdate?.Invoke(sb.ToString());
 
             float pct = GetDelayMultiplier(c, profile);
             await Delay(profile, pct, ct);
@@ -70,36 +70,34 @@ public class TypewriterService
     {
         switch (c)
         {
-            case ',': return p.commaPct;
-            case '.': return p.periodPct;
-            case '?': return p.questionPct;
-            case '!': return p.exclaimPct;
-            case ';': return p.semicolonPct;
-            case ':': return p.colonPct;
+            case ',':                   return p.commaPct;
+            case '.':
+            case '?':
+            case '!':                   return p.periodPct;
+            case ':':
+            case ';':                   return p.colonPct;
             case '"':
-            case '«':
-            case '»':
-            case '“':
-            case '”':
-            case '‘':
-            case '’': return p.quotePct;
+            case '\u00AB': // Â«
+            case '\u00BB': // Â»
+            case '\u00BF': // Â¿
+            case '\u00A1': // Â¡
             case '(':
             case ')':
             case '[':
             case ']':
             case '{':
-            case '}': return p.parenPct;
+            case '}':                   return p.bracketPct;
             case ' ':
             case '\t':
             case '\n':
-            case '\r': return p.minimalWhitespaceDelay ? 1f : 1.2f;
-            default: return 1f;
+            case '\r':                  return p.whitespacePct;
+            default:                    return 1f;
         }
     }
 
     private static async Task Delay(TypewriterProfile p, float pct, CancellationToken ct)
     {
-        float t = Mathf.Max(0.001f, p.secondsPerChar * pct * p.globalSpeed);
+        float t = Mathf.Max(0.001f, p.secondsPerChar * pct);
         await Task.Delay(TimeSpan.FromSeconds(t), ct);
     }
 }

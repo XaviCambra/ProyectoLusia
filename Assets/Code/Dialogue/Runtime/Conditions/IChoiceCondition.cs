@@ -1,4 +1,4 @@
 public interface IChoiceCondition
 {
-    bool IsMet(DialogueNodeData.ChoiceData c);
+    bool IsMet(ChoiceModule.ChoiceData c);
 }

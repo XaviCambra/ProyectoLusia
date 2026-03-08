@@ -1,33 +1,35 @@
 using System.Threading.Tasks;
-using TMPro;
-using UnityEngine;
 
 /// <summary>
-/// Controla el pool de retratos, su colocación en escena y las animaciones asociadas.
-/// Implementación de referencia: <see cref="PortraitController"/>.
+/// Controla el pool de retratos, su colocaciÃ³n en escena y las animaciones asociadas.
+/// ImplementaciÃ³n de referencia: <see cref="PortraitController"/>.
 /// </summary>
 public interface IPortraitController
 {
     /// <summary>
-    /// Inicializa el pool y lookups necesarios en base al <see cref="DialogueGraph"/> activo.
-    /// Debe poder llamarse múltiples veces (reconstruye el pool).
+    /// Inicializa el pool escaneando los <see cref="PortraitModule"/> del grafo.
+    /// Debe poder llamarse mÃºltiples veces (reconstruye el pool).
     /// </summary>
     void Init(DialogueGraph graph);
 
     /// <summary>
-    /// Aplica el estado visual de un nodo: sprite, orden visual, tinte/escala, 
-    /// y animación de colocación/entrada-salida. Devuelve cuando la colocación principal ha finalizado.
+    /// Aplica el estado visual de un mÃ³dulo de retrato: sprite, orden visual, tinte/escala
+    /// y animaciÃ³n de colocaciÃ³n/entrada. Devuelve cuando la colocaciÃ³n principal ha finalizado.
     /// </summary>
-    Task ApplyAsync(DialogueNodeData node);
+    Task ApplyAsync(PortraitModule module);
 
     /// <summary>
-    /// Aviso de que el texto del nodo va a empezar a mostrarse. Útil si
-    /// la animación especial está configurada para iniciarse en este momento.
-    /// </summary>
-    void OnTextStart(DialogueNodeData node);
-
-    /// <summary>
-    /// Detiene y limpia toda animación activa, oculta retratos y restablece el estado inicial.
+    /// Detiene y limpia toda animaciÃ³n activa, oculta retratos y restablece el estado inicial.
     /// </summary>
     void ResetAll();
+
+    /// <summary>
+    /// Inicia la animaciÃ³n especial (Playable) en el portrait del perfil indicado.
+    /// </summary>
+    void PlaySpecialAnimation(string profileId, UnityEngine.AnimationClip clip, float speed, bool loop, bool persistent = false);
+
+    /// <summary>
+    /// Detiene la animaciÃ³n especial del portrait del perfil indicado.
+    /// </summary>
+    void StopSpecialAnimation(string profileId);
 }
