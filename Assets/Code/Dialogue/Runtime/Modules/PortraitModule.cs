@@ -11,17 +11,8 @@ public class PortraitModule : DialogueModuleBase
     public override string DisplayName => "Portrait";
 
     // --- Perfil ---
-    [Tooltip("Perfil del personaje (referencia directa, solo editor).")]
+    [Tooltip("Perfil del personaje.")]
     public CharacterProfile profileRef;
-
-    [Tooltip("ID persistente del perfil (usado en runtime).")]
-    public string profileId = "";
-
-    /// <summary>
-    /// ID efectivo del perfil: usa profileRef si está disponible, cae en profileId serializado.
-    /// Evita que un profileId vacío rompa el sistema cuando profileRef sí está asignado.
-    /// </summary>
-    public string ProfileId => profileRef != null ? profileRef.ProfileId : profileId;
 
     [Tooltip("Clave del sprite dentro del perfil del personaje.")]
     public string portraitKey = "";

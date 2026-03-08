@@ -37,9 +37,9 @@ public sealed class EmoteModuleExecutor : MonoBehaviour, IModuleExecutor
         var m = (EmoteModule)module;
 
         if (m.clip != null)
-            _controller.PlaySpecialAnimation(m.ProfileId, m.clip, m.speed, m.loop, m.persistent);
+            _controller.PlaySpecialAnimation(m.profileRef, m.clip, m.speed, m.loop, m.persistent);
         else
-            _controller.StopSpecialAnimation(m.ProfileId);
+            _controller.StopSpecialAnimation(m.profileRef);
 
         return Task.CompletedTask;
     }

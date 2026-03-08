@@ -12,6 +12,7 @@ public sealed class PortraitModuleExecutor : MonoBehaviour, IModuleExecutor
     [SerializeField] private MonoBehaviour portraitControllerRef; // IPortraitController
 
     private IPortraitController _controller;
+    private PortraitModule      _activeModule;
 
     public Type ModuleType => typeof(PortraitModule);
 
@@ -35,11 +36,19 @@ public sealed class PortraitModuleExecutor : MonoBehaviour, IModuleExecutor
     {
         if (_controller == null) return;
         var m = (PortraitModule)module;
-        await _controller.ApplyAsync(m);
+        _activeModule = m;
+        try   { await _controller.ApplyAsync(m); }
+        finally { _activeModule = null; }
     }
 
     public void Cancel() { }
-    public bool TryFastForward() => false;
+
+    public bool TryFastForward()
+    {
+        if (_activeModule == null || _controller == null) return false;
+        _controller.SnapPlacement(_activeModule);
+        return true;
+    }
 
     /// <summary>
     /// Detiene y limpia todos los retratos activos.

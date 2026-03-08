@@ -12,14 +12,8 @@ public class EmoteModule : DialogueModuleBase
     public override string DisplayName => "Emote";
 
     // --- Perfil ---
-    [Tooltip("Perfil del personaje (referencia directa, solo editor).")]
+    [Tooltip("Perfil del personaje.")]
     public CharacterProfile profileRef;
-
-    [Tooltip("ID persistente del perfil (usado en runtime).")]
-    public string profileId = "";
-
-    /// <summary>ID efectivo: usa profileRef si está disponible, cae en profileId serializado.</summary>
-    public string ProfileId => profileRef != null ? profileRef.ProfileId : profileId;
 
     // --- Animación ---
     [Tooltip("Clip de animación a reproducir. Sin clip asignado, detiene el emote activo del personaje.")]

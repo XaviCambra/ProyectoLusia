@@ -20,7 +20,6 @@ public static class EmoteModuleDrawer
         profileField.RegisterValueChangedCallback(e =>
         {
             m.profileRef = e.newValue as CharacterProfile;
-            m.profileId  = m.profileRef != null ? m.profileRef.ProfileId : string.Empty;
             onChanged?.Invoke();
         });
         ModuleDrawerStyles.ApplyFieldMargins(profileField);

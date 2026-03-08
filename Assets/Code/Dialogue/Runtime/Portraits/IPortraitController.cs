@@ -26,10 +26,16 @@ public interface IPortraitController
     /// <summary>
     /// Inicia la animación especial (Playable) en el portrait del perfil indicado.
     /// </summary>
-    void PlaySpecialAnimation(string profileId, UnityEngine.AnimationClip clip, float speed, bool loop, bool persistent = false);
+    void PlaySpecialAnimation(CharacterProfile profile, UnityEngine.AnimationClip clip, float speed, bool loop, bool persistent = false);
 
     /// <summary>
     /// Detiene la animación especial del portrait del perfil indicado.
     /// </summary>
-    void StopSpecialAnimation(string profileId);
+    void StopSpecialAnimation(CharacterProfile profile);
+
+    /// <summary>
+    /// Teleporta el portrait al estado final definido por el módulo, deteniendo
+    /// cualquier animación de colocación activa. Funciona independientemente del caché interno.
+    /// </summary>
+    void SnapPlacement(PortraitModule module);
 }

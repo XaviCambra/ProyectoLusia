@@ -30,6 +30,7 @@ public sealed class DialogueRunner : MonoBehaviour
 
     [Header("Controles")]
     [SerializeField] private KeyCode advanceKey = KeyCode.N;
+    [SerializeField] private KeyCode gameplayAdvanceKey = KeyCode.M;
 
     // Servicios internos
     private IGraphNavigator _navigator;
@@ -91,6 +92,9 @@ public sealed class DialogueRunner : MonoBehaviour
             if (_nodeReadyToAdvance)
                 AdvanceToNext();
         }
+
+        if (Input.GetKeyDown(gameplayAdvanceKey) && _nodeReadyToAdvance)
+            AdvanceToNext();
     }
 
     private async Task ShowNodeAsync(DialogueNodeData node)
