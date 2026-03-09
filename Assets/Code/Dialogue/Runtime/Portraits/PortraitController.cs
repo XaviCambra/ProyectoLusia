@@ -310,7 +310,7 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
 
     #region Colocación (Cut/Fade/Slide)
 
-    private async Task RunPlacementAsync(PortraitModule module, RectTransform rootRt, System.Action<float> onProgress = null)
+    private async Task RunPlacementAsync(PortraitModule module, RectTransform rootRt)
     {
         if (!rootRt) return;
 
@@ -348,13 +348,13 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
                 }
                 var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
                 _placementTcs[module.profileRef] = tcs;
-                _placementCo[rootRt] = StartCoroutine(CoPlaceAndComplete(rootRt, cg, from, to, module.moveSpeed, onProgress, module.profileRef, tcs));
+                _placementCo[rootRt] = StartCoroutine(CoPlaceAndComplete(rootRt, cg, from, to, module.moveSpeed, module.profileRef, tcs));
                 await tcs.Task;
                 return;
         }
     }
 
-    private IEnumerator CoPlace(RectTransform rt, CanvasGroup cg, Pose from, Pose to, float speed, System.Action<float> onProgress)
+    private IEnumerator CoPlace(RectTransform rt, CanvasGroup cg, Pose from, Pose to, float speed)
     {
         Vector3 startPos   = from.pos;
         float   startAlpha = from.alpha;
@@ -379,7 +379,6 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
             rt.position = Vector3.LerpUnclamped(startPos, to.pos, easedT);
             if (cg) cg.alpha = Mathf.Lerp(startAlpha, to.alpha, rawT);
 
-            onProgress?.Invoke(rawT);
             yield return null;
         }
 
@@ -388,9 +387,9 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
     }
 
     private IEnumerator CoPlaceAndComplete(RectTransform rt, CanvasGroup cg, Pose from, Pose to, float speed,
-        System.Action<float> onProgress, CharacterProfile profile, TaskCompletionSource<bool> tcs)
+        CharacterProfile profile, TaskCompletionSource<bool> tcs)
     {
-        yield return CoPlace(rt, cg, from, to, speed, onProgress);
+        yield return CoPlace(rt, cg, from, to, speed);
         _placementCo.Remove(rt);
         _placementTcs.Remove(profile);
         tcs.TrySetResult(true);

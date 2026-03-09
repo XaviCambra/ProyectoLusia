@@ -100,14 +100,5 @@ public static class PortraitModuleDrawer
         c.Add(toField);
         return c;
     }
-
-    private static Label MakeSeparator(string text)
-    {
-        var lbl = new Label(text);
-        lbl.style.unityFontStyleAndWeight = UnityEngine.FontStyle.Bold;
-        lbl.style.marginTop = 6;
-        lbl.style.marginBottom = 2;
-        return lbl;
-    }
 }
 #endif

@@ -119,7 +119,6 @@ public class CharacterProfilesWindow : EditorWindow
 
         // Miniatura
         var firstSprite = p.portraits?.FirstOrDefault(e => e != null && e.sprite != null)?.sprite;
-        var tex = GetSpritePreview(firstSprite);
 
         var thumb = new VisualElement
         {
@@ -127,14 +126,14 @@ public class CharacterProfilesWindow : EditorWindow
             {
                 width  = THUMB, height = THUMB,
                 alignSelf = Align.Center,
-                backgroundColor = new Color(0, 0, 0, tex != null ? 0f : 0.08f),
+                backgroundColor = new Color(0, 0, 0, firstSprite != null ? 0f : 0.08f),
                 borderTopLeftRadius    = 8, borderTopRightRadius    = 8,
                 borderBottomLeftRadius = 8, borderBottomRightRadius = 8,
             }
         };
-        if (tex != null)
+        if (firstSprite != null)
         {
-            thumb.Add(new Image { image = tex, scaleMode = ScaleMode.ScaleToFit,
+            thumb.Add(new Image { sprite = firstSprite, scaleMode = ScaleMode.ScaleToFit,
                 style = { width = THUMB, height = THUMB } });
         }
         card.Add(thumb);
@@ -159,11 +158,5 @@ public class CharacterProfilesWindow : EditorWindow
 
     private static void AddSpacer(VisualElement parent, float height)
         => parent.Add(new VisualElement { style = { height = height } });
-
-    private static Texture2D GetSpritePreview(Sprite sprite)
-    {
-        if (sprite == null) return null;
-        return AssetPreview.GetAssetPreview(sprite) ?? sprite.texture;
-    }
 }
 #endif
