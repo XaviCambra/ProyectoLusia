@@ -85,9 +85,18 @@ public sealed class DialogueRunner : MonoBehaviour
 
         if (Input.GetKeyDown(advanceKey))
         {
-            // Intentar fast-forward en el executor activo (ej. skip typewriter)
-            if (_activeBlockingExecutor != null && _activeBlockingExecutor.TryFastForward())
-                return;
+            bool anyForwarded = false;
+
+            // El portrait puede correr como Parallel o FireAndForget; intentar snap siempre
+            if (portraitExecutor != null && portraitExecutor.TryFastForward())
+                anyForwarded = true;
+
+            // Executor bloqueante activo (ej. typewriter), si no es ya el portrait
+            if (_activeBlockingExecutor != null && _activeBlockingExecutor != portraitExecutor
+                && _activeBlockingExecutor.TryFastForward())
+                anyForwarded = true;
+
+            if (anyForwarded) return;
 
             if (_nodeReadyToAdvance)
                 AdvanceToNext();

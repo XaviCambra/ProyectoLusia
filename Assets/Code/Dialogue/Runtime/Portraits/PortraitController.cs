@@ -58,21 +58,13 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
     private readonly HashSet<Image>                      _persistentEmotes  = new();
     private readonly Dictionary<RectTransform, Coroutine> _placementCo = new();
     private readonly Dictionary<RectTransform, Coroutine> _scaleCo     = new();
-    private readonly Dictionary<CharacterProfile, TaskCompletionSource<bool>> _placementTcs    = new();
-    private readonly Dictionary<CharacterProfile, Pose>                       _placementTarget = new();
-
-    private readonly struct PortraitState
-    {
-        public readonly Vector3 screenPos;
-        public PortraitState(Vector3 p) { screenPos = p; }
-    }
+    private readonly Dictionary<CharacterProfile, TaskCompletionSource<bool>> _placementTcs = new();
 
     private struct Pose
     {
         public Vector3 pos;
         public float   alpha;
-        public Vector3 scale;
-        public Pose(Vector3 p, float a, Vector3 s) { pos = p; alpha = a; scale = s; }
+        public Pose(Vector3 p, float a) { pos = p; alpha = a; }
     }
 
     private readonly struct SpecialAnimState
@@ -84,8 +76,6 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         public SpecialAnimState(PlayableGraph g, AnimationClipPlayable p, AnimationClip c, float s)
         { Graph = g; Playable = p; Clip = c; Speed = s; }
     }
-
-    private readonly Dictionary<CharacterProfile, PortraitState> _stateByProfile = new();
 
     #endregion
 
@@ -154,10 +144,7 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
 
             rootRt.position = ResolveSpot(module.target, rootRt);
             cg.alpha        = module.useFade ? UnityEngine.Mathf.Clamp01(module.enterToOpacity / 100f) : 1f;
-            _stateByProfile[profile] = new PortraitState(rootRt.position);
         }
-
-        _placementTarget.Remove(profile);
 
         if (_placementTcs.TryGetValue(profile, out var tcs))
         {
@@ -172,7 +159,6 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         _placementCo.Clear();
         foreach (var t in _placementTcs.Values) t.TrySetResult(true);
         _placementTcs.Clear();
-        _placementTarget.Clear();
         foreach (var kv in _scaleCo) if (kv.Value != null) StopCoroutine(kv.Value);
         _scaleCo.Clear();
         foreach (var kv in _specialGraphs) if (kv.Value.Graph.IsValid()) kv.Value.Graph.Destroy();
@@ -197,7 +183,6 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         _placementCo.Clear();
         foreach (var t in _placementTcs.Values) t.TrySetResult(true);
         _placementTcs.Clear();
-        _placementTarget.Clear();
         foreach (var kv in _scaleCo) if (kv.Value != null) StopCoroutine(kv.Value);
         _scaleCo.Clear();
         foreach (var kv in _specialGraphs) if (kv.Value.Graph.IsValid()) kv.Value.Graph.Destroy();
@@ -242,7 +227,6 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
 
             _portraitByProfile[profile] = img;
             _rootByProfile[profile]     = rootRt;
-            _stateByProfile[profile]    = new PortraitState(rootRt.position);
         }
     }
 
@@ -353,7 +337,6 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
             case AppearanceMode.Cut:
                 rootRt.position = to.pos;
                 cg.alpha        = to.alpha;
-                _stateByProfile[module.profileRef] = new PortraitState(rootRt.position);
                 return;
 
             case AppearanceMode.Slide:
@@ -361,15 +344,12 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
                 {
                     rootRt.position = to.pos;
                     cg.alpha        = to.alpha;
-                    _stateByProfile[module.profileRef] = new PortraitState(rootRt.position);
                     return;
                 }
                 var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                _placementTcs[module.profileRef]    = tcs;
-                _placementTarget[module.profileRef] = to;
+                _placementTcs[module.profileRef] = tcs;
                 _placementCo[rootRt] = StartCoroutine(CoPlaceAndComplete(rootRt, cg, from, to, module.moveSpeed, onProgress, module.profileRef, tcs));
                 await tcs.Task;
-                _stateByProfile[module.profileRef] = new PortraitState(rootRt.position);
                 return;
         }
     }
@@ -413,20 +393,6 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         yield return CoPlace(rt, cg, from, to, speed, onProgress);
         _placementCo.Remove(rt);
         _placementTcs.Remove(profile);
-        _placementTarget.Remove(profile);
-        tcs.TrySetResult(true);
-    }
-
-    private Task RunAsTask(IEnumerator co)
-    {
-        var tcs = new TaskCompletionSource<bool>();
-        StartCoroutine(Wrap(co, tcs));
-        return tcs.Task;
-    }
-
-    private IEnumerator Wrap(IEnumerator co, TaskCompletionSource<bool> tcs)
-    {
-        yield return co;
         tcs.TrySetResult(true);
     }
 
@@ -548,22 +514,13 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
     {
         var cg = rt.GetComponent<CanvasGroup>();
         if (!cg) cg = rt.gameObject.AddComponent<CanvasGroup>();
-
-        var startPos   = ResolveSpot(module.origin, rt);
-        var startAlpha = module.useFade ? Mathf.Clamp01(module.enterFromOpacity / 100f) : cg.alpha;
-        var startScale = rt.localScale;
-
-        return new Pose(startPos, startAlpha, startScale);
+        return new Pose(ResolveSpot(module.origin, rt),
+                        module.useFade ? Mathf.Clamp01(module.enterFromOpacity / 100f) : cg.alpha);
     }
 
     private Pose ComputeEndPose(PortraitModule module, RectTransform rt)
-    {
-        var endPos  = ResolveSpot(module.target, rt);
-        var toAlpha = module.useFade ? Mathf.Clamp01(module.enterToOpacity / 100f) : 1f;
-        var endScale = rt.localScale;
-
-        return new Pose(endPos, toAlpha, endScale);
-    }
+        => new Pose(ResolveSpot(module.target, rt),
+                    module.useFade ? Mathf.Clamp01(module.enterToOpacity / 100f) : 1f);
 
     #endregion
 
@@ -576,7 +533,6 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         _placementCo.Clear();
         foreach (var t in _placementTcs.Values) t.TrySetResult(true);
         _placementTcs.Clear();
-        _placementTarget.Clear();
         foreach (var co in _scaleCo.Values) if (co != null) StopCoroutine(co);
         _scaleCo.Clear();
         foreach (var kv in _specialGraphs) if (kv.Value.Graph.IsValid()) kv.Value.Graph.Destroy();
