@@ -54,7 +54,7 @@ MonoBehaviour:
       x: 516
       y: 128
       width: 400
-      height: 816
+      height: 772
     bgColorIndex: 4
     bgColor: {r: 0.52, g: 0.33, b: 0.3, a: 1}
     isStart: 0
@@ -66,10 +66,10 @@ MonoBehaviour:
   - GUID: 0d012364-a784-443e-bbc8-e3939f4b9574
     nodeRect:
       serializedVersion: 2
-      x: -443
-      y: 204
+      x: -451
+      y: 214
       width: 400
-      height: 720
+      height: 876
     bgColorIndex: 2
     bgColor: {r: 0.48, g: 0.28, b: 0.22, a: 1}
     isStart: 1
@@ -78,16 +78,19 @@ MonoBehaviour:
     - rid: 4079482912282771456
     - rid: 4079482942335746148
     - rid: 4079482875762704456
+    - rid: 4079483025781948491
+    - rid: 4079483025781948492
+    - rid: 4079483025781948493
   edges:
   - fromNodeGUID: 40b85c1f-725d-45c5-9b49-ac7fe41e7b49
     fromPortName: Next
     toNodeGUID: 763de03d-c252-48f0-95e4-eefb97441312
-  - fromNodeGUID: 0d012364-a784-443e-bbc8-e3939f4b9574
-    fromPortName: Next
-    toNodeGUID: 40b85c1f-725d-45c5-9b49-ac7fe41e7b49
   - fromNodeGUID: 763de03d-c252-48f0-95e4-eefb97441312
     fromPortName: 085052cf
     toNodeGUID: 050e5960-0dd3-43f4-a674-3fc2ea07d2b3
+  - fromNodeGUID: 0d012364-a784-443e-bbc8-e3939f4b9574
+    fromPortName: Next
+    toNodeGUID: 40b85c1f-725d-45c5-9b49-ac7fe41e7b49
   frames:
   - title: Testing
     color: {r: 0.4273318, g: 0.9192322, b: 0.9339623, a: 0.15}
@@ -290,3 +293,19 @@ MonoBehaviour:
           progressArgInt: 0
           progressArgFloat: 0
           progressArgString: 
+    - rid: 4079483025781948491
+      type: {class: ChatPauseModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 1
+    - rid: 4079483025781948492
+      type: {class: ChatTypingModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 0}
+        duration: 2
+    - rid: 4079483025781948493
+      type: {class: WaitForSignalModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        signal: {fileID: 0}
