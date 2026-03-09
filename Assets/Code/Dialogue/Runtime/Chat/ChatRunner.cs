@@ -16,8 +16,12 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public sealed class ChatRunner : MonoBehaviour
 {
-    [SerializeField] private GraphNavigator   navigator;
-    [SerializeField] private MonoBehaviour    presenterRef; // debe implementar IChatPresenter
+    [Header("Graph")]
+    [SerializeField] private DialogueGraph  autoStartGraph; // si se asigna, arranca automáticamente en Start
+
+    [Header("Referencias")]
+    [SerializeField] private GraphNavigator navigator;
+    [SerializeField] private MonoBehaviour  presenterRef; // debe implementar IChatPresenter
 
     private IChatPresenter           _presenter;
     private CancellationTokenSource  _cts;
@@ -37,6 +41,12 @@ public sealed class ChatRunner : MonoBehaviour
         _presenter = presenterRef as IChatPresenter;
         if (_presenter == null)
             Debug.LogError("[ChatRunner] presenterRef no implementa IChatPresenter.");
+    }
+
+    private void Start()
+    {
+        if (autoStartGraph != null)
+            StartChat(autoStartGraph);
     }
 
     private void OnDestroy() => Stop();
@@ -101,7 +111,7 @@ public sealed class ChatRunner : MonoBehaviour
             switch (module)
             {
                 case TextModule m:
-                    var entry = new ChatEntry(m.speakerName, m.text);
+                    var entry = new ChatEntry(m.speakerName, m.text, m.isOwn);
                     _history.Add(entry);
                     _presenter?.AddMessage(entry);
                     break;

@@ -6,10 +6,12 @@ public readonly struct ChatEntry
 {
     public readonly string speakerName;
     public readonly string text;
+    public readonly bool   isOwn;
 
-    public ChatEntry(string speakerName, string text)
+    public ChatEntry(string speakerName, string text, bool isOwn = false)
     {
         this.speakerName = speakerName ?? string.Empty;
         this.text        = text        ?? string.Empty;
+        this.isOwn       = isOwn;
     }
 }

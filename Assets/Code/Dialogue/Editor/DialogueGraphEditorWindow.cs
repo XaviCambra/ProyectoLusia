@@ -37,6 +37,7 @@ public class DialogueGraphEditorWindow : EditorWindow
 
     public void MarkAssetDirtyAndSave()
     {
+        if (_isLoading) return;
         if (_asset != null && _graphView != null)
             DialogueGraphSaveUtility.SaveGraph(_graphView, _asset);
     }

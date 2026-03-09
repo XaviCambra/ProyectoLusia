@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using TMPro;
 using UnityEngine;
 
 /// <summary>
@@ -20,14 +19,6 @@ public sealed class DialogueRunner : MonoBehaviour
     [Header("Navegación")]
     [SerializeField] private MonoBehaviour navigatorBehaviour; // IGraphNavigator
 
-    [Header("Executors de módulos")]
-    [SerializeField] private TextModuleExecutor             textExecutor;
-    [SerializeField] private PortraitModuleExecutor          portraitExecutor;
-    [SerializeField] private EmoteModuleExecutor             emoteExecutor;
-    [SerializeField] private EventModuleExecutor             eventExecutor;
-    [SerializeField] private AudioModuleExecutor             audioExecutor;
-    [SerializeField] private ChoiceModuleExecutor            choiceExecutor;
-
     [Header("Controles")]
     [SerializeField] private KeyCode advanceKey = KeyCode.N;
     [SerializeField] private KeyCode gameplayAdvanceKey = KeyCode.M;
@@ -36,6 +27,9 @@ public sealed class DialogueRunner : MonoBehaviour
     private IGraphNavigator _navigator;
     private readonly Dictionary<Type, IModuleExecutor> _executors     = new();
     private readonly List<IModuleExecutor>             _executorList  = new(); // para iteraciones sin alloc
+
+    // Executor de choices: único con lógica especial (evento + hotkeys)
+    private ChoiceModuleExecutor _choiceExecutor;
 
     // Estado del runner
     private DialogueNodeData _current;
@@ -47,22 +41,22 @@ public sealed class DialogueRunner : MonoBehaviour
     {
         _navigator = navigatorBehaviour as IGraphNavigator;
 
-        if (graph == null)      { Debug.LogError("[DialogueRunner] Falta DialogueGraph.");       enabled = false; return; }
-        if (_navigator == null) { Debug.LogError("[DialogueRunner] Falta IGraphNavigator.");      enabled = false; return; }
+        if (graph == null)      { Debug.LogError("[DialogueRunner] Falta DialogueGraph.");  enabled = false; return; }
+        if (_navigator == null) { Debug.LogError("[DialogueRunner] Falta IGraphNavigator."); enabled = false; return; }
 
-        // Registrar executors
-        RegisterExecutor(textExecutor);
-        RegisterExecutor(portraitExecutor);
-        RegisterExecutor(emoteExecutor);
-        RegisterExecutor(eventExecutor);
-        RegisterExecutor(audioExecutor);
-        RegisterExecutor(choiceExecutor);
+        // Descubrir y registrar todos los executors presentes en la jerarquía
+        foreach (var executor in GetComponentsInChildren<IModuleExecutor>())
+            RegisterExecutor(executor);
 
-        // Suscribirse al evento de choice seleccionada
-        if (choiceExecutor != null)
-            choiceExecutor.OnChoiceSelected += OnChoiceSelected;
+        // Obtener el executor de choices para su lógica especial
+        if (_executors.TryGetValue(typeof(ChoiceModule), out var ce))
+        {
+            _choiceExecutor = ce as ChoiceModuleExecutor;
+            if (_choiceExecutor != null)
+                _choiceExecutor.OnChoiceSelected += OnChoiceSelected;
+        }
 
-        // Inicializar executor que lo necesitan (ej. PortraitController necesita el grafo)
+        // Inicializar executors que lo necesiten (ej. PortraitController necesita el grafo)
         foreach (var executor in _executorList)
             executor.Initialize(graph);
 
@@ -80,21 +74,16 @@ public sealed class DialogueRunner : MonoBehaviour
         if (_current == null) return;
 
         // Hotkeys de choice (1-4)
-        if (choiceExecutor != null && choiceExecutor.TryConsumeHotkey(out _))
+        if (_choiceExecutor != null && _choiceExecutor.TryConsumeHotkey(out _))
             return; // choiceExecutor ya dispara OnChoiceSelected
 
         if (Input.GetKeyDown(advanceKey))
         {
             bool anyForwarded = false;
 
-            // El portrait puede correr como Parallel o FireAndForget; intentar snap siempre
-            if (portraitExecutor != null && portraitExecutor.TryFastForward())
-                anyForwarded = true;
-
-            // Executor bloqueante activo (ej. typewriter), si no es ya el portrait
-            if (_activeBlockingExecutor != null && _activeBlockingExecutor != portraitExecutor
-                && _activeBlockingExecutor.TryFastForward())
-                anyForwarded = true;
+            // Intentar snap en todos los executors (cada uno decide internamente si está activo)
+            foreach (var executor in _executorList)
+                if (executor.TryFastForward()) anyForwarded = true;
 
             if (anyForwarded) return;
 
@@ -222,8 +211,8 @@ public sealed class DialogueRunner : MonoBehaviour
         _cts?.Cancel();
         _cts?.Dispose();
         _cts = null;
-        if (choiceExecutor != null)
-            choiceExecutor.OnChoiceSelected -= OnChoiceSelected;
+        if (_choiceExecutor != null)
+            _choiceExecutor.OnChoiceSelected -= OnChoiceSelected;
     }
 
     private void RegisterExecutor(IModuleExecutor executor)

@@ -13,524 +13,299 @@ MonoBehaviour:
   m_Name: NewDialogueGraph
   m_EditorClassIdentifier: 
   nodes:
-  - GUID: 09fdf76d-e66a-4944-9ac0-2cfa75ea6620
+  - GUID: 40b85c1f-725d-45c5-9b49-ac7fe41e7b49
     nodeRect:
       serializedVersion: 2
-      x: 125
-      y: 32
-      width: 480
-      height: 837
-    bgColorIndex: 8
-    bgColor: {r: 0.25, g: 0.35, b: 0.48, a: 1}
-    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: bc17ed2360684d68b5e7a55be922310b
-    portraitKey: idle
-    speakerName: Guille 2
-    localization: 0
-    lineText: Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-      Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-      when an unknown printer took a galley of type and scrambled it to make a type
-      specimen book.
-    locKey: 
-    appearance: 0
-    origin: 3
-    target: 3
-    moveSpeed: 3000
-    textStart: 1
-    useFade: 1
-    enterFromOpacity: 0
-    enterToOpacity: 100
-    playSpecialAnimation: 1
-    specialAnimation: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
-    specialAnimSpeed: 0.5
-    specialAnimLoop: 1
-    specialStart: 1
-    showTypewriterBox: 0
-    useTypewriter: 0
-    tw:
-      secondsPerChar: 0.03
-      globalSpeed: 1
-    showExtrasBox: 0
-    isStart: 1
-    startId: START02
-    isChoiceNode: 0
-    choiceCount: 2
-    showBlockedChoices: 0
-    choices:
-    - choiceText: "Opci\xF3n"
-      portName: c04d41
-      choiceUseLocalization: 0
-      choiceLocKey: 
-      requiresAffinity: 0
-      affinityKey: 
-      requiredAffinity: 0
-      invertRequirement: 0
-      requiresProgress: 0
-      progressMethod: 
-      progressArgType: 0
-      progressArgInt: 0
-      progressArgFloat: 0
-      progressArgString: 
-    - choiceText: "Opci\xF3n"
-      portName: 3eda0d
-      choiceUseLocalization: 0
-      choiceLocKey: 
-      requiresAffinity: 0
-      affinityKey: 
-      requiredAffinity: 0
-      invertRequirement: 0
-      requiresProgress: 0
-      progressMethod: 
-      progressArgType: 0
-      progressArgInt: 0
-      progressArgFloat: 0
-      progressArgString: 
-    eventKey: OpenDoor
-    eventPayloadType: 1
-    eventInt: 5
-    eventFloat: 0
-    eventString: 
-    eventBool: 0
-  - GUID: e63d5428-29b6-4eb6-9d12-0c476d3737e9
-    nodeRect:
-      serializedVersion: 2
-      x: -417
-      y: -193
-      width: 480
-      height: 533
-    bgColorIndex: 8
-    bgColor: {r: 0.25, g: 0.35, b: 0.48, a: 1}
-    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: bc17ed2360684d68b5e7a55be922310b
-    portraitKey: idle
-    speakerName: Guillermo
-    localization: 1
-    lineText: Lorem.
-    locKey: 100100001
-    appearance: 1
-    origin: 1
-    target: 4
-    moveSpeed: 300
-    textStart: 0
-    useFade: 1
-    enterFromOpacity: 0
-    enterToOpacity: 100
-    playSpecialAnimation: 1
-    specialAnimation: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
-    specialAnimSpeed: 0.5
-    specialAnimLoop: 1
-    specialStart: 1
-    showTypewriterBox: 0
-    useTypewriter: 1
-    tw:
-      secondsPerChar: 0.2
-      globalSpeed: 0.5
-    showExtrasBox: 0
-    isStart: 1
-    startId: START01
-    isChoiceNode: 0
-    choiceCount: 2
-    showBlockedChoices: 0
-    choices:
-    - choiceText: "Opci\xF3n"
-      portName: ce1a11
-      choiceUseLocalization: 0
-      choiceLocKey: 
-      requiresAffinity: 0
-      affinityKey: 
-      requiredAffinity: 0
-      invertRequirement: 0
-      requiresProgress: 0
-      progressMethod: 
-      progressArgType: 0
-      progressArgInt: 0
-      progressArgFloat: 0
-      progressArgString: 
-    - choiceText: "Opci\xF3n"
-      portName: 825736
-      choiceUseLocalization: 0
-      choiceLocKey: 
-      requiresAffinity: 0
-      affinityKey: 
-      requiredAffinity: 0
-      invertRequirement: 0
-      requiresProgress: 0
-      progressMethod: 
-      progressArgType: 0
-      progressArgInt: 0
-      progressArgFloat: 0
-      progressArgString: 
-    eventKey: OpenDoor
-    eventPayloadType: 5
-    eventInt: 5
-    eventFloat: 2.6
-    eventString: "\xD1"
-    eventBool: 1
-  - GUID: feefe5f9-a7f7-4430-8c0c-b73f8a13be19
-    nodeRect:
-      serializedVersion: 2
-      x: -417
-      y: 387
-      width: 480
-      height: 694
+      x: 30
+      y: 281
+      width: 400
+      height: 1278
     bgColorIndex: 0
-    bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
-    profileRef: {fileID: 0}
-    profileId: 
-    portraitKey: 
-    speakerName: 
-    localization: 0
-    lineText: 
-    locKey: 
-    appearance: 0
-    origin: 0
-    target: 1
-    moveSpeed: 600
-    textStart: 2
-    useFade: 0
-    enterFromOpacity: 0
-    enterToOpacity: 100
-    playSpecialAnimation: 0
-    specialAnimation: {fileID: 0}
-    specialAnimSpeed: 1
-    specialAnimLoop: 0
-    specialStart: 1
-    showTypewriterBox: 0
-    useTypewriter: 0
-    tw:
-      secondsPerChar: 0.03
-      globalSpeed: 1
-    showExtrasBox: 0
+    bgColor: {r: 0.22, g: 0.22, b: 0.22, a: 1}
     isStart: 0
     startId: 
-    isChoiceNode: 0
-    choiceCount: 2
-    showBlockedChoices: 0
-    choices: []
-    eventKey: 
-    eventPayloadType: 0
-    eventInt: 0
-    eventFloat: 0
-    eventString: 
-    eventBool: 0
-  - GUID: 15ce3799-2ec7-426b-818d-523b43d315df
+    modules:
+    - rid: 4079483031377674346
+    - rid: 4079483031377674347
+    - rid: 4079483031377674348
+    - rid: 4079483031377674349
+    - rid: 4079483031377674350
+    - rid: 4079483031377674351
+    - rid: 4079483031377674352
+    - rid: 4079483031377674353
+  - GUID: 050e5960-0dd3-43f4-a674-3fc2ea07d2b3
     nodeRect:
       serializedVersion: 2
-      x: 659
-      y: -70
-      width: 480
-      height: 1301
+      x: 1025
+      y: 78
+      width: 400
+      height: 666
+    bgColorIndex: 0
+    bgColor: {r: 0.22, g: 0.22, b: 0.22, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 4079483031377674354
+    - rid: 4079483031377674355
+    - rid: 4079483031377674356
+  - GUID: 763de03d-c252-48f0-95e4-eefb97441312
+    nodeRect:
+      serializedVersion: 2
+      x: 516
+      y: 128
+      width: 400
+      height: 772
     bgColorIndex: 4
     bgColor: {r: 0.52, g: 0.33, b: 0.3, a: 1}
-    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: bc17ed2360684d68b5e7a55be922310b
-    portraitKey: idle
-    speakerName: Guille12
-    localization: 1
-    lineText: Donec vitae commodo magna. Lorem ipsum dolor sit amet, consectetur
-      adipiscing elit. Morbi mattis aliquet ante hendrerit tincidunt. Mauris lacinia
-      et ante tempus imperdiet.
-    locKey: 100100003
-    appearance: 0
-    origin: 1
-    target: 1
-    moveSpeed: 600
-    textStart: 3
-    useFade: 0
-    enterFromOpacity: 0
-    enterToOpacity: 100
-    playSpecialAnimation: 1
-    specialAnimation: {fileID: 7400000, guid: cbe870c782a219347aafa709359019c4, type: 2}
-    specialAnimSpeed: 1
-    specialAnimLoop: 0
-    specialStart: 1
-    showTypewriterBox: 1
-    useTypewriter: 1
-    tw:
-      secondsPerChar: 0.03
-      globalSpeed: 1
-    showExtrasBox: 1
-    isStart: 1
-    startId: 
-    isChoiceNode: 1
-    choiceCount: 3
-    showBlockedChoices: 1
-    choices:
-    - choiceText: Hola
-      portName: 6c743e
-      choiceUseLocalization: 1
-      choiceLocKey: 100100012
-      requiresAffinity: 1
-      affinityKey: Guille
-      requiredAffinity: 55
-      invertRequirement: 1
-      requiresProgress: 0
-      progressMethod: PreferenciasNero
-      progressArgType: 2
-      progressArgInt: 2
-      progressArgFloat: 5.12
-      progressArgString: AntenaRadio
-    - choiceText: Hola Jefe
-      portName: fc905f
-      choiceUseLocalization: 1
-      choiceLocKey: 100100014
-      requiresAffinity: 1
-      affinityKey: Sora
-      requiredAffinity: 15
-      invertRequirement: 1
-      requiresProgress: 1
-      progressMethod: PreferenciasNero
-      progressArgType: 0
-      progressArgInt: 0
-      progressArgFloat: 0
-      progressArgString: 
-    - choiceText: "Hola Rati\xF1a"
-      portName: 82acee
-      choiceUseLocalization: 1
-      choiceLocKey: 100100015
-      requiresAffinity: 0
-      affinityKey: Sora
-      requiredAffinity: 30
-      invertRequirement: 1
-      requiresProgress: 0
-      progressMethod: 
-      progressArgType: 0
-      progressArgInt: 0
-      progressArgFloat: 0
-      progressArgString: 
-    eventKey: TestingPerro
-    eventPayloadType: 5
-    eventInt: 3
-    eventFloat: 15.8
-    eventString: q
-    eventBool: 1
-  - GUID: e8933d2f-52be-4a35-b3e8-96f2422a2310
-    nodeRect:
-      serializedVersion: 2
-      x: 1600
-      y: -590
-      width: 480
-      height: 795
-    bgColorIndex: 0
-    bgColor: {r: 0.15, g: 0.17, b: 0.19, a: 1}
-    profileRef: {fileID: 0}
-    profileId: dffa52ce-3c0e-4b8e-947e-2a51dae674dc
-    portraitKey: 
-    speakerName: Sora
-    localization: 0
-    lineText: Pues hola
-    locKey: 
-    appearance: 0
-    origin: 0
-    target: 1
-    moveSpeed: 600
-    textStart: 2
-    useFade: 0
-    enterFromOpacity: 0
-    enterToOpacity: 100
-    playSpecialAnimation: 0
-    specialAnimation: {fileID: 0}
-    specialAnimSpeed: 1
-    specialAnimLoop: 0
-    specialStart: 1
-    showTypewriterBox: 0
-    useTypewriter: 0
-    tw:
-      secondsPerChar: 0.03
-      globalSpeed: 1
-    showExtrasBox: 0
     isStart: 0
     startId: 
-    isChoiceNode: 0
-    choiceCount: 2
-    showBlockedChoices: 0
-    choices: []
-    eventKey: 
-    eventPayloadType: 0
-    eventInt: 0
-    eventFloat: 0
-    eventString: 
-    eventBool: 0
-  - GUID: 28a3408d-8b81-4417-85da-8635a8d71a6f
+    modules:
+    - rid: 4079483031377674357
+    - rid: 4079483031377674358
+    - rid: 4079483031377674359
+  - GUID: 0d012364-a784-443e-bbc8-e3939f4b9574
     nodeRect:
       serializedVersion: 2
-      x: 2220
-      y: 263
-      width: 480
-      height: 1486
-    bgColorIndex: 9
-    bgColor: {r: 0.23, g: 0.3, b: 0.46, a: 1}
-    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: bc17ed2360684d68b5e7a55be922310b
-    portraitKey: idleFEO
-    speakerName: Sora
-    localization: 1
-    lineText: Que pasa bro
-    locKey: 123456
-    appearance: 3
-    origin: 6
-    target: 6
-    moveSpeed: 100
-    textStart: 1
-    useFade: 1
-    enterFromOpacity: 4
-    enterToOpacity: 4
-    playSpecialAnimation: 1
-    specialAnimation: {fileID: 7400000, guid: 84ef4a4bd64349746bb4e0ea11b8e5c6, type: 2}
-    specialAnimSpeed: 0.1
-    specialAnimLoop: 1
-    specialStart: 3
-    showTypewriterBox: 1
-    useTypewriter: 1
-    tw:
-      secondsPerChar: 0.15
-      globalSpeed: 1
-    showExtrasBox: 1
+      x: -451
+      y: 214
+      width: 400
+      height: 942
+    bgColorIndex: 2
+    bgColor: {r: 0.48, g: 0.28, b: 0.22, a: 1}
     isStart: 1
-    startId: 1234
-    isChoiceNode: 1
-    choiceCount: 2
-    showBlockedChoices: 1
-    choices:
-    - choiceText: TEST1
-      portName: b6adbe
-      choiceUseLocalization: 0
-      choiceLocKey: 
-      requiresAffinity: 1
-      affinityKey: PASTO
-      requiredAffinity: 5
-      invertRequirement: 1
-      requiresProgress: 1
-      progressMethod: RECONS
-      progressArgType: 0
-      progressArgInt: 0
-      progressArgFloat: 0
-      progressArgString: 
-    - choiceText: TEST2
-      portName: 7d795c
-      choiceUseLocalization: 0
-      choiceLocKey: 
-      requiresAffinity: 0
-      affinityKey: 
-      requiredAffinity: 0
-      invertRequirement: 0
-      requiresProgress: 1
-      progressMethod: RECONS14
-      progressArgType: 2
-      progressArgInt: 0
-      progressArgFloat: 15.5
-      progressArgString: 
-    eventKey: GES
-    eventPayloadType: 3
-    eventInt: 0
-    eventFloat: 0
-    eventString: BOOOLER
-    eventBool: 0
-  - GUID: cf71b309-4c3e-4c6e-8010-00dc8aca007d
-    nodeRect:
-      serializedVersion: 2
-      x: 1624
-      y: 659
-      width: 480
-      height: 1317
-    bgColorIndex: 14
-    bgColor: {r: 0.18, g: 0.25, b: 0.36, a: 1}
-    profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-    profileId: bc17ed2360684d68b5e7a55be922310b
-    portraitKey: Idle
-    speakerName: Guille
-    localization: 0
-    lineText: UWU por 2
-    locKey: 0005
-    appearance: 3
-    origin: 6
-    target: 6
-    moveSpeed: 100
-    textStart: 3
-    useFade: 1
-    enterFromOpacity: 25
-    enterToOpacity: 75
-    playSpecialAnimation: 1
-    specialAnimation: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
-    specialAnimSpeed: 5
-    specialAnimLoop: 1
-    specialStart: 3
-    showTypewriterBox: 1
-    useTypewriter: 1
-    tw:
-      secondsPerChar: 0.1
-      globalSpeed: 0.1
-    showExtrasBox: 1
-    isStart: 1
-    startId: qwer
-    isChoiceNode: 1
-    choiceCount: 2
-    showBlockedChoices: 0
-    choices:
-    - choiceText: "Opci\xF3n"
-      portName: 865afb
-      choiceUseLocalization: 0
-      choiceLocKey: 
-      requiresAffinity: 0
-      affinityKey: 
-      requiredAffinity: 0
-      invertRequirement: 0
-      requiresProgress: 0
-      progressMethod: 
-      progressArgType: 0
-      progressArgInt: 0
-      progressArgFloat: 0
-      progressArgString: 
-    - choiceText: "Opci\xF3n"
-      portName: d7de3b
-      choiceUseLocalization: 0
-      choiceLocKey: 
-      requiresAffinity: 0
-      affinityKey: 
-      requiredAffinity: 0
-      invertRequirement: 0
-      requiresProgress: 0
-      progressMethod: 
-      progressArgType: 0
-      progressArgInt: 0
-      progressArgFloat: 0
-      progressArgString: 
-    eventKey: 
-    eventPayloadType: 5
-    eventInt: 0
-    eventFloat: 0
-    eventString: w
-    eventBool: 0
+    startId: 
+    modules:
+    - rid: 4079483031377674360
+    - rid: 4079483031377674361
+    - rid: 4079483031377674362
+    - rid: 4079483031377674363
+    - rid: 4079483031377674364
+    - rid: 4079483031377674365
   edges:
-  - fromNodeGUID: 09fdf76d-e66a-4944-9ac0-2cfa75ea6620
+  - fromNodeGUID: 40b85c1f-725d-45c5-9b49-ac7fe41e7b49
     fromPortName: Next
-    toNodeGUID: 15ce3799-2ec7-426b-818d-523b43d315df
-  - fromNodeGUID: 15ce3799-2ec7-426b-818d-523b43d315df
-    fromPortName: 82acee
-    toNodeGUID: cf71b309-4c3e-4c6e-8010-00dc8aca007d
-  - fromNodeGUID: 15ce3799-2ec7-426b-818d-523b43d315df
-    fromPortName: fc905f
-    toNodeGUID: 28a3408d-8b81-4417-85da-8635a8d71a6f
-  - fromNodeGUID: 15ce3799-2ec7-426b-818d-523b43d315df
-    fromPortName: 6c743e
-    toNodeGUID: e8933d2f-52be-4a35-b3e8-96f2422a2310
-  - fromNodeGUID: e63d5428-29b6-4eb6-9d12-0c476d3737e9
+    toNodeGUID: 763de03d-c252-48f0-95e4-eefb97441312
+  - fromNodeGUID: 763de03d-c252-48f0-95e4-eefb97441312
+    fromPortName: 085052cf
+    toNodeGUID: 050e5960-0dd3-43f4-a674-3fc2ea07d2b3
+  - fromNodeGUID: 0d012364-a784-443e-bbc8-e3939f4b9574
     fromPortName: Next
-    toNodeGUID: 15ce3799-2ec7-426b-818d-523b43d315df
+    toNodeGUID: 40b85c1f-725d-45c5-9b49-ac7fe41e7b49
   frames:
-  - title: SORA A <color=red>TLABAHA
-    color: {r: 0.7264151, g: 0.41460484, b: 0.41460484, a: 0.23529412}
+  - title: Testing
+    color: {r: 0.4273318, g: 0.9192322, b: 0.9339623, a: 0.15}
     rect:
       serializedVersion: 2
-      x: -1517.7969
-      y: -459.55927
-      width: 2698.167
-      height: 2012.03
-  - title: MARINO TRABAHA
-    color: {r: 0.2, g: 0.6, b: 1, a: 0.15}
-    rect:
-      serializedVersion: 2
-      x: 1393.352
-      y: -850.1755
-      width: 1575.7288
-      height: 2979.8206
+      x: -556.494
+      y: 15.77087
+      width: 2623.127
+      height: 1989.825
+  references:
+    version: 2
+    RefIds:
+    - rid: 4079483031377674346
+      type: {class: PortraitModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 0
+        profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+        portraitKey: GuilleConFrio
+        appearance: 1
+        origin: 5
+        target: 1
+        moveSpeed: 50
+        useFade: 0
+        enterFromOpacity: 0
+        enterToOpacity: 100
+    - rid: 4079483031377674347
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Guille
+        useLocalization: 0
+        text: BIM BARABUM MR WORLDWIDE ONE STEP ONE ROOM, DALE ESA JEBITA TIENE TREMENDO...
+        locKey: 
+        useTypewriter: 1
+        profileOverride: {fileID: 11400000, guid: 42285b40b748d8f4b81fe80320aa07ad, type: 2}
+    - rid: 4079483031377674348
+      type: {class: EventDispatcherModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 0
+        eventKey: OpenDoor
+        payloadType: 0
+        intValue: 0
+        floatValue: 0
+        stringValue: 
+        boolValue: 0
+    - rid: 4079483031377674349
+      type: {class: EventDispatcherModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 0
+        eventKey: OpenDoor
+        payloadType: 1
+        intValue: 455523
+        floatValue: 0
+        stringValue: 
+        boolValue: 0
+    - rid: 4079483031377674350
+      type: {class: EventDispatcherModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 0
+        eventKey: OpenDoor
+        payloadType: 2
+        intValue: 0
+        floatValue: 41234.13
+        stringValue: 
+        boolValue: 0
+    - rid: 4079483031377674351
+      type: {class: EventDispatcherModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 0
+        eventKey: OpenDoor
+        payloadType: 3
+        intValue: 0
+        floatValue: 0
+        stringValue: PATO FANTASTICO
+        boolValue: 0
+    - rid: 4079483031377674352
+      type: {class: EventDispatcherModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 0
+        eventKey: OpenDoor
+        payloadType: 4
+        intValue: 0
+        floatValue: 0
+        stringValue: 
+        boolValue: 1
+    - rid: 4079483031377674353
+      type: {class: EventDispatcherModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 0
+        eventKey: OpenDoor
+        payloadType: 5
+        intValue: 0
+        floatValue: 0
+        stringValue: Z
+        boolValue: 0
+    - rid: 4079483031377674354
+      type: {class: EmoteModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+        clip: {fileID: 0}
+        speed: 1
+        loop: 0
+        persistent: 0
+    - rid: 4079483031377674355
+      type: {class: PortraitModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+        portraitKey: GuilleConFrio
+        appearance: 2
+        origin: 1
+        target: 1
+        moveSpeed: 600
+        useFade: 0
+        enterFromOpacity: 0
+        enterToOpacity: 100
+    - rid: 4079483031377674356
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Guilllem
+        useLocalization: 0
+        text: ESAAAA ES
+        locKey: 
+        useTypewriter: 1
+        profileOverride: {fileID: 0}
+    - rid: 4079483031377674357
+      type: {class: PortraitModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profileRef: {fileID: 11400000, guid: 0adfa58d0167f2249a978446e07c322b, type: 2}
+        portraitKey: SoraGacha
+        appearance: 1
+        origin: 0
+        target: 3
+        moveSpeed: 600
+        useFade: 0
+        enterFromOpacity: 0
+        enterToOpacity: 100
+    - rid: 4079483031377674358
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Sora
+        useLocalization: 0
+        text: CULOoooooo
+        locKey: 
+        useTypewriter: 1
+        profileOverride: {fileID: 0}
+    - rid: 4079483031377674359
+      type: {class: ChoiceModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        showBlockedChoices: 0
+        choices:
+        - choiceText: "ESE ES MI NI\xD1O"
+          portName: 085052cf
+          choiceUseLocalization: 0
+          choiceLocKey: 
+          requiresAffinity: 0
+          affinityKey: 
+          requiredAffinity: 0
+          invertRequirement: 0
+          requiresProgress: 0
+          progressMethod: 
+          progressArgType: 0
+          progressArgInt: 0
+          progressArgFloat: 0
+          progressArgString: 
+    - rid: 4079483031377674360
+      type: {class: PortraitModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+        portraitKey: GuilleFeli
+        appearance: 1
+        origin: 0
+        target: 5
+        moveSpeed: 500
+        useFade: 0
+        enterFromOpacity: 0
+        enterToOpacity: 100
+    - rid: 4079483031377674361
+      type: {class: EmoteModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+        clip: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
+        speed: 0.2
+        loop: 1
+        persistent: 1
+    - rid: 4079483031377674362
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Guille
+        useLocalization: 0
+        text: QUE PASA MI GENTE
+        locKey: 
+        useTypewriter: 0
+        profileOverride: {fileID: 0}
+    - rid: 4079483031377674363
+      type: {class: ChatPauseModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 1
+    - rid: 4079483031377674364
+      type: {class: ChatTypingModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 0}
+        duration: 2
+    - rid: 4079483031377674365
+      type: {class: WaitForSignalModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        signal: {fileID: 0}

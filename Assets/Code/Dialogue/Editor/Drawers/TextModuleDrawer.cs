@@ -41,6 +41,12 @@ public static class TextModuleDrawer
         root.Add(locKey);
         UpdateLocVisibility();
 
+        // Own message (chat side)
+        var ownToggle = new Toggle("Own Message") { value = m.isOwn };
+        ownToggle.RegisterValueChangedCallback(e => { m.isOwn = e.newValue; onChanged?.Invoke(); });
+        ModuleDrawerStyles.ApplyToggleMargins(ownToggle);
+        root.Add(ownToggle);
+
         // Typewriter
         var twToggle = new Toggle("Typewriter") { value = m.useTypewriter };
         var twFields = BuildTypewriterFields(m, onChanged);
