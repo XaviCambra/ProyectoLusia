@@ -48,21 +48,6 @@ MonoBehaviour:
     - rid: 4079482957405093968
     - rid: 4079482957405093969
     - rid: 4079482957405093970
-  - GUID: 0d012364-a784-443e-bbc8-e3939f4b9574
-    nodeRect:
-      serializedVersion: 2
-      x: -481
-      y: 256
-      width: 400
-      height: 801
-    bgColorIndex: 2
-    bgColor: {r: 0.48, g: 0.28, b: 0.22, a: 1}
-    isStart: 1
-    startId: 
-    modules:
-    - rid: 4079482912282771456
-    - rid: 4079482875762704456
-    - rid: 4079482942335746148
   - GUID: 763de03d-c252-48f0-95e4-eefb97441312
     nodeRect:
       serializedVersion: 2
@@ -78,13 +63,28 @@ MonoBehaviour:
     - rid: 4079482900060307527
     - rid: 4079482900060307528
     - rid: 4079482984728363125
+  - GUID: 0d012364-a784-443e-bbc8-e3939f4b9574
+    nodeRect:
+      serializedVersion: 2
+      x: -481
+      y: 256
+      width: 400
+      height: 774
+    bgColorIndex: 2
+    bgColor: {r: 0.48, g: 0.28, b: 0.22, a: 1}
+    isStart: 1
+    startId: 
+    modules:
+    - rid: 4079482912282771456
+    - rid: 4079482875762704456
+    - rid: 4079482942335746148
   edges:
-  - fromNodeGUID: 0d012364-a784-443e-bbc8-e3939f4b9574
-    fromPortName: Next
-    toNodeGUID: 40b85c1f-725d-45c5-9b49-ac7fe41e7b49
   - fromNodeGUID: 40b85c1f-725d-45c5-9b49-ac7fe41e7b49
     fromPortName: Next
     toNodeGUID: 763de03d-c252-48f0-95e4-eefb97441312
+  - fromNodeGUID: 0d012364-a784-443e-bbc8-e3939f4b9574
+    fromPortName: Next
+    toNodeGUID: 40b85c1f-725d-45c5-9b49-ac7fe41e7b49
   frames:
   - title: Testing
     color: {r: 0.4273318, g: 0.9192322, b: 0.9339623, a: 0.15}

@@ -11,8 +11,6 @@ public class Character : MonoBehaviour
     float m_Resistencia;
     float m_Velocidad;
     float m_Suerte;
-
-    float m_Affinity;
     #endregion
 
     
