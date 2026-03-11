@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class CombatOrderManager : MonoBehaviour
 {
     [SerializeField]
     List<CharacterTurn> m_CharacterOrder = new List<CharacterTurn>();
-    private int m_CharacterTurn = 0;
+
+    CombatTurnManager m_CombatTurnManager = new CombatTurnManager();
 
     public void AddCharacter(Character _Character)
     {
@@ -39,13 +41,26 @@ public class CombatOrderManager : MonoBehaviour
         m_CharacterOrder = l_SortedList;
     }
 
+    public void SetActiveCharacter(int _TurnOrder = 0)
+    {
+        m_CombatTurnManager.SetActiveCharacter(m_CharacterOrder[_TurnOrder].m_Character);
+    }
+
     // Update is called once per frame
     void Update()
     {
-        
+        if (m_CombatTurnManager.PlayTurn())
+            EndTurn(5); //EndTurn(m_CharacterOrder[0].m_TurnID);
     }
 
 
+
+    public void EndTurn(float _TurnDelay)
+    {
+        m_CharacterOrder[0].m_TurnID += _TurnDelay;
+        SortListBySpeed();
+        SetActiveCharacter();
+    }
 }
 
 [Serializable]

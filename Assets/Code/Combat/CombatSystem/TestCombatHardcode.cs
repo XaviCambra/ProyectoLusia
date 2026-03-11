@@ -13,5 +13,7 @@ public class TestCombatHardcode : MonoBehaviour
         {
             orderManager.AddCharacter(character);
         }
+
+        orderManager.SetActiveCharacter();
     }
 }

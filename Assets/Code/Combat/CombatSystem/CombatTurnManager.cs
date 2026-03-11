@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CombatTurnManager : MonoBehaviour
+public class CombatTurnManager
 {
     private enum ETurnState
     {
@@ -11,43 +11,51 @@ public class CombatTurnManager : MonoBehaviour
 
     private ETurnState m_TurnState = ETurnState.PickAction;
 
-    public void PlayTurn()
+    private Character m_ActiveCharacter;
+
+    public void SetActiveCharacter(Character _Character)
+    {
+        m_ActiveCharacter = _Character;
+    }
+
+    public bool PlayTurn()
     {
         switch (m_TurnState)
         {
             case ETurnState.PickAction:
-                PickActionState();
-                break;
+                return PickActionState();
             case ETurnState.PickTarget:
-                PickTargetState();
-                break;
+                return PickTargetState();
             case ETurnState.Execute:
-                Execute();
-                break;
+                return Execute();
             default:
                 m_TurnState = ETurnState.PickAction;
                 break;
         }
+        return false;
     }
 
-    private void PickActionState()
+    private bool PickActionState()
     {
         if (Input.GetKeyUp(KeyCode.E))
         {
             m_TurnState = ETurnState.PickTarget;
         }
+        return false;
     }
 
-    private void PickTargetState()
+    private bool PickTargetState()
     {
         if (Input.GetKeyUp(KeyCode.E))
         {
             m_TurnState = ETurnState.Execute;
         }
+        return false;
     }
 
-    private void Execute()
+    private bool Execute()
     {
         m_TurnState = ETurnState.PickAction;
+        return true;
     }
 }
