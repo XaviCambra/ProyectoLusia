@@ -46,34 +46,25 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
     [SerializeField] private bool resetSpecialsWithStaticPoseOnNodeChange = true;
     [SerializeField] private AnimationClip specialStaticPoseClip;
 
-    [Header("Perfiles")]
-    [SerializeField] private CharacterProfileDatabase profileDatabase;
-
     #endregion
 
     #region Estado interno
 
     private DialogueGraph _graph;
 
-    private readonly Dictionary<string, Image>         _portraitByProfile = new();
-    private readonly Dictionary<string, RectTransform> _rootByProfile     = new();
+    private readonly Dictionary<CharacterProfile, Image>         _portraitByProfile = new();
+    private readonly Dictionary<CharacterProfile, RectTransform> _rootByProfile     = new();
     private readonly Dictionary<Image, SpecialAnimState> _specialGraphs    = new();
-    private readonly HashSet<Image>                    _persistentEmotes  = new();
+    private readonly HashSet<Image>                      _persistentEmotes  = new();
     private readonly Dictionary<RectTransform, Coroutine> _placementCo = new();
     private readonly Dictionary<RectTransform, Coroutine> _scaleCo     = new();
-
-    private readonly struct PortraitState
-    {
-        public readonly Vector3 screenPos;
-        public PortraitState(Vector3 p) { screenPos = p; }
-    }
+    private readonly Dictionary<CharacterProfile, TaskCompletionSource<bool>> _placementTcs = new();
 
     private struct Pose
     {
         public Vector3 pos;
         public float   alpha;
-        public Vector3 scale;
-        public Pose(Vector3 p, float a, Vector3 s) { pos = p; alpha = a; scale = s; }
+        public Pose(Vector3 p, float a) { pos = p; alpha = a; }
     }
 
     private readonly struct SpecialAnimState
@@ -85,8 +76,6 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         public SpecialAnimState(PlayableGraph g, AnimationClipPlayable p, AnimationClip c, float s)
         { Graph = g; Playable = p; Clip = c; Speed = s; }
     }
-
-    private readonly Dictionary<string, PortraitState> _stateByProfile = new();
 
     #endregion
 
@@ -100,8 +89,8 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
 
     public async Task ApplyAsync(PortraitModule module)
     {
-        if (module == null || string.IsNullOrEmpty(module.ProfileId)
-            || !_rootByProfile.TryGetValue(module.ProfileId, out var rootRt))
+        if (module == null || module.profileRef == null
+            || !_rootByProfile.TryGetValue(module.profileRef, out var rootRt))
         {
             if (resetSpecialsWithStaticPoseOnNodeChange) ResetSpecialsToStaticPose();
             return;
@@ -109,35 +98,67 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
 
         if (resetSpecialsWithStaticPoseOnNodeChange) ResetSpecialsToStaticPose();
 
-        var img = _portraitByProfile[module.ProfileId];
+        var img = _portraitByProfile[module.profileRef];
         SetSpriteForModule(img, module);
 
-        BringOnTop(module.ProfileId);
-        UpdateTint(module.ProfileId);
-        UpdateScale(module.ProfileId);
+        BringOnTop(module.profileRef);
+        UpdateTint(module.profileRef);
+        UpdateScale(module.profileRef);
 
         await RunPlacementAsync(module, rootRt);
     }
 
-    public void PlaySpecialAnimation(string profileId, AnimationClip clip, float speed, bool loop, bool persistent = false)
+    public void PlaySpecialAnimation(CharacterProfile profile, AnimationClip clip, float speed, bool loop, bool persistent = false)
     {
-        if (!_portraitByProfile.TryGetValue(profileId, out var img) || !img) return;
+        if (profile == null || !_portraitByProfile.TryGetValue(profile, out var img) || !img) return;
         if (persistent) _persistentEmotes.Add(img);
         else            _persistentEmotes.Remove(img);
         PlaySpecial(img, clip, speed, loop);
     }
 
-    public void StopSpecialAnimation(string profileId)
+    public void StopSpecialAnimation(CharacterProfile profile)
     {
-        if (!_portraitByProfile.TryGetValue(profileId, out var img) || !img) return;
+        if (profile == null || !_portraitByProfile.TryGetValue(profile, out var img) || !img) return;
         _persistentEmotes.Remove(img);
         StopSpecial(img, graceful: true);
+    }
+
+    public void SnapPlacement(PortraitModule module)
+    {
+        if (module == null || module.profileRef == null) return;
+        var profile = module.profileRef;
+        if (!_rootByProfile.TryGetValue(profile, out var rootRt) || !rootRt) return;
+
+        // Detener coroutine activa si existe
+        if (_placementCo.TryGetValue(rootRt, out var co) && co != null)
+        {
+            StopCoroutine(co);
+            _placementCo.Remove(rootRt);
+        }
+
+        // Calcular end pose directamente del módulo (no depende del caché)
+        if (module.appearance != AppearanceMode.None)
+        {
+            var cg = rootRt.GetComponent<CanvasGroup>();
+            if (!cg) cg = rootRt.gameObject.AddComponent<CanvasGroup>();
+
+            rootRt.position = ResolveSpot(module.target, rootRt);
+            cg.alpha        = module.useFade ? UnityEngine.Mathf.Clamp01(module.enterToOpacity / 100f) : 1f;
+        }
+
+        if (_placementTcs.TryGetValue(profile, out var tcs))
+        {
+            _placementTcs.Remove(profile);
+            tcs.TrySetResult(true);
+        }
     }
 
     public void ResetAll()
     {
         foreach (var kv in _placementCo) if (kv.Value != null) StopCoroutine(kv.Value);
         _placementCo.Clear();
+        foreach (var t in _placementTcs.Values) t.TrySetResult(true);
+        _placementTcs.Clear();
         foreach (var kv in _scaleCo) if (kv.Value != null) StopCoroutine(kv.Value);
         _scaleCo.Clear();
         foreach (var kv in _specialGraphs) if (kv.Value.Graph.IsValid()) kv.Value.Graph.Destroy();
@@ -160,6 +181,8 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
     {
         foreach (var kv in _placementCo) if (kv.Value != null) StopCoroutine(kv.Value);
         _placementCo.Clear();
+        foreach (var t in _placementTcs.Values) t.TrySetResult(true);
+        _placementTcs.Clear();
         foreach (var kv in _scaleCo) if (kv.Value != null) StopCoroutine(kv.Value);
         _scaleCo.Clear();
         foreach (var kv in _specialGraphs) if (kv.Value.Graph.IsValid()) kv.Value.Graph.Destroy();
@@ -175,13 +198,13 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         var uniqueProfiles = _graph.Nodes
             .Where(n => n?.modules != null)
             .SelectMany(n => n.modules.OfType<PortraitModule>())
-            .Where(m => !string.IsNullOrEmpty(m.ProfileId))
-            .Select(m => m.ProfileId)
+            .Where(m => m.profileRef != null)
+            .Select(m => m.profileRef)
             .Distinct();
 
-        foreach (var pid in uniqueProfiles)
+        foreach (var profile in uniqueProfiles)
         {
-            var rootGo = new GameObject($"PortraitRoot_{pid}", typeof(RectTransform), typeof(CanvasGroup));
+            var rootGo = new GameObject($"PortraitRoot_{profile.name}", typeof(RectTransform), typeof(CanvasGroup));
             var rootRt = (RectTransform)rootGo.transform;
             rootRt.SetParent(portraitsRoot, false);
 
@@ -193,7 +216,7 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
             cg.alpha = 0f;
 
             var img = Instantiate(portraitPrefab, rootRt);
-            img.gameObject.name = $"Portrait_{pid}";
+            img.gameObject.name = $"Portrait_{profile.name}";
             img.enabled = false;
 
             var rt = img.rectTransform;
@@ -202,24 +225,16 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
             rt.anchoredPosition = Vector2.zero;
             rt.localScale = Vector3.one;
 
-            _portraitByProfile[pid] = img;
-            _rootByProfile[pid]     = rootRt;
-            _stateByProfile[pid]    = new PortraitState(rootRt.position);
+            _portraitByProfile[profile] = img;
+            _rootByProfile[profile]     = rootRt;
         }
     }
 
     private void SetSpriteForModule(Image img, PortraitModule module)
     {
-        if (!img || module == null || profileDatabase == null) return;
+        if (!img || module == null || module.profileRef == null) return;
 
-        Sprite sprite = null;
-        if (!string.IsNullOrEmpty(module.ProfileId))
-        {
-            var profile = profileDatabase.FindById(module.ProfileId);
-            if (profile != null)
-                sprite = profile.GetSprite(module.portraitKey);
-        }
-
+        var sprite  = module.profileRef.GetPortraitByKey(module.portraitKey);
         img.sprite  = sprite;
         img.enabled = sprite != null;
     }
@@ -228,37 +243,34 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
 
     #region Orden, tinte y escala
 
-    private void BringOnTop(string profileId)
+    private void BringOnTop(CharacterProfile profile)
     {
-        if (string.IsNullOrEmpty(profileId)) return;
-        if (_portraitByProfile.TryGetValue(profileId, out var img) && img)
+        if (profile == null) return;
+        if (_portraitByProfile.TryGetValue(profile, out var img) && img)
             img.transform.SetAsLastSibling();
     }
 
-    private void UpdateTint(string currentProfileId)
+    private void UpdateTint(CharacterProfile current)
     {
         if (_portraitByProfile.Count == 0) return;
-        bool hasSpeaker = !string.IsNullOrEmpty(currentProfileId);
         foreach (var kv in _portraitByProfile)
         {
             var img = kv.Value; if (!img) continue;
-            if (!dimNonSpeaking || !hasSpeaker) { img.color = speakingTint; continue; }
-            img.color = (kv.Key == currentProfileId) ? speakingTint : nonSpeakingTint;
+            if (!dimNonSpeaking || current == null) { img.color = speakingTint; continue; }
+            img.color = (kv.Key == current) ? speakingTint : nonSpeakingTint;
         }
     }
 
-    private void UpdateScale(string currentProfileId)
+    private void UpdateScale(CharacterProfile current)
     {
         if (_portraitByProfile.Count == 0) return;
-        bool hasSpeaker = !string.IsNullOrEmpty(currentProfileId);
-
         foreach (var kv in _portraitByProfile)
         {
             var img = kv.Value; if (!img) continue;
             var rt  = img.rectTransform;
-            var target = (!scaleNonSpeaking || !hasSpeaker)
+            var target = (!scaleNonSpeaking || current == null)
                 ? speakingScale
-                : (kv.Key == currentProfileId ? speakingScale : nonSpeakingScale);
+                : (kv.Key == current ? speakingScale : nonSpeakingScale);
             StartScaleTween(rt, target);
         }
     }
@@ -298,9 +310,12 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
 
     #region Colocación (Cut/Fade/Slide)
 
-    private async Task RunPlacementAsync(PortraitModule module, RectTransform rootRt, System.Action<float> onProgress = null)
+    private async Task RunPlacementAsync(PortraitModule module, RectTransform rootRt)
     {
         if (!rootRt) return;
+
+        // None = solo actualiza sprite/tinte/escala; no toca posición ni alpha.
+        if (module.appearance == AppearanceMode.None) return;
 
         if (_placementCo.TryGetValue(rootRt, out var running) && running != null)
         {
@@ -322,7 +337,6 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
             case AppearanceMode.Cut:
                 rootRt.position = to.pos;
                 cg.alpha        = to.alpha;
-                _stateByProfile[module.ProfileId] = new PortraitState(rootRt.position);
                 return;
 
             case AppearanceMode.Slide:
@@ -330,19 +344,17 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
                 {
                     rootRt.position = to.pos;
                     cg.alpha        = to.alpha;
-                    _stateByProfile[module.ProfileId] = new PortraitState(rootRt.position);
                     return;
                 }
-                await RunAsTask(CoPlace(rootRt, cg, from, to, module.moveSpeed, onProgress));
-                _stateByProfile[module.ProfileId] = new PortraitState(rootRt.position);
-                return;
-
-            default:
+                var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                _placementTcs[module.profileRef] = tcs;
+                _placementCo[rootRt] = StartCoroutine(CoPlaceAndComplete(rootRt, cg, from, to, module.moveSpeed, module.profileRef, tcs));
+                await tcs.Task;
                 return;
         }
     }
 
-    private IEnumerator CoPlace(RectTransform rt, CanvasGroup cg, Pose from, Pose to, float speed, System.Action<float> onProgress)
+    private IEnumerator CoPlace(RectTransform rt, CanvasGroup cg, Pose from, Pose to, float speed)
     {
         Vector3 startPos   = from.pos;
         float   startAlpha = from.alpha;
@@ -367,7 +379,6 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
             rt.position = Vector3.LerpUnclamped(startPos, to.pos, easedT);
             if (cg) cg.alpha = Mathf.Lerp(startAlpha, to.alpha, rawT);
 
-            onProgress?.Invoke(rawT);
             yield return null;
         }
 
@@ -375,16 +386,12 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         if (cg) cg.alpha = to.alpha;
     }
 
-    private Task RunAsTask(IEnumerator co)
+    private IEnumerator CoPlaceAndComplete(RectTransform rt, CanvasGroup cg, Pose from, Pose to, float speed,
+        CharacterProfile profile, TaskCompletionSource<bool> tcs)
     {
-        var tcs = new TaskCompletionSource<bool>();
-        StartCoroutine(Wrap(co, tcs));
-        return tcs.Task;
-    }
-
-    private IEnumerator Wrap(IEnumerator co, TaskCompletionSource<bool> tcs)
-    {
-        yield return co;
+        yield return CoPlace(rt, cg, from, to, speed);
+        _placementCo.Remove(rt);
+        _placementTcs.Remove(profile);
         tcs.TrySetResult(true);
     }
 
@@ -506,22 +513,13 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
     {
         var cg = rt.GetComponent<CanvasGroup>();
         if (!cg) cg = rt.gameObject.AddComponent<CanvasGroup>();
-
-        var startPos   = ResolveSpot(module.origin, rt);
-        var startAlpha = module.useFade ? Mathf.Clamp01(module.enterFromOpacity / 100f) : cg.alpha;
-        var startScale = rt.localScale;
-
-        return new Pose(startPos, startAlpha, startScale);
+        return new Pose(ResolveSpot(module.origin, rt),
+                        module.useFade ? Mathf.Clamp01(module.enterFromOpacity / 100f) : cg.alpha);
     }
 
     private Pose ComputeEndPose(PortraitModule module, RectTransform rt)
-    {
-        var endPos  = ResolveSpot(module.target, rt);
-        var toAlpha = module.useFade ? Mathf.Clamp01(module.enterToOpacity / 100f) : 1f;
-        var endScale = rt.localScale;
-
-        return new Pose(endPos, toAlpha, endScale);
-    }
+        => new Pose(ResolveSpot(module.target, rt),
+                    module.useFade ? Mathf.Clamp01(module.enterToOpacity / 100f) : 1f);
 
     #endregion
 
@@ -532,6 +530,8 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
     {
         foreach (var co in _placementCo.Values) if (co != null) StopCoroutine(co);
         _placementCo.Clear();
+        foreach (var t in _placementTcs.Values) t.TrySetResult(true);
+        _placementTcs.Clear();
         foreach (var co in _scaleCo.Values) if (co != null) StopCoroutine(co);
         _scaleCo.Clear();
         foreach (var kv in _specialGraphs) if (kv.Value.Graph.IsValid()) kv.Value.Graph.Destroy();

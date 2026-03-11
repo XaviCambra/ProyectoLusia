@@ -45,14 +45,14 @@ MonoBehaviour:
     isStart: 0
     startId: 
     modules:
+    - rid: 4079482957405093970
     - rid: 4079482957405093968
     - rid: 4079482957405093969
-    - rid: 4079482957405093970
   - GUID: 763de03d-c252-48f0-95e4-eefb97441312
     nodeRect:
       serializedVersion: 2
-      x: 472
-      y: 78
+      x: 516
+      y: 128
       width: 400
       height: 772
     bgColorIndex: 4
@@ -62,26 +62,32 @@ MonoBehaviour:
     modules:
     - rid: 4079482900060307527
     - rid: 4079482900060307528
-    - rid: 4079482984728363125
+    - rid: 4079483007711314022
   - GUID: 0d012364-a784-443e-bbc8-e3939f4b9574
     nodeRect:
       serializedVersion: 2
-      x: -481
-      y: 256
+      x: -451
+      y: 214
       width: 400
-      height: 774
+      height: 942
     bgColorIndex: 2
     bgColor: {r: 0.48, g: 0.28, b: 0.22, a: 1}
     isStart: 1
     startId: 
     modules:
     - rid: 4079482912282771456
-    - rid: 4079482875762704456
     - rid: 4079482942335746148
+    - rid: 4079482875762704456
+    - rid: 4079483025781948491
+    - rid: 4079483025781948492
+    - rid: 4079483025781948493
   edges:
   - fromNodeGUID: 40b85c1f-725d-45c5-9b49-ac7fe41e7b49
     fromPortName: Next
     toNodeGUID: 763de03d-c252-48f0-95e4-eefb97441312
+  - fromNodeGUID: 763de03d-c252-48f0-95e4-eefb97441312
+    fromPortName: 085052cf
+    toNodeGUID: 050e5960-0dd3-43f4-a674-3fc2ea07d2b3
   - fromNodeGUID: 0d012364-a784-443e-bbc8-e3939f4b9574
     fromPortName: Next
     toNodeGUID: 40b85c1f-725d-45c5-9b49-ac7fe41e7b49
@@ -102,17 +108,16 @@ MonoBehaviour:
       data:
         runMode: 2
         speakerName: Guille
-        useLocalization: 1
+        useLocalization: 0
         text: QUE PASA MI GENTE
         locKey: 
-        useTypewriter: 1
+        useTypewriter: 0
         profileOverride: {fileID: 0}
     - rid: 4079482900060307527
       type: {class: PortraitModule, ns: , asm: Assembly-CSharp}
       data:
         runMode: 2
         profileRef: {fileID: 11400000, guid: 0adfa58d0167f2249a978446e07c322b, type: 2}
-        profileId: 557aa130789447358f1010d7d7629857
         portraitKey: SoraGacha
         appearance: 1
         origin: 0
@@ -136,21 +141,19 @@ MonoBehaviour:
       data:
         runMode: 2
         profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-        profileId: bc17ed2360684d68b5e7a55be922310b
         portraitKey: GuilleFeli
         appearance: 1
         origin: 0
         target: 5
         moveSpeed: 500
-        useFade: 1
+        useFade: 0
         enterFromOpacity: 0
-        enterToOpacity: 75
+        enterToOpacity: 100
     - rid: 4079482942335746126
       type: {class: PortraitModule, ns: , asm: Assembly-CSharp}
       data:
         runMode: 0
         profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-        profileId: bc17ed2360684d68b5e7a55be922310b
         portraitKey: GuilleConFrio
         appearance: 1
         origin: 5
@@ -172,9 +175,8 @@ MonoBehaviour:
     - rid: 4079482942335746148
       type: {class: EmoteModule, ns: , asm: Assembly-CSharp}
       data:
-        runMode: 0
+        runMode: 2
         profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-        profileId: bc17ed2360684d68b5e7a55be922310b
         clip: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
         speed: 0.2
         loop: 1
@@ -193,12 +195,11 @@ MonoBehaviour:
       type: {class: PortraitModule, ns: , asm: Assembly-CSharp}
       data:
         runMode: 2
-        profileRef: {fileID: 11400000, guid: 0adfa58d0167f2249a978446e07c322b, type: 2}
-        profileId: 557aa130789447358f1010d7d7629857
-        portraitKey: SoraGacha
-        appearance: 1
-        origin: 3
-        target: 5
+        profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+        portraitKey: GuilleConFrio
+        appearance: 2
+        origin: 1
+        target: 1
         moveSpeed: 600
         useFade: 0
         enterFromOpacity: 0
@@ -207,9 +208,9 @@ MonoBehaviour:
       type: {class: TextModule, ns: , asm: Assembly-CSharp}
       data:
         runMode: 2
-        speakerName: Sora
+        speakerName: Guilllem
         useLocalization: 0
-        text: ooooooooooooooohhh
+        text: ESAAAA ES
         locKey: 
         useTypewriter: 1
         profileOverride: {fileID: 0}
@@ -218,7 +219,6 @@ MonoBehaviour:
       data:
         runMode: 2
         profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
-        profileId: bc17ed2360684d68b5e7a55be922310b
         clip: {fileID: 0}
         speed: 1
         loop: 0
@@ -273,17 +273,17 @@ MonoBehaviour:
         floatValue: 0
         stringValue: Z
         boolValue: 0
-    - rid: 4079482984728363125
+    - rid: 4079483007711314022
       type: {class: ChoiceModule, ns: , asm: Assembly-CSharp}
       data:
         runMode: 2
         showBlockedChoices: 0
         choices:
-        - choiceText: Option 1
-          portName: 36d0fd33
+        - choiceText: "ESE ES MI NI\xD1O"
+          portName: 085052cf
           choiceUseLocalization: 0
           choiceLocKey: 
-          requiresAffinity: 1
+          requiresAffinity: 0
           affinityKey: 
           requiredAffinity: 0
           invertRequirement: 0
@@ -293,3 +293,19 @@ MonoBehaviour:
           progressArgInt: 0
           progressArgFloat: 0
           progressArgString: 
+    - rid: 4079483025781948491
+      type: {class: ChatPauseModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 1
+    - rid: 4079483025781948492
+      type: {class: ChatTypingModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 0}
+        duration: 2
+    - rid: 4079483025781948493
+      type: {class: WaitForSignalModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        signal: {fileID: 0}

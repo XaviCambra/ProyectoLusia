@@ -20,7 +20,6 @@ public static class PortraitModuleDrawer
         profileField.RegisterValueChangedCallback(e =>
         {
             m.profileRef = e.newValue as CharacterProfile;
-            m.profileId  = m.profileRef != null ? m.profileRef.ProfileId : string.Empty;
             onChanged?.Invoke();
         });
         ModuleDrawerStyles.ApplyFieldMargins(profileField);
@@ -100,15 +99,6 @@ public static class PortraitModuleDrawer
         c.Add(fromField);
         c.Add(toField);
         return c;
-    }
-
-    private static Label MakeSeparator(string text)
-    {
-        var lbl = new Label(text);
-        lbl.style.unityFontStyleAndWeight = UnityEngine.FontStyle.Bold;
-        lbl.style.marginTop = 6;
-        lbl.style.marginBottom = 2;
-        return lbl;
     }
 }
 #endif

@@ -23,6 +23,9 @@ public class TextModule : DialogueModuleBase
     [Tooltip("Clave de localización para obtener el texto en el idioma activo.")]
     public string locKey = "";
 
+    [Tooltip("Si está activo, la burbuja aparece en el lado derecho (mensaje propio).")]
+    public bool isOwn = false;
+
     [Tooltip("Si está activo, el texto se revela carácter a carácter.")]
     public bool useTypewriter = true;
 

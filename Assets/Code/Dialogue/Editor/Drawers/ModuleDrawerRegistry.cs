@@ -23,6 +23,9 @@ public static class ModuleDrawerRegistry
         Register<EventDispatcherModule>(EventModuleDrawer.Draw);
         Register<AudioModule>(AudioModuleDrawer.Draw);
         Register<ChoiceModule>(ChoiceModuleDrawer.Draw);
+        Register<ChatPauseModule>(ChatPauseModuleDrawer.Draw);
+        Register<ChatTypingModule>(ChatTypingModuleDrawer.Draw);
+        Register<WaitForSignalModule>(WaitForSignalModuleDrawer.Draw);
     }
 
     /// <summary>
@@ -57,6 +60,9 @@ public static class ModuleDrawerRegistry
         ["Event"]             = typeof(EventDispatcherModule),
         ["Audio"]             = typeof(AudioModule),
         ["Choices"]           = typeof(ChoiceModule),
+        ["Chat Pause"]        = typeof(ChatPauseModule),
+        ["Chat Typing"]       = typeof(ChatTypingModule),
+        ["Wait For Signal"]   = typeof(WaitForSignalModule),
     };
 }
 #endif
