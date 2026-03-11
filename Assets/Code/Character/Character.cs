@@ -2,18 +2,22 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 
-public class Character : MonoBehaviour
+[CreateAssetMenu(fileName = "Character", menuName = "Character", order = 1)]
+public class Character : ScriptableObject
 {
     #region Statistics
     [Header("Statistics")]
-    float m_Vitalidad;
-    float m_Fuerza;
-    float m_Resistencia;
-    float m_Velocidad;
-    float m_Suerte;
+    [SerializeField] float m_Vitalidad;
+    [SerializeField] float m_Fuerza;
+    [SerializeField] float m_Resistencia;
+    [SerializeField] float m_Velocidad;
+    [SerializeField] float m_Suerte;
     #endregion
 
-    
+    public (float, float, float, float, float) GetStats()
+    {
+        return (m_Vitalidad, m_Fuerza, m_Resistencia, m_Velocidad, m_Suerte);
+    }
 
     #region States & Effects
     private HashSet<TileEffect> immunities = new();

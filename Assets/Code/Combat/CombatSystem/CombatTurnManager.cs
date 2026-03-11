@@ -9,11 +9,11 @@ public class CombatTurnManager : MonoBehaviour
         Execute
     }
 
-    private ETurnState TurnState = ETurnState.PickAction;
+    private ETurnState m_TurnState = ETurnState.PickAction;
 
-    private void Update()
+    public void PlayTurn()
     {
-        switch (TurnState)
+        switch (m_TurnState)
         {
             case ETurnState.PickAction:
                 PickActionState();
@@ -25,23 +25,29 @@ public class CombatTurnManager : MonoBehaviour
                 Execute();
                 break;
             default:
-                TurnState = ETurnState.PickAction;
+                m_TurnState = ETurnState.PickAction;
                 break;
         }
     }
 
     private void PickActionState()
     {
-        TurnState = ETurnState.PickTarget;
+        if (Input.GetKeyUp(KeyCode.E))
+        {
+            m_TurnState = ETurnState.PickTarget;
+        }
     }
 
     private void PickTargetState()
     {
-        TurnState = ETurnState.Execute;
+        if (Input.GetKeyUp(KeyCode.E))
+        {
+            m_TurnState = ETurnState.Execute;
+        }
     }
 
     private void Execute()
     {
-        TurnState = ETurnState.PickAction;
+        m_TurnState = ETurnState.PickAction;
     }
 }
