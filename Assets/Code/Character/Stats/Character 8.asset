@@ -9,13 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5d5e89429aa98c4eb96c9f12dd76c74, type: 3}
-  m_Name: CharacterSO_2
+  m_Script: {fileID: 11500000, guid: e570c4375381f7d4a946e27d2ff6a4fe, type: 3}
+  m_Name: Character 8
   m_EditorClassIdentifier: 
-  m_CharacterProfile: {fileID: 0}
-  m_BaseVitalidad: 0
-  m_BaseFuerza: 0
-  m_BaseResistencia: 0
-  m_BaseVelocidad: 0
-  m_BaseSuerte: 0
-  m_CombatAbilities: []
+  m_Vitalidad: 2
+  m_Fuerza: 2
+  m_Resistencia: 2
+  m_Velocidad: 2
+  m_Suerte: 10
