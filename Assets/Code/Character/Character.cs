@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Character : MonoBehaviour
 {
-    public CombatCharacterStatsSO m_CombatCharacterSO;
-
     #region Statistics
     [Header("Statistics")]
     float m_Vitalidad;
@@ -17,21 +15,7 @@ public class Character : MonoBehaviour
     float m_Affinity;
     #endregion
 
-    #region Getters i Setters
-    void SetStats()
-    {
-        m_Vitalidad = m_CombatCharacterSO.m_BaseVitalidad;
-        m_Fuerza = m_CombatCharacterSO.m_BaseFuerza;
-        m_Resistencia = m_CombatCharacterSO.m_BaseResistencia;
-        m_Velocidad = m_CombatCharacterSO.m_BaseVelocidad;
-        m_Suerte = m_CombatCharacterSO.m_BaseSuerte;
-    }
-
-    List<_CombatAbility> GetAbilities()
-    {
-        return m_CombatCharacterSO.m_CombatAbilities;
-    }
-    #endregion
+    
 
     #region States & Effects
     private HashSet<TileEffect> immunities = new();
