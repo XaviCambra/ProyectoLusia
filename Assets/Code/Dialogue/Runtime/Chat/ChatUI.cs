@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,10 +18,11 @@ using UnityEngine.UI;
 public class ChatUI : MonoBehaviour, IChatPresenter
 {
     [Header("Scroll")]
-    [SerializeField] private ScrollRect scrollRect;
-    [SerializeField] private Transform  contentParent;
-    [SerializeField] private ChatBubble bubblePrefab;
-    [SerializeField] private ChatBubble ownBubblePrefab; // si se asigna, se usa para mensajes propios (isOwn=true)
+    [SerializeField] private ScrollRect          scrollRect;
+    [SerializeField] private Transform           contentParent;
+    [SerializeField] private ContentSizeListener contentSizeListener;
+    [SerializeField] private ChatBubble          bubblePrefab;
+    [SerializeField] private ChatBubble          ownBubblePrefab; // si se asigna, se usa para mensajes propios (isOwn=true)
 
     [Header("Indicador de escritura")]
     [SerializeField] private GameObject typingIndicator;
@@ -33,6 +33,18 @@ public class ChatUI : MonoBehaviour, IChatPresenter
     [SerializeField] private Button    choiceButtonPrefab;
 
     private TaskCompletionSource<int> _choiceTcs;
+
+    private void Awake()
+    {
+        if (contentSizeListener)
+            contentSizeListener.OnSizeChanged += ScrollToBottom;
+    }
+
+    private void OnDestroy()
+    {
+        if (contentSizeListener)
+            contentSizeListener.OnSizeChanged -= ScrollToBottom;
+    }
 
     // -----------------------------------------------------------------------
     // IChatPresenter
@@ -45,7 +57,6 @@ public class ChatUI : MonoBehaviour, IChatPresenter
         var prefab = (entry.isOwn && ownBubblePrefab) ? ownBubblePrefab : bubblePrefab;
         var bubble = Instantiate(prefab, contentParent);
         bubble.Set(entry);
-        StartCoroutine(ScrollToBottomNextFrame());
     }
 
     public async Task ShowTypingAsync(CharacterProfile profile, float seconds, CancellationToken ct)
@@ -117,12 +128,8 @@ public class ChatUI : MonoBehaviour, IChatPresenter
             Destroy(child.gameObject);
     }
 
-    /// <summary>
-    /// Espera un frame para que el LayoutGroup recalcule antes de hacer scroll.
-    /// </summary>
-    private IEnumerator ScrollToBottomNextFrame()
+    private void ScrollToBottom()
     {
-        yield return null;
         if (scrollRect) scrollRect.verticalNormalizedPosition = 0f;
     }
 }

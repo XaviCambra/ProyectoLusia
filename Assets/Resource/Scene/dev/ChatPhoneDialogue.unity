@@ -407,7 +407,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 335542742}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.99921364
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -536,6 +536,7 @@ GameObject:
   - component: {fileID: 337269448}
   - component: {fileID: 337269450}
   - component: {fileID: 337269449}
+  - component: {fileID: 337269451}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -559,7 +560,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.0002596362, y: 0.0008635232}
+  m_AnchoredPosition: {x: 0.00014076657, y: 0.0008635232}
   m_SizeDelta: {x: -132, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &337269449
@@ -595,13 +596,25 @@ MonoBehaviour:
     m_Bottom: 0
   m_ChildAlignment: 0
   m_Spacing: 0
-  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
+  m_ChildScaleWidth: 1
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &337269451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 337269447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7013acd5b0759744595221a83b31a2a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &496381597
 GameObject:
   m_ObjectHideFlags: 0
@@ -918,8 +931,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scrollRect: {fileID: 1236842112}
   contentParent: {fileID: 337269448}
-  bubblePrefab: {fileID: 6311583140945930074, guid: ab243eece8e128d4ca73b0e86678e784, type: 3}
-  ownBubblePrefab: {fileID: 0}
+  contentSizeListener: {fileID: 337269451}
+  bubblePrefab: {fileID: 6311583140945930074, guid: 77b41c3368a940541aa48c7c1e81e065, type: 3}
+  ownBubblePrefab: {fileID: 6311583140945930074, guid: 77b41c3368a940541aa48c7c1e81e065, type: 3}
   typingIndicator: {fileID: 1262213199}
   typingLabel: {fileID: 1854869480}
   choicesParent: {fileID: 885300259}

@@ -145,7 +145,7 @@ MonoBehaviour:
         runMode: 2
         speakerName: Sora
         useLocalization: 0
-        text: Hi! How are you?
+        text: Hi!
         locKey: 
         isOwn: 0
         useTypewriter: 0
