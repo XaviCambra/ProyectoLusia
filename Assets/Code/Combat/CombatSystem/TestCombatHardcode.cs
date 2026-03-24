@@ -5,15 +5,10 @@ public class TestCombatHardcode : MonoBehaviour
 {
     public List<Character> characterList;
 
-    public CombatOrderManager orderManager;
+    public CombatManager orderManager;
 
     private void Start()
     {
-        foreach (Character character in characterList)
-        {
-            orderManager.AddCharacter(character);
-        }
-
-        orderManager.SetActiveCharacter();
+        orderManager.StartCombat(characterList);
     }
 }

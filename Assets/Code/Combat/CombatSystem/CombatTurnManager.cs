@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CombatTurnManager
 {
-    private enum ETurnState
+    public enum ETurnState
     {
         PickAction,
         PickTarget,
@@ -10,52 +10,51 @@ public class CombatTurnManager
     }
 
     private ETurnState m_TurnState = ETurnState.PickAction;
+    public ETurnState CurrentState => m_TurnState;
 
     private Character m_ActiveCharacter;
+
+    public bool TurnFinished { get; private set; }
 
     public void SetActiveCharacter(Character _Character)
     {
         m_ActiveCharacter = _Character;
+        m_TurnState = ETurnState.PickAction;
+        TurnFinished = false;
     }
 
-    public bool PlayTurn()
+    public void Tick()
     {
+        TurnFinished = false; // se resetea cada frame
+
         switch (m_TurnState)
         {
             case ETurnState.PickAction:
-                return PickActionState();
+                HandlePickAction();
+                break;
             case ETurnState.PickTarget:
-                return PickTargetState();
+                HandlePickTarget();
+                break;
             case ETurnState.Execute:
-                return Execute();
-            default:
-                m_TurnState = ETurnState.PickAction;
+                HandleExecute();
                 break;
         }
-        return false;
     }
 
-    private bool PickActionState()
+    private void HandlePickAction()
     {
         if (Input.GetKeyUp(KeyCode.E))
-        {
             m_TurnState = ETurnState.PickTarget;
-        }
-        return false;
     }
 
-    private bool PickTargetState()
+    private void HandlePickTarget()
     {
         if (Input.GetKeyUp(KeyCode.E))
-        {
             m_TurnState = ETurnState.Execute;
-        }
-        return false;
     }
 
-    private bool Execute()
+    private void HandleExecute()
     {
-        m_TurnState = ETurnState.PickAction;
-        return true;
+        TurnFinished = true;
     }
 }

@@ -12,8 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e570c4375381f7d4a946e27d2ff6a4fe, type: 3}
   m_Name: Character 1
   m_EditorClassIdentifier: 
+  sprite: {fileID: -5623356006370864985, guid: afa594ba07cc2da47953e7a1e737fcdb, type: 3}
   m_Vitalidad: 4
   m_Fuerza: 3
   m_Resistencia: 4
   m_Velocidad: 3
   m_Suerte: 8
+  m_Habilidades:
+  - m_AbilityName: Ataque 1
+    m_Target: 0
+  - m_AbilityName: Ataque 2
+    m_Target: 1
