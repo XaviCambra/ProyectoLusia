@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Character", menuName = "Character", order = 1)]
@@ -8,19 +7,9 @@ public class Character : ScriptableObject
 {
     public Sprite sprite;
 
-    #region Statistics
-    [Header("Statistics")]
-    [SerializeField] float m_Vitalidad;
-    [SerializeField] float m_Fuerza;
-    [SerializeField] float m_Resistencia;
-    [SerializeField] float m_Velocidad;
-    [SerializeField] float m_Suerte;
-    #endregion
+    public CharacterStats m_CharacterStats;
 
-    public (float, float, float, float, float) GetStats()
-    {
-        return (m_Vitalidad, m_Fuerza, m_Resistencia, m_Velocidad, m_Suerte);
-    }
+    public CharacterStats GetStats() => m_CharacterStats;
 
     public List<Habilidades> m_Habilidades = new List<Habilidades>();
 
@@ -44,4 +33,14 @@ public class Habilidades
         MULTIPLE
     }
     public AbilityTarget m_Target;
+}
+
+[Serializable]
+public struct CharacterStats
+{
+    public float m_Vitalidad;
+    public float m_Fuerza;
+    public float m_Resistencia;
+    public float m_Velocidad;
+    public float m_Suerte;
 }

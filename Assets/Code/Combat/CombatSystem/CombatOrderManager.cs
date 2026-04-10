@@ -13,7 +13,7 @@ public class CombatOrderManager
         var ct = new CharacterTurn
         {
             m_Character = character,
-            m_TurnID = character.GetStats().Item4
+            m_TurnID = character.GetStats().m_Velocidad
         };
 
         turnOrder.Add(ct);

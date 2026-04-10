@@ -12,20 +12,17 @@ public class CombatTurnManager
     private ETurnState m_TurnState = ETurnState.PickAction;
     public ETurnState CurrentState => m_TurnState;
 
-    private Character m_ActiveCharacter;
-
     public bool TurnFinished { get; private set; }
 
     public void SetActiveCharacter(Character _Character)
     {
-        m_ActiveCharacter = _Character;
         m_TurnState = ETurnState.PickAction;
         TurnFinished = false;
     }
 
     public void Tick()
     {
-        TurnFinished = false; // se resetea cada frame
+        TurnFinished = false;
 
         switch (m_TurnState)
         {

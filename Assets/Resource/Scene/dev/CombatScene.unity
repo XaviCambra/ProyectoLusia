@@ -356,6 +356,38 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 146759471}
   m_CullTransparentMesh: 1
+--- !u!1 &403888699
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 403888700}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &403888700
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 403888699}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6.75, y: -2.75, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1163013706}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &506393199
 GameObject:
   m_ObjectHideFlags: 0
@@ -689,12 +721,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1163013704}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.5, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 3.5, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 403888700}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1320018816
 GameObject:
@@ -759,10 +791,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6d9643d5d4ab08f4ca18c8ff50ea96f0, type: 2}
   - {fileID: 11400000, guid: a2b4f21ebc9e8574780618024fc0b55f, type: 2}
   - {fileID: 11400000, guid: 6f3a75a48eda76b4f80919bb9c62acf4, type: 2}
-  - {fileID: 11400000, guid: a43da79b84254854aa6171d831c86a34, type: 2}
-  - {fileID: 11400000, guid: 09ff8684f4e98884da51669c88807f64, type: 2}
-  - {fileID: 11400000, guid: 03404b72e3b30344196110b42ebff85c, type: 2}
-  - {fileID: 11400000, guid: e37c6ea674e0915459dac01b70352e26, type: 2}
   orderManager: {fileID: 1320018819}
 --- !u!114 &1320018821
 MonoBehaviour:
@@ -1497,7 +1525,7 @@ SceneRoots:
   - {fileID: 1870150716}
   - {fileID: 1707230092}
   - {fileID: 506393202}
-  - {fileID: 1163013706}
+  - {fileID: 403888700}
   - {fileID: 1785380132}
   - {fileID: 780512745}
   - {fileID: 720226711}

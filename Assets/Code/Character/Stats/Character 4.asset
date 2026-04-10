@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: Character 4
   m_EditorClassIdentifier: 
   sprite: {fileID: -6043556727711267651, guid: 56017c2511deee74bb14f2bea37814ed, type: 3}
-  m_Vitalidad: 3
-  m_Fuerza: 4
-  m_Resistencia: 8
-  m_Velocidad: 5
-  m_Suerte: 4
+  m_CharacterStats:
+    m_Vitalidad: 9
+    m_Fuerza: 1
+    m_Resistencia: 2
+    m_Velocidad: 5
+    m_Suerte: 0
   m_Habilidades:
   - m_AbilityName: Ataque 1
     m_Target: 0
