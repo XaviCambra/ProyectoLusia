@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ded7e729df1c15148964c118780acf18, type: 3}
   m_Name: Guille
   m_EditorClassIdentifier: 
-  profileId: bc17ed2360684d68b5e7a55be922310b
   displayName: Guille
+  avatarSprite: {fileID: -6043556727711267651, guid: 56017c2511deee74bb14f2bea37814ed, type: 3}
   portraits:
   - key: GuilleFeli
     sprite: {fileID: -6043556727711267651, guid: 56017c2511deee74bb14f2bea37814ed, type: 3}

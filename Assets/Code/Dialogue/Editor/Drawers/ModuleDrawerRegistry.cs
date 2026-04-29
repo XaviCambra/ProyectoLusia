@@ -26,6 +26,7 @@ public static class ModuleDrawerRegistry
         Register<ChatPauseModule>(ChatPauseModuleDrawer.Draw);
         Register<ChatTypingModule>(ChatTypingModuleDrawer.Draw);
         Register<WaitForSignalModule>(WaitForSignalModuleDrawer.Draw);
+        Register<ProfileModule>(ProfileModuleDrawer.Draw);
     }
 
     /// <summary>
@@ -63,6 +64,7 @@ public static class ModuleDrawerRegistry
         ["Chat Pause"]        = typeof(ChatPauseModule),
         ["Chat Typing"]       = typeof(ChatTypingModule),
         ["Wait For Signal"]   = typeof(WaitForSignalModule),
+        ["Profile"]           = typeof(ProfileModule),
     };
 }
 #endif

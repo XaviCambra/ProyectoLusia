@@ -94,7 +94,11 @@ public class ChatUI : MonoBehaviour, IChatPresenter
             btn.onClick.AddListener(() => SelectChoice(idx));
         }
 
-        ct.Register(ClearChoiceButtons);
+        using var reg = ct.Register(() =>
+        {
+            _choiceTcs?.TrySetCanceled();
+            ClearChoiceButtons();
+        });
 
         int result = await _choiceTcs.Task;
         ClearChoiceButtons();
@@ -103,8 +107,9 @@ public class ChatUI : MonoBehaviour, IChatPresenter
 
     public void Clear()
     {
-        foreach (Transform child in contentParent)
-            Destroy(child.gameObject);
+        if (contentParent)
+            foreach (Transform child in contentParent)
+                Destroy(child.gameObject);
 
         ClearChoiceButtons();
 

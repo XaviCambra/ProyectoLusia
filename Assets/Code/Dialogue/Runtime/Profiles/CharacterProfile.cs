@@ -8,6 +8,9 @@ public class CharacterProfile : ScriptableObject
     [Header("Datos")]
     public string displayName;
 
+    [Header("Avatar de chat")]
+    public Sprite avatarSprite;
+
     [Header("Retratos")]
     public List<PortraitEntry> portraits = new();
 

@@ -13,48 +13,19 @@ MonoBehaviour:
   m_Name: TestChatDialog
   m_EditorClassIdentifier: 
   nodes:
-  - GUID: 0adf404b-ca74-42c5-b8a0-3d242c445326
-    nodeRect:
-      serializedVersion: 2
-      x: -241
-      y: 436
-      width: 400
-      height: 704
-    bgColorIndex: 0
-    bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
-    isStart: 0
-    startId: 
-    modules:
-    - rid: 4079483031377674408
-    - rid: 4079483031377674407
-    - rid: 4079483031377674410
-    - rid: 4079483031377674409
-  - GUID: 5be5050a-1772-45ff-9c2f-fa7e6cb88ee6
-    nodeRect:
-      serializedVersion: 2
-      x: 242
-      y: 436
-      width: 400
-      height: 401
-    bgColorIndex: 0
-    bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
-    isStart: 0
-    startId: 
-    modules:
-    - rid: 4079483031377674411
-    - rid: 4079483031377674413
   - GUID: eeba5d35-5e37-47dd-95c7-90f9d6ebe293
     nodeRect:
       serializedVersion: 2
       x: 1150
       y: 436
       width: 400
-      height: 505
+      height: 571
     bgColorIndex: 0
     bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
     isStart: 0
     startId: 
     modules:
+    - rid: 1510204080709435474
     - rid: 4079483031377674416
     - rid: 4079483031377674414
     - rid: 4079483031377674419
@@ -64,12 +35,13 @@ MonoBehaviour:
       x: 701
       y: 436
       width: 400
-      height: 492
+      height: 558
     bgColorIndex: 0
     bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
     isStart: 0
     startId: 
     modules:
+    - rid: 1510204080709435473
     - rid: 4079483031377674415
     - rid: 4079483031377674412
     - rid: 4079483031377674417
@@ -79,12 +51,13 @@ MonoBehaviour:
       x: 1626
       y: 436
       width: 400
-      height: 665
+      height: 731
     bgColorIndex: 0
     bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
     isStart: 0
     startId: 
     modules:
+    - rid: 1510204080709435475
     - rid: 4079483031377674421
     - rid: 4079483031377674420
     - rid: 4079483031377674422
@@ -94,12 +67,13 @@ MonoBehaviour:
       x: 2613
       y: 436
       width: 400
-      height: 440
+      height: 506
     bgColorIndex: 0
     bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
     isStart: 0
     startId: 
     modules:
+    - rid: 1510204080709435478
     - rid: 4079483031377674424
     - rid: 4079483031377674423
   - GUID: d3c71a8b-4278-4b8e-a62e-1d80d006fabd
@@ -108,14 +82,47 @@ MonoBehaviour:
       x: 2118
       y: 436
       width: 400
-      height: 401
+      height: 467
     bgColorIndex: 0
     bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
     isStart: 0
     startId: 
     modules:
+    - rid: 1510204080709435476
     - rid: 4079483031377674429
     - rid: 4079483031377674428
+  - GUID: 5be5050a-1772-45ff-9c2f-fa7e6cb88ee6
+    nodeRect:
+      serializedVersion: 2
+      x: 242
+      y: 436
+      width: 400
+      height: 467
+    bgColorIndex: 0
+    bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 1510204080709435472
+    - rid: 4079483031377674411
+    - rid: 4079483031377674413
+  - GUID: 0adf404b-ca74-42c5-b8a0-3d242c445326
+    nodeRect:
+      serializedVersion: 2
+      x: -251
+      y: 436
+      width: 400
+      height: 770
+    bgColorIndex: 0
+    bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 1510204080709435471
+    - rid: 4079483031377674408
+    - rid: 4079483031377674407
+    - rid: 4079483031377674410
+    - rid: 4079483031377674409
   edges:
   - fromNodeGUID: 0adf404b-ca74-42c5-b8a0-3d242c445326
     fromPortName: 01f82a8b
@@ -129,16 +136,51 @@ MonoBehaviour:
   - fromNodeGUID: eeba5d35-5e37-47dd-95c7-90f9d6ebe293
     fromPortName: Next
     toNodeGUID: 8588f015-ebec-48fa-ba05-c7b6212a609b
-  - fromNodeGUID: d3c71a8b-4278-4b8e-a62e-1d80d006fabd
-    fromPortName: Next
-    toNodeGUID: 6ee563f3-5127-46f6-b998-cec361645997
   - fromNodeGUID: 8588f015-ebec-48fa-ba05-c7b6212a609b
     fromPortName: 37fc8710
     toNodeGUID: d3c71a8b-4278-4b8e-a62e-1d80d006fabd
+  - fromNodeGUID: d3c71a8b-4278-4b8e-a62e-1d80d006fabd
+    fromPortName: Next
+    toNodeGUID: 6ee563f3-5127-46f6-b998-cec361645997
   frames: []
   references:
     version: 2
     RefIds:
+    - rid: 1510204080709435471
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: 0adfa58d0167f2249a978446e07c322b, type: 2}
+    - rid: 1510204080709435472
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+    - rid: 1510204080709435473
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: 0adfa58d0167f2249a978446e07c322b, type: 2}
+    - rid: 1510204080709435474
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: 0adfa58d0167f2249a978446e07c322b, type: 2}
+    - rid: 1510204080709435475
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: 0adfa58d0167f2249a978446e07c322b, type: 2}
+    - rid: 1510204080709435476
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
+    - rid: 1510204080709435478
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: 0adfa58d0167f2249a978446e07c322b, type: 2}
     - rid: 4079483031377674407
       type: {class: TextModule, ns: , asm: Assembly-CSharp}
       data:

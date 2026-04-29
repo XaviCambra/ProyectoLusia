@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ded7e729df1c15148964c118780acf18, type: 3}
   m_Name: Sora
   m_EditorClassIdentifier: 
-  profileId: 557aa130789447358f1010d7d7629857
   displayName: Sora
+  avatarSprite: {fileID: -2104986425262294201, guid: 0ae7225c61cadb44a8d66153f2384a0e, type: 3}
   portraits:
   - key: SoraGacha
     sprite: {fileID: 7279494265541373513, guid: 59423d3ff44dcd64c867b3a3d6ef51c6, type: 3}

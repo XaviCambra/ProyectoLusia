@@ -25,6 +25,7 @@ public sealed class ChatRunner : MonoBehaviour
 
     private IChatPresenter           _presenter;
     private CancellationTokenSource  _cts;
+    private CharacterProfile         _currentProfile;
 
     private readonly List<ChatEntry> _history = new();
 
@@ -59,6 +60,7 @@ public sealed class ChatRunner : MonoBehaviour
         Stop();
         _cts = new CancellationTokenSource();
         _history.Clear();
+        _currentProfile = null;
         _presenter?.Clear();
         navigator.Init(graph);
         _ = RunAsync(navigator.StartNode(), _cts.Token);
@@ -110,8 +112,12 @@ public sealed class ChatRunner : MonoBehaviour
 
             switch (module)
             {
+                case ProfileModule m:
+                    _currentProfile = m.profile;
+                    break;
+
                 case TextModule m:
-                    var entry = new ChatEntry(m.speakerName, m.text, m.isOwn);
+                    var entry = new ChatEntry(m.speakerName, m.text, m.isOwn, _currentProfile?.avatarSprite);
                     _history.Add(entry);
                     _presenter?.AddMessage(entry);
                     break;

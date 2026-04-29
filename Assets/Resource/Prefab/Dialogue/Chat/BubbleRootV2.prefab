@@ -573,6 +573,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speakerLabel: {fileID: 8125967683564319856}
   bodyLabel: {fileID: 8257985471190945573}
+  avatarImage: {fileID: 8919110219898936257}
 --- !u!114 &2214734989612945700
 MonoBehaviour:
   m_ObjectHideFlags: 0
