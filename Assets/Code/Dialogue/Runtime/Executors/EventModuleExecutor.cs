@@ -8,30 +8,17 @@ using UnityEngine;
 /// La Task completa inmediatamente (el evento es síncrono).
 /// </summary>
 [DisallowMultipleComponent]
-public sealed class EventModuleExecutor : MonoBehaviour, IModuleExecutor
+public sealed class EventModuleExecutor : ModuleExecutorBase
 {
-    public Type ModuleType => typeof(EventDispatcherModule);
+    public override Type ModuleType => typeof(EventDispatcherModule);
 
-    public void Initialize(DialogueGraph graph) { }
-    public void OnNodeBegin() { }
-    public void Cancel() { }
-    public bool TryFastForward() => false;
-    public void ResetAll() { }
-
-    public Task ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
+    public override Task ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
     {
         var m = (EventDispatcherModule)module;
 
         if (!string.IsNullOrEmpty(m.eventKey))
         {
-            try
-            {
-                GlobalDialogueEvents.Fire(m.BuildPayload());
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"[EventModuleExecutor] Error disparando evento '{m.eventKey}': {ex.Message}");
-            }
+            GlobalDialogueEvents.Fire(m.BuildPayload());
         }
 
         return Task.CompletedTask;

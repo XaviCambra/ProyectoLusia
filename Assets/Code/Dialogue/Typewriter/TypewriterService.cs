@@ -14,11 +14,7 @@ public class TypewriterService
         Action<string> onTextUpdate = null,
         CancellationToken ct = default)
     {
-        if (profile == null)
-        {
-            Debug.LogWarning("[TypewriterService] No se asigno ningun perfil de configuracion.");
-            return;
-        }
+        if (profile == null) return;
 
         var sb = new StringBuilder(text.Length);
         if (target) target.text = "";

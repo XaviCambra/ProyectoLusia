@@ -155,15 +155,7 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
 
     public void ResetAll()
     {
-        foreach (var kv in _placementCo) if (kv.Value != null) StopCoroutine(kv.Value);
-        _placementCo.Clear();
-        foreach (var t in _placementTcs.Values) t.TrySetResult(true);
-        _placementTcs.Clear();
-        foreach (var kv in _scaleCo) if (kv.Value != null) StopCoroutine(kv.Value);
-        _scaleCo.Clear();
-        foreach (var kv in _specialGraphs) if (kv.Value.Graph.IsValid()) kv.Value.Graph.Destroy();
-        _specialGraphs.Clear();
-        _persistentEmotes.Clear();
+        CleanupGraphs();
         foreach (var kv in _portraitByProfile)
         {
             if (!kv.Value) continue;
@@ -179,14 +171,7 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
 
     private void RebuildPool()
     {
-        foreach (var kv in _placementCo) if (kv.Value != null) StopCoroutine(kv.Value);
-        _placementCo.Clear();
-        foreach (var t in _placementTcs.Values) t.TrySetResult(true);
-        _placementTcs.Clear();
-        foreach (var kv in _scaleCo) if (kv.Value != null) StopCoroutine(kv.Value);
-        _scaleCo.Clear();
-        foreach (var kv in _specialGraphs) if (kv.Value.Graph.IsValid()) kv.Value.Graph.Destroy();
-        _specialGraphs.Clear();
+        CleanupGraphs();
         foreach (var kv in _portraitByProfile) if (kv.Value) Destroy(kv.Value.gameObject);
         _portraitByProfile.Clear();
         foreach (var kv in _rootByProfile) if (kv.Value) Destroy(kv.Value.gameObject);

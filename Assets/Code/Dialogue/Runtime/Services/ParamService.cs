@@ -15,17 +15,13 @@ public static class ParamService
         get
         {
             if (_settings == null)
-            {
-                // Carga perezosa: coloca un asset llamado "ParamSettings" dentro de una carpeta Resources/
                 _settings = Resources.Load<ParamSettings>("ParamSettings/ParamSettingsTest");
-                if (_settings == null)
-                    Debug.LogWarning("[ParamService] No se encontró Resources/ParamSettings. Devolviendo valores por defecto.");
-            }
+
             return _settings;
         }
     }
 
-    /// <summary> Devuelve un float paramétrico. </summary>
+    /// <summary> Devuelve un float paramï¿½trico. </summary>
     public static float GetFloat(string key, float @default = 0f)
     {
         if (Settings != null && Settings.TryGetFloat(key, out var v)) return v;

@@ -33,22 +33,16 @@ public sealed class ChoiceUIController : MonoBehaviour, IChoiceUIController
         if (conditionEvaluatorRef != null)
         {
             _conditions = conditionEvaluatorRef as IConditionEvaluator;
-            if (_conditions == null)
-                Debug.LogError("[ChoiceUIController] 'conditionEvaluatorRef' no implementa IConditionEvaluator.");
         }
 
         if (_conditions == null)
         {
             _conditions = FindAnyObjectByType<ConditionEvaluator>();
-            if (_conditions == null)
-                Debug.LogWarning("[ChoiceUIController] No se encontró ningún ConditionEvaluator. Las opciones no comprobarán requisitos.");
         }
 
         if (localizationRef != null)
         {
             _loc = localizationRef as ILocalizationService;
-            if (_loc == null)
-                Debug.LogError("[ChoiceUIController] 'localizationRef' no implementa ILocalizationService.");
         }
     }
 
@@ -125,14 +119,6 @@ public sealed class ChoiceUIController : MonoBehaviour, IChoiceUIController
 
             btn.gameObject.SetActive(true);
             _map.Add((btn, choice, port));
-        }
-
-        for (int i = write; i < buttons.Length; i++)
-        {
-            var btn = buttons[i];
-            if (!btn) continue;
-            btn.onClick.RemoveAllListeners();
-            btn.gameObject.SetActive(false);
         }
 
         return _map.Count > 0;

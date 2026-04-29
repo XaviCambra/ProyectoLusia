@@ -41,7 +41,7 @@ public sealed class ChatRunner : MonoBehaviour
     {
         _presenter = presenterRef as IChatPresenter;
         if (_presenter == null)
-            Debug.LogError("[ChatRunner] presenterRef no implementa IChatPresenter.");
+            enabled = false;
     }
 
     private void Start()
@@ -92,10 +92,7 @@ public sealed class ChatRunner : MonoBehaviour
             OnChatComplete?.Invoke();
         }
         catch (OperationCanceledException) { /* cancelación normal */ }
-        catch (Exception e)
-        {
-            Debug.LogError($"[ChatRunner] Error inesperado: {e}");
-        }
+        catch (Exception) { }
     }
 
     /// <summary>
