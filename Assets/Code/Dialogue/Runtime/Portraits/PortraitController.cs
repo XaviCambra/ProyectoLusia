@@ -499,7 +499,7 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         var cg = rt.GetComponent<CanvasGroup>();
         if (!cg) cg = rt.gameObject.AddComponent<CanvasGroup>();
         return new Pose(ResolveSpot(module.origin, rt),
-                        module.useFade ? Mathf.Clamp01(module.enterFromOpacity / 100f) : cg.alpha);
+                        module.useFade ? Mathf.Clamp01(module.enterFromOpacity / 100f) : 1f);
     }
 
     private Pose ComputeEndPose(PortraitModule module, RectTransform rt)

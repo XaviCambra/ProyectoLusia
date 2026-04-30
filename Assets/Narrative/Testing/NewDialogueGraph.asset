@@ -19,7 +19,7 @@ MonoBehaviour:
       x: 30
       y: 281
       width: 400
-      height: 1278
+      height: 1300
     bgColorIndex: 0
     bgColor: {r: 0.22, g: 0.22, b: 0.22, a: 1}
     isStart: 0
@@ -39,7 +39,7 @@ MonoBehaviour:
       x: 1025
       y: 78
       width: 400
-      height: 666
+      height: 688
     bgColorIndex: 0
     bgColor: {r: 0.22, g: 0.22, b: 0.22, a: 1}
     isStart: 0
@@ -54,7 +54,7 @@ MonoBehaviour:
       x: 516
       y: 128
       width: 400
-      height: 772
+      height: 794
     bgColorIndex: 4
     bgColor: {r: 0.52, g: 0.33, b: 0.3, a: 1}
     isStart: 0
@@ -69,14 +69,14 @@ MonoBehaviour:
       x: -451
       y: 214
       width: 400
-      height: 942
+      height: 964
     bgColorIndex: 2
     bgColor: {r: 0.48, g: 0.28, b: 0.22, a: 1}
     isStart: 1
     startId: 
     modules:
-    - rid: 4079483031377674360
     - rid: 4079483031377674361
+    - rid: 4079483031377674360
     - rid: 4079483031377674362
     - rid: 4079483031377674363
     - rid: 4079483031377674364
@@ -124,6 +124,7 @@ MonoBehaviour:
         useLocalization: 0
         text: BIM BARABUM MR WORLDWIDE ONE STEP ONE ROOM, DALE ESA JEBITA TIENE TREMENDO...
         locKey: 
+        isOwn: 0
         useTypewriter: 1
         profileOverride: {fileID: 11400000, guid: 42285b40b748d8f4b81fe80320aa07ad, type: 2}
     - rid: 4079483031377674348
@@ -216,6 +217,7 @@ MonoBehaviour:
         useLocalization: 0
         text: ESAAAA ES
         locKey: 
+        isOwn: 0
         useTypewriter: 1
         profileOverride: {fileID: 0}
     - rid: 4079483031377674357
@@ -239,6 +241,7 @@ MonoBehaviour:
         useLocalization: 0
         text: CULOoooooo
         locKey: 
+        isOwn: 0
         useTypewriter: 1
         profileOverride: {fileID: 0}
     - rid: 4079483031377674359
@@ -277,7 +280,7 @@ MonoBehaviour:
     - rid: 4079483031377674361
       type: {class: EmoteModule, ns: , asm: Assembly-CSharp}
       data:
-        runMode: 2
+        runMode: 0
         profileRef: {fileID: 11400000, guid: 120d0effdfccc8a48a6c00edb7d7a794, type: 2}
         clip: {fileID: 7400000, guid: 64107c91ad086ae4bbcbe64269fe90e7, type: 2}
         speed: 0.2
@@ -291,6 +294,7 @@ MonoBehaviour:
         useLocalization: 0
         text: QUE PASA MI GENTE
         locKey: 
+        isOwn: 0
         useTypewriter: 0
         profileOverride: {fileID: 0}
     - rid: 4079483031377674363
