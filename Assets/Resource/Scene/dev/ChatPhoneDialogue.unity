@@ -407,7 +407,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 335542742}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.9925667
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -560,7 +560,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000011300412, y: 0.0008635232}
+  m_AnchoredPosition: {x: 0.000017282755, y: 0.0008635232}
   m_SizeDelta: {x: -132, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &337269449
@@ -935,13 +935,13 @@ MonoBehaviour:
   bubblePrefabs:
   - contentType: 0
     prefab: {fileID: 6311583140945930074, guid: c0a38f80a996aa3448e6ec1c9a02ea90, type: 3}
-    ownPrefab: {fileID: 0}
+    ownPrefab: {fileID: 173219796859597938, guid: 786ec2fb1ce605a4ab61506ef0f2705e, type: 3}
   - contentType: 1
     prefab: {fileID: 6311583140945930074, guid: 1930cdf0ab210f3458fc5d053dae1cbb, type: 3}
-    ownPrefab: {fileID: 0}
+    ownPrefab: {fileID: 64154018811762033, guid: dd939be3700de344b87ebbf14bc2f644, type: 3}
   - contentType: 2
     prefab: {fileID: 6311583140945930074, guid: c6bbde7f83ea71b4ea85bc61cec3b6c8, type: 3}
-    ownPrefab: {fileID: 0}
+    ownPrefab: {fileID: 5980194926818105359, guid: c1a81ad03c42ede4ea8de2db8a92af17, type: 3}
   typingIndicator: {fileID: 1262213199}
   typingLabel: {fileID: 1854869480}
   choicesParent: {fileID: 885300259}
