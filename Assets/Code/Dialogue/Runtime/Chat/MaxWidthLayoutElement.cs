@@ -17,7 +17,14 @@ public class MaxWidthLayoutElement : MonoBehaviour, ILayoutElement
     private void Awake() => _tmp = GetComponent<TMP_Text>();
 
     // Ancho preferido = ancho natural del texto, pero nunca supera maxWidth
-    public float preferredWidth  => Mathf.Min(_tmp.preferredWidth, maxWidth);
+    public float preferredWidth
+    {
+        get
+        {
+            if (_tmp == null) _tmp = GetComponent<TMP_Text>();
+            return Mathf.Min(_tmp.preferredWidth, maxWidth);
+        }
+    }
     public float preferredHeight => -1;
     public float minWidth        => -1;
     public float minHeight       => -1;

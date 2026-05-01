@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+// USO: Solo sistema de Retratos (DialogueRunner). Ignorado por Chat Bubble.
 /// <summary>
 /// Módulo de evento: dispara un evento global con payload tipado
 /// cuando el nodo llega a este módulo en su ejecución.

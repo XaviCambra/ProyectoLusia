@@ -27,6 +27,8 @@ public static class ModuleDrawerRegistry
         Register<ChatTypingModule>(ChatTypingModuleDrawer.Draw);
         Register<WaitForSignalModule>(WaitForSignalModuleDrawer.Draw);
         Register<ProfileModule>(ProfileModuleDrawer.Draw);
+        Register<EmojiModule>(EmojiModuleDrawer.Draw);
+        Register<ImageModule>(ImageModuleDrawer.Draw);
     }
 
     /// <summary>
@@ -65,6 +67,8 @@ public static class ModuleDrawerRegistry
         ["Chat Typing"]       = typeof(ChatTypingModule),
         ["Wait For Signal"]   = typeof(WaitForSignalModule),
         ["Profile"]           = typeof(ProfileModule),
+        ["Emoji"]             = typeof(EmojiModule),
+        ["Image"]             = typeof(ImageModule),
     };
 }
 #endif

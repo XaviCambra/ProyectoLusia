@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+// USO: Ambos sistemas. En Retratos muestra botones de elección en pantalla; en Chat Bubble muestra opciones como burbujas.
 /// <summary>
 /// Módulo de elección: presenta al jugador un conjunto de opciones
 /// y espera a que seleccione una. Siempre es bloqueante.

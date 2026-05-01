@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 /// </summary>
 public interface IChatPresenter
 {
-    /// <summary>Añade un mensaje al historial visible.</summary>
+    /// <summary>Añade una entrada al historial visible (texto, emoji o imagen).</summary>
     void AddMessage(ChatEntry entry);
 
     /// <summary>
@@ -18,9 +18,7 @@ public interface IChatPresenter
     /// </summary>
     Task ShowTypingAsync(CharacterProfile profile, float seconds, CancellationToken ct);
 
-    /// <summary>
-    /// Presenta las opciones al jugador y devuelve el índice elegido.
-    /// </summary>
+    /// <summary>Presenta las opciones al jugador y devuelve el índice elegido.</summary>
     Task<int> ShowChoicesAsync(IReadOnlyList<ChoiceModule.ChoiceData> choices, CancellationToken ct);
 
     /// <summary>Limpia el historial visible (nuevo chat).</summary>

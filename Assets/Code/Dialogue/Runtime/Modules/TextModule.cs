@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+// USO: Ambos sistemas. En Retratos muestra el texto en pantalla; en Chat Bubble genera una burbuja de mensaje.
 /// <summary>
 /// Módulo de texto: muestra el nombre del hablante y el cuerpo del diálogo,
 /// opcionalmente con efecto typewriter y soporte de localización.

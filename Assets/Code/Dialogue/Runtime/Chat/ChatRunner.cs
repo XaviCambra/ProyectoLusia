@@ -114,7 +114,7 @@ public sealed class ChatRunner : MonoBehaviour
                     break;
 
                 case TextModule m:
-                    var entry = new ChatEntry(m.speakerName, m.text, m.isOwn, _currentProfile?.avatarSprite);
+                    var entry = ChatEntry.ForText(m.speakerName, m.text, m.isOwn, _currentProfile?.avatarSprite);
                     _history.Add(entry);
                     _presenter?.AddMessage(entry);
                     break;
@@ -141,6 +141,20 @@ public sealed class ChatRunner : MonoBehaviour
 
                 case WaitForSignalModule m when m.signal != null:
                     await WaitForSignalAsync(m.signal, ct);
+                    break;
+
+                case EmojiModule m when m.emoji != null:
+                    var emojiEntry = ChatEntry.ForEmoji(
+                        _currentProfile?.displayName, m.emoji, m.isOwn, _currentProfile?.avatarSprite);
+                    _history.Add(emojiEntry);
+                    _presenter?.AddMessage(emojiEntry);
+                    break;
+
+                case ImageModule m when m.image != null:
+                    var imageEntry = ChatEntry.ForImage(
+                        _currentProfile?.displayName, m.image, m.isOwn, _currentProfile?.avatarSprite);
+                    _history.Add(imageEntry);
+                    _presenter?.AddMessage(imageEntry);
                     break;
             }
 

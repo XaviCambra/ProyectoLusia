@@ -97,7 +97,7 @@ MonoBehaviour:
       x: 242
       y: 436
       width: 400
-      height: 467
+      height: 627
     bgColorIndex: 0
     bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
     isStart: 0
@@ -105,6 +105,7 @@ MonoBehaviour:
     modules:
     - rid: 1510204080709435472
     - rid: 4079483031377674411
+    - rid: 1510204106920951901
     - rid: 4079483031377674413
   - GUID: 0adf404b-ca74-42c5-b8a0-3d242c445326
     nodeRect:
@@ -127,9 +128,6 @@ MonoBehaviour:
   - fromNodeGUID: 0adf404b-ca74-42c5-b8a0-3d242c445326
     fromPortName: 01f82a8b
     toNodeGUID: 5be5050a-1772-45ff-9c2f-fa7e6cb88ee6
-  - fromNodeGUID: 5be5050a-1772-45ff-9c2f-fa7e6cb88ee6
-    fromPortName: Next
-    toNodeGUID: 2cfe4ca8-e7c5-4d64-a212-f6bda5e68972
   - fromNodeGUID: 2cfe4ca8-e7c5-4d64-a212-f6bda5e68972
     fromPortName: Next
     toNodeGUID: eeba5d35-5e37-47dd-95c7-90f9d6ebe293
@@ -142,6 +140,9 @@ MonoBehaviour:
   - fromNodeGUID: d3c71a8b-4278-4b8e-a62e-1d80d006fabd
     fromPortName: Next
     toNodeGUID: 6ee563f3-5127-46f6-b998-cec361645997
+  - fromNodeGUID: 5be5050a-1772-45ff-9c2f-fa7e6cb88ee6
+    fromPortName: Next
+    toNodeGUID: 2cfe4ca8-e7c5-4d64-a212-f6bda5e68972
   frames: []
   references:
     version: 2
@@ -181,6 +182,12 @@ MonoBehaviour:
       data:
         runMode: 2
         profile: {fileID: 11400000, guid: 0adfa58d0167f2249a978446e07c322b, type: 2}
+    - rid: 1510204106920951901
+      type: {class: EmojiModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        emoji: {fileID: 8019020588823736630, guid: 0799250051fd8a34cb924887144482db, type: 3}
+        isOwn: 1
     - rid: 4079483031377674407
       type: {class: TextModule, ns: , asm: Assembly-CSharp}
       data:
@@ -267,7 +274,7 @@ MonoBehaviour:
       data:
         runMode: 2
         profile: {fileID: 11400000, guid: 0adfa58d0167f2249a978446e07c322b, type: 2}
-        duration: 3
+        duration: 1
     - rid: 4079483031377674416
       type: {class: ChatTypingModule, ns: , asm: Assembly-CSharp}
       data:

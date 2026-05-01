@@ -69,7 +69,7 @@ MonoBehaviour:
       x: -451
       y: 214
       width: 400
-      height: 994
+      height: 943
     bgColorIndex: 2
     bgColor: {r: 0.48, g: 0.28, b: 0.22, a: 1}
     isStart: 1
@@ -79,8 +79,6 @@ MonoBehaviour:
     - rid: 4079482942335746148
     - rid: 4079482875762704456
     - rid: 4079483025781948491
-    - rid: 4079483025781948492
-    - rid: 4079483025781948493
   edges:
   - fromNodeGUID: 40b85c1f-725d-45c5-9b49-ac7fe41e7b49
     fromPortName: Next
@@ -301,15 +299,4 @@ MonoBehaviour:
       type: {class: ChatPauseModule, ns: , asm: Assembly-CSharp}
       data:
         runMode: 2
-        duration: 1
-    - rid: 4079483025781948492
-      type: {class: ChatTypingModule, ns: , asm: Assembly-CSharp}
-      data:
-        runMode: 2
-        profile: {fileID: 0}
-        duration: 2
-    - rid: 4079483025781948493
-      type: {class: WaitForSignalModule, ns: , asm: Assembly-CSharp}
-      data:
-        runMode: 2
-        signal: {fileID: 0}
+        duration: 3

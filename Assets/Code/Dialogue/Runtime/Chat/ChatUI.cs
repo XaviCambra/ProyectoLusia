@@ -8,21 +8,31 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Implementación de referencia de <see cref="IChatPresenter"/> usando uGUI + TMP.
-/// Instancia burbujas de chat, muestra el indicador de escritura y
-/// presenta botones de elección al jugador.
+/// Instancia burbujas de chat según <see cref="ChatContentType"/>, muestra el indicador
+/// de escritura y presenta botones de elección al jugador.
 ///
-/// Prefabs requeridos:
-///   - <see cref="bubblePrefab"/>  : GameObject con componente <see cref="ChatBubble"/>
-///   - <see cref="choiceButtonPrefab"/> : GameObject con Button + TMP_Text en un hijo
+/// Configura <see cref="bubblePrefabs"/> en el inspector: una entrada por cada
+/// <see cref="ChatContentType"/> que quieras soportar (Text, Emoji, Image…).
+/// Añadir un nuevo tipo no requiere cambios de código, solo un nuevo prefab y una entrada en la lista.
 /// </summary>
 public class ChatUI : MonoBehaviour, IChatPresenter
 {
+    [Serializable]
+    public class BubblePrefabMapping
+    {
+        public ChatContentType contentType;
+        public ChatBubble      prefab;
+        [Tooltip("Si se asigna, se usa para mensajes propios (isOwn = true).")]
+        public ChatBubble      ownPrefab;
+    }
+
     [Header("Scroll")]
     [SerializeField] private ScrollRect          scrollRect;
     [SerializeField] private Transform           contentParent;
     [SerializeField] private ContentSizeListener contentSizeListener;
-    [SerializeField] private ChatBubble          bubblePrefab;
-    [SerializeField] private ChatBubble          ownBubblePrefab; // si se asigna, se usa para mensajes propios (isOwn=true)
+
+    [Header("Burbujas")]
+    [SerializeField] private List<BubblePrefabMapping> bubblePrefabs = new();
 
     [Header("Indicador de escritura")]
     [SerializeField] private GameObject typingIndicator;
@@ -32,10 +42,15 @@ public class ChatUI : MonoBehaviour, IChatPresenter
     [SerializeField] private Transform choicesParent;
     [SerializeField] private Button    choiceButtonPrefab;
 
-    private TaskCompletionSource<int> _choiceTcs;
+    private Dictionary<ChatContentType, BubblePrefabMapping> _bubbleMap;
+    private TaskCompletionSource<int>                        _choiceTcs;
 
     private void Awake()
     {
+        _bubbleMap = new Dictionary<ChatContentType, BubblePrefabMapping>(bubblePrefabs.Count);
+        foreach (var mapping in bubblePrefabs)
+            _bubbleMap[mapping.contentType] = mapping;
+
         if (contentSizeListener)
             contentSizeListener.OnSizeChanged += ScrollToBottom;
     }
@@ -52,9 +67,12 @@ public class ChatUI : MonoBehaviour, IChatPresenter
 
     public void AddMessage(ChatEntry entry)
     {
-        if (!bubblePrefab || !contentParent) return;
+        if (!contentParent) return;
+        if (!_bubbleMap.TryGetValue(entry.contentType, out var mapping)) return;
 
-        var prefab = (entry.isOwn && ownBubblePrefab) ? ownBubblePrefab : bubblePrefab;
+        var prefab = (entry.isOwn && mapping.ownPrefab) ? mapping.ownPrefab : mapping.prefab;
+        if (!prefab) return;
+
         var bubble = Instantiate(prefab, contentParent);
         bubble.Set(entry);
     }
