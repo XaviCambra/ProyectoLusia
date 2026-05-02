@@ -407,7 +407,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 335542742}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.99999875
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -560,7 +560,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000030216917, y: 0.0008635232}
+  m_AnchoredPosition: {x: -0.00001887725, y: 0.0008635232}
   m_SizeDelta: {x: -132, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &337269449
@@ -935,13 +935,13 @@ MonoBehaviour:
   bubblePrefabs:
   - contentType: 0
     prefab: {fileID: 6311583140945930074, guid: c0a38f80a996aa3448e6ec1c9a02ea90, type: 3}
-    ownPrefab: {fileID: 8028093356372417248, guid: 786ec2fb1ce605a4ab61506ef0f2705e, type: 3}
+    ownPrefab: {fileID: 2302436575613865588, guid: ce649c0b4abb5db4a89914d783aa673e, type: 3}
   - contentType: 1
-    prefab: {fileID: 6311583140945930074, guid: 1930cdf0ab210f3458fc5d053dae1cbb, type: 3}
-    ownPrefab: {fileID: 1383900566274487340, guid: 3094aeaab8a5e524d994b8c73cac8484, type: 3}
+    prefab: {fileID: 305630316785977270, guid: 1930cdf0ab210f3458fc5d053dae1cbb, type: 3}
+    ownPrefab: {fileID: 2301267267577530808, guid: d16d5f04d356e1c4a865accf455f9721, type: 3}
   - contentType: 2
-    prefab: {fileID: 6311583140945930074, guid: c6bbde7f83ea71b4ea85bc61cec3b6c8, type: 3}
-    ownPrefab: {fileID: 6016906919517021298, guid: c1a81ad03c42ede4ea8de2db8a92af17, type: 3}
+    prefab: {fileID: 431026492366712519, guid: c6bbde7f83ea71b4ea85bc61cec3b6c8, type: 3}
+    ownPrefab: {fileID: 6837521088408333809, guid: 868f5ba8baeddb447ab40d8e030a5aff, type: 3}
   typingIndicator: {fileID: 1262213199}
   typingLabel: {fileID: 1854869480}
   choicesParent: {fileID: 885300259}
@@ -1066,7 +1066,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.05882353, g: 0.039215688, b: 0.05882353, a: 1}
+  m_Color: {r: 0.05882353, g: 0.05882353, b: 0.05882353, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
