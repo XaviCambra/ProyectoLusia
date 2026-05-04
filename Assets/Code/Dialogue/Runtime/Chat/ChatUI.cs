@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 /// <summary>
 /// Implementación de referencia de <see cref="IChatPresenter"/> usando uGUI + TMP.
 /// Instancia burbujas de chat según <see cref="ChatContentType"/>, muestra el indicador
@@ -35,12 +36,12 @@ public class ChatUI : MonoBehaviour, IChatPresenter
     [SerializeField] private List<BubblePrefabMapping> bubblePrefabs = new();
 
     [Header("Indicador de escritura")]
-    [SerializeField] private GameObject typingIndicator;
-    [SerializeField] private TMP_Text   typingLabel;
+    [SerializeField] private TypingBubble typingBubblePrefab;
 
     [Header("Opciones")]
-    [SerializeField] private Transform choicesParent;
-    [SerializeField] private Button    choiceButtonPrefab;
+    [SerializeField] private Transform            choicesParent;
+    [SerializeField] private Button               choiceButtonPrefab;
+    [SerializeField] private ChoicesPanelAnimator choicesAnimator;
 
     private Dictionary<ChatContentType, BubblePrefabMapping> _bubbleMap;
     private TaskCompletionSource<int>                        _choiceTcs;
@@ -79,14 +80,11 @@ public class ChatUI : MonoBehaviour, IChatPresenter
 
     public async Task ShowTypingAsync(CharacterProfile profile, float seconds, CancellationToken ct)
     {
-        if (typingIndicator)
+        TypingBubble instance = null;
+        if (typingBubblePrefab && contentParent)
         {
-            if (typingLabel)
-                typingLabel.text = profile != null
-                    ? $"{profile.displayName} está escribiendo..."
-                    : "Escribiendo...";
-
-            typingIndicator.SetActive(true);
+            instance = Instantiate(typingBubblePrefab, contentParent);
+            instance.Set(profile);
         }
 
         try
@@ -95,7 +93,7 @@ public class ChatUI : MonoBehaviour, IChatPresenter
         }
         finally
         {
-            if (typingIndicator) typingIndicator.SetActive(false);
+            if (instance) Destroy(instance.gameObject);
         }
     }
 
@@ -112,13 +110,17 @@ public class ChatUI : MonoBehaviour, IChatPresenter
             btn.onClick.AddListener(() => SelectChoice(idx));
         }
 
+        choicesAnimator?.Show();
+
         using var reg = ct.Register(() =>
         {
             _choiceTcs?.TrySetCanceled();
+            if (choicesAnimator) choicesAnimator.HideImmediate();
             ClearChoiceButtons();
         });
 
         int result = await _choiceTcs.Task;
+        choicesAnimator?.Hide();
         ClearChoiceButtons();
         return result;
     }
@@ -130,8 +132,8 @@ public class ChatUI : MonoBehaviour, IChatPresenter
                 Destroy(child.gameObject);
 
         ClearChoiceButtons();
+        choicesAnimator?.HideImmediate();
 
-        if (typingIndicator) typingIndicator.SetActive(false);
     }
 
     // -----------------------------------------------------------------------
