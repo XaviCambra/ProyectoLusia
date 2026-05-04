@@ -6,7 +6,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 /// <summary>
 /// Implementación de referencia de <see cref="IChatPresenter"/> usando uGUI + TMP.
 /// Instancia burbujas de chat según <see cref="ChatContentType"/>, muestra el indicador
@@ -133,7 +132,6 @@ public class ChatUI : MonoBehaviour, IChatPresenter
 
         ClearChoiceButtons();
         choicesAnimator?.HideImmediate();
-
     }
 
     // -----------------------------------------------------------------------

@@ -36,10 +36,7 @@ public class ChatBubble : MonoBehaviour
         else
         {
             if (contentImage)
-            {
-                contentImage.sprite         = entry.contentSprite;
-                contentImage.preserveAspect = true;
-            }
+                contentImage.sprite = entry.contentSprite;
         }
     }
 }

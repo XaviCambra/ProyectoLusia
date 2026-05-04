@@ -92,7 +92,7 @@ public sealed class ChatRunner : MonoBehaviour
             OnChatComplete?.Invoke();
         }
         catch (OperationCanceledException) { /* cancelación normal */ }
-        catch (Exception) { }
+        catch (Exception e) { Debug.LogException(e); }
     }
 
     /// <summary>
