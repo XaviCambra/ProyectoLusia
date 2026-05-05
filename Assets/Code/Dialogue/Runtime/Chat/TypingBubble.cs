@@ -11,7 +11,7 @@ public sealed class TypingBubble : MonoBehaviour
     [SerializeField] private Image    avatarImage;
     [SerializeField] private TMP_Text nameLabel;
 
-    public void Set(CharacterProfile profile)
+    public void Set(CharacterDefinition profile)
     {
         if (avatarImage)
         {

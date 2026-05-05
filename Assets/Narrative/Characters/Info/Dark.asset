@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterId: 863ce857d3f0444ab05020e63a015f80
   displayName: Dark
+  icon: {fileID: 0}
   sex: 2
   race: 0
-  age: 24
+  age: 16

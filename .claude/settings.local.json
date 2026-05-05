@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "WebSearch"
+      "WebSearch",
+      "WebFetch(domain:www.schemecolor.com)",
+      "WebFetch(domain:www.color-hex.com)",
+      "Bash(Get-ChildItem -Path \"d:\\\\UnityProjects\\\\RealProjectLu\\\\ProyectoLusia\" -Recurse -Directory)",
+      "Bash(Select-Object -First 20)"
     ]
   }
 }

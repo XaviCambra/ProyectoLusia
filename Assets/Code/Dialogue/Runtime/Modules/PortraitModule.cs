@@ -13,7 +13,7 @@ public class PortraitModule : DialogueModuleBase
 
     // --- Perfil ---
     [Tooltip("Perfil del personaje.")]
-    public CharacterProfile profileRef;
+    public CharacterDefinition profileRef;
 
     [Tooltip("Clave del sprite dentro del perfil del personaje.")]
     public string portraitKey = "";

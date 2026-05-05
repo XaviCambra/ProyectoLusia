@@ -14,7 +14,7 @@ public class EmoteModule : DialogueModuleBase
 
     // --- Perfil ---
     [Tooltip("Perfil del personaje.")]
-    public CharacterProfile profileRef;
+    public CharacterDefinition profileRef;
 
     // --- Animación ---
     [Tooltip("Clip de animación a reproducir. Sin clip asignado, detiene el emote activo del personaje.")]

@@ -82,7 +82,7 @@ public class ChatUI : MonoBehaviour, IChatPresenter
         bubble.Set(entry);
     }
 
-    public async Task ShowTypingAsync(CharacterProfile profile, float seconds, CancellationToken ct)
+    public async Task ShowTypingAsync(CharacterDefinition profile, float seconds, CancellationToken ct)
     {
         TypingBubble instance = null;
         if (typingBubblePrefab && contentParent)

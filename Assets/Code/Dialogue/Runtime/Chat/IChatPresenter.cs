@@ -16,7 +16,7 @@ public interface IChatPresenter
     /// Muestra el indicador "está escribiendo..." del perfil indicado
     /// durante <paramref name="seconds"/> segundos.
     /// </summary>
-    Task ShowTypingAsync(CharacterProfile profile, float seconds, CancellationToken ct);
+    Task ShowTypingAsync(CharacterDefinition profile, float seconds, CancellationToken ct);
 
     /// <summary>Presenta las opciones de texto al jugador y devuelve el índice elegido.</summary>
     Task<int> ShowChoicesAsync(IReadOnlyList<ChoiceModule.ChoiceData> choices, CancellationToken ct);

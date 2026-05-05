@@ -14,12 +14,12 @@ public static class EmoteModuleDrawer
         // --- Perfil ---
         var profileField = new ObjectField("Profile")
         {
-            objectType = typeof(CharacterProfile),
+            objectType = typeof(CharacterDefinition),
             value      = m.profileRef
         };
         profileField.RegisterValueChangedCallback(e =>
         {
-            m.profileRef = e.newValue as CharacterProfile;
+            m.profileRef = e.newValue as CharacterDefinition;
             onChanged?.Invoke();
         });
         ModuleDrawerStyles.ApplyFieldMargins(profileField);

@@ -25,7 +25,7 @@ public sealed class ChatRunner : MonoBehaviour
 
     private IChatPresenter           _presenter;
     private CancellationTokenSource  _cts;
-    private CharacterProfile         _currentProfile;
+    private CharacterDefinition      _currentProfile;
 
     private readonly List<ChatEntry> _history = new();
 

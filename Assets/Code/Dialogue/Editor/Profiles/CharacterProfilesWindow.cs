@@ -12,8 +12,8 @@ public class CharacterProfilesWindow : EditorWindow
     private const float THUMB        = 128f;
     private const float MARGIN       = 6f;
 
-    [MenuItem("Window/Dialogue/Character Profiles")]
-    public static void Open() => GetWindow<CharacterProfilesWindow>("Character Profiles");
+    [MenuItem("Window/Dialogue/Characters")]
+    public static void Open() => GetWindow<CharacterProfilesWindow>("Characters");
 
     private void CreateGUI()
     {
@@ -26,30 +26,27 @@ public class CharacterProfilesWindow : EditorWindow
 
         AddSpacer(root, 4);
 
-        // --- Crear nuevo perfil ---
-        var createBtn = new Button(CreateNewProfile) { text = "+ Nuevo Perfil..." };
+        var createBtn = new Button(CreateNewCharacter) { text = "+ Nuevo Personaje..." };
         createBtn.style.alignSelf = Align.Stretch;
         root.Add(createBtn);
         AddSpacer(root, 4);
 
-        // --- Actualizar ---
         var refreshBtn = new Button(Refresh) { text = "Actualizar" };
         refreshBtn.style.alignSelf = Align.Stretch;
         root.Add(refreshBtn);
         AddSpacer(root, 8);
 
-        // --- Scroll lista ---
         var scroll = new ScrollView { name = "list", style = { flexGrow = 1 } };
         root.Add(scroll);
 
         DrawList();
     }
 
-    private void CreateNewProfile()
+    private void CreateNewCharacter()
     {
-        var path = EditorUtility.SaveFilePanelInProject("Guardar Perfil", "NewCharacterProfile", "asset", "");
+        var path = EditorUtility.SaveFilePanelInProject("Guardar Personaje", "NewCharacter", "asset", "");
         if (string.IsNullOrEmpty(path)) return;
-        var p = CreateInstance<CharacterProfile>();
+        var p = CreateInstance<CharacterDefinition>();
         AssetDatabase.CreateAsset(p, path);
         AssetDatabase.SaveAssets();
         Selection.activeObject = p;
@@ -68,16 +65,16 @@ public class CharacterProfilesWindow : EditorWindow
         if (list == null) return;
         list.Clear();
 
-        var profiles = AssetDatabase
-            .FindAssets("t:CharacterProfile")
-            .Select(guid => AssetDatabase.LoadAssetAtPath<CharacterProfile>(AssetDatabase.GUIDToAssetPath(guid)))
+        var characters = AssetDatabase
+            .FindAssets("t:CharacterDefinition")
+            .Select(guid => AssetDatabase.LoadAssetAtPath<CharacterDefinition>(AssetDatabase.GUIDToAssetPath(guid)))
             .Where(p => p != null)
             .OrderBy(p => p.displayName)
             .ToList();
 
-        if (profiles.Count == 0)
+        if (characters.Count == 0)
         {
-            list.Add(new HelpBox("No hay CharacterProfiles en el proyecto.", HelpBoxMessageType.Info));
+            list.Add(new HelpBox("No hay CharacterDefinitions en el proyecto.", HelpBoxMessageType.Info));
             return;
         }
 
@@ -85,19 +82,19 @@ public class CharacterProfilesWindow : EditorWindow
         {
             style =
             {
-                flexDirection = FlexDirection.Row,
-                flexWrap      = Wrap.Wrap,
+                flexDirection  = FlexDirection.Row,
+                flexWrap       = Wrap.Wrap,
                 justifyContent = Justify.FlexStart,
-                alignItems    = Align.FlexStart,
+                alignItems     = Align.FlexStart,
             }
         };
         list.Add(grid);
 
-        foreach (var p in profiles)
-            grid.Add(MakeCard(p));
+        foreach (var c in characters)
+            grid.Add(MakeCard(c));
     }
 
-    private VisualElement MakeCard(CharacterProfile p)
+    private VisualElement MakeCard(CharacterDefinition c)
     {
         var card = new Box
         {
@@ -117,15 +114,17 @@ public class CharacterProfilesWindow : EditorWindow
             }
         };
 
-        // Miniatura
-        var firstSprite = p.portraits?.FirstOrDefault(e => e != null && e.sprite != null)?.sprite;
+        // Thumbnail: primer retrato, o avatarSprite, o icono
+        var firstSprite = c.portraits?.FirstOrDefault(e => e != null && e.sprite != null)?.sprite
+                       ?? c.avatarSprite
+                       ?? c.icon;
 
         var thumb = new VisualElement
         {
             style =
             {
                 width  = THUMB, height = THUMB,
-                alignSelf = Align.Center,
+                alignSelf       = Align.Center,
                 backgroundColor = new Color(0, 0, 0, firstSprite != null ? 0f : 0.08f),
                 borderTopLeftRadius    = 8, borderTopRightRadius    = 8,
                 borderBottomLeftRadius = 8, borderBottomRightRadius = 8,
@@ -139,7 +138,7 @@ public class CharacterProfilesWindow : EditorWindow
         card.Add(thumb);
         AddSpacer(card, 8);
 
-        var nameLbl = new Label(string.IsNullOrEmpty(p.displayName) ? "(Sin nombre)" : p.displayName)
+        var nameLbl = new Label(string.IsNullOrEmpty(c.displayName) ? "(Sin nombre)" : c.displayName)
         {
             style =
             {
@@ -150,7 +149,7 @@ public class CharacterProfilesWindow : EditorWindow
         card.Add(nameLbl);
         AddSpacer(card, 8);
 
-        var openBtn = new Button(() => Selection.activeObject = p) { text = "Abrir" };
+        var openBtn = new Button(() => Selection.activeObject = c) { text = "Abrir" };
         card.Add(openBtn);
 
         return card;

@@ -13,7 +13,7 @@ public class ChatTypingModule : DialogueModuleBase
     public override string DisplayName => "Chat Typing";
 
     [Tooltip("Personaje cuyo indicador de escritura se muestra.")]
-    public CharacterProfile profile;
+    public CharacterDefinition profile;
 
     [Min(0f)]
     [Tooltip("Duración en segundos del indicador 'está escribiendo'.")]

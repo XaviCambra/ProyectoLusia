@@ -52,13 +52,13 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
 
     private DialogueGraph _graph;
 
-    private readonly Dictionary<CharacterProfile, Image>         _portraitByProfile = new();
-    private readonly Dictionary<CharacterProfile, RectTransform> _rootByProfile     = new();
+    private readonly Dictionary<CharacterDefinition, Image>         _portraitByProfile = new();
+    private readonly Dictionary<CharacterDefinition, RectTransform> _rootByProfile     = new();
     private readonly Dictionary<Image, SpecialAnimState> _specialGraphs    = new();
     private readonly HashSet<Image>                      _persistentEmotes  = new();
     private readonly Dictionary<RectTransform, Coroutine> _placementCo = new();
     private readonly Dictionary<RectTransform, Coroutine> _scaleCo     = new();
-    private readonly Dictionary<CharacterProfile, TaskCompletionSource<bool>> _placementTcs = new();
+    private readonly Dictionary<CharacterDefinition, TaskCompletionSource<bool>> _placementTcs = new();
 
     private struct Pose
     {
@@ -108,7 +108,7 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         await RunPlacementAsync(module, rootRt);
     }
 
-    public void PlaySpecialAnimation(CharacterProfile profile, AnimationClip clip, float speed, bool loop, bool persistent = false)
+    public void PlaySpecialAnimation(CharacterDefinition profile, AnimationClip clip, float speed, bool loop, bool persistent = false)
     {
         if (profile == null || !_portraitByProfile.TryGetValue(profile, out var img) || !img) return;
         if (persistent) _persistentEmotes.Add(img);
@@ -116,7 +116,7 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         PlaySpecial(img, clip, speed, loop);
     }
 
-    public void StopSpecialAnimation(CharacterProfile profile)
+    public void StopSpecialAnimation(CharacterDefinition profile)
     {
         if (profile == null || !_portraitByProfile.TryGetValue(profile, out var img) || !img) return;
         _persistentEmotes.Remove(img);
@@ -228,14 +228,14 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
 
     #region Orden, tinte y escala
 
-    private void BringOnTop(CharacterProfile profile)
+    private void BringOnTop(CharacterDefinition profile)
     {
         if (profile == null) return;
         if (_portraitByProfile.TryGetValue(profile, out var img) && img)
             img.transform.SetAsLastSibling();
     }
 
-    private void UpdateTint(CharacterProfile current)
+    private void UpdateTint(CharacterDefinition current)
     {
         if (_portraitByProfile.Count == 0) return;
         foreach (var kv in _portraitByProfile)
@@ -246,7 +246,7 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
         }
     }
 
-    private void UpdateScale(CharacterProfile current)
+    private void UpdateScale(CharacterDefinition current)
     {
         if (_portraitByProfile.Count == 0) return;
         foreach (var kv in _portraitByProfile)
@@ -372,7 +372,7 @@ public sealed class PortraitController : MonoBehaviour, IPortraitController
     }
 
     private IEnumerator CoPlaceAndComplete(RectTransform rt, CanvasGroup cg, Pose from, Pose to, float speed,
-        CharacterProfile profile, TaskCompletionSource<bool> tcs)
+        CharacterDefinition profile, TaskCompletionSource<bool> tcs)
     {
         yield return CoPlace(rt, cg, from, to, speed);
         _placementCo.Remove(rt);
