@@ -37,10 +37,15 @@ public class ChatUI : MonoBehaviour, IChatPresenter
     [Header("Indicador de escritura")]
     [SerializeField] private TypingBubble typingBubblePrefab;
 
-    [Header("Opciones")]
+    [Header("Opciones de texto")]
     [SerializeField] private Transform            choicesParent;
     [SerializeField] private Button               choiceButtonPrefab;
     [SerializeField] private ChoicesPanelAnimator choicesAnimator;
+
+    [Header("Opciones de imagen")]
+    [SerializeField] private Transform            imageChoicesParent;
+    [SerializeField] private ImageChoiceButton    imageChoiceButtonPrefab;
+    [SerializeField] private ChoicesPanelAnimator imageChoicesAnimator;
 
     private Dictionary<ChatContentType, BubblePrefabMapping> _bubbleMap;
     private TaskCompletionSource<int>                        _choiceTcs;
@@ -96,6 +101,32 @@ public class ChatUI : MonoBehaviour, IChatPresenter
         }
     }
 
+    public async Task<int> ShowImageChoicesAsync(IReadOnlyList<ImageChoiceModule.ImageChoiceData> choices, CancellationToken ct)
+    {
+        _choiceTcs = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        for (int i = 0; i < choices.Count; i++)
+        {
+            var idx = i;
+            var btn = Instantiate(imageChoiceButtonPrefab, imageChoicesParent);
+            btn.Set(choices[i].sprite, () => SelectChoice(idx));
+        }
+
+        imageChoicesAnimator?.Show();
+
+        using var reg = ct.Register(() =>
+        {
+            _choiceTcs?.TrySetCanceled();
+            if (imageChoicesAnimator) imageChoicesAnimator.HideImmediate();
+            ClearImageChoiceButtons();
+        });
+
+        int result = await _choiceTcs.Task;
+        imageChoicesAnimator?.Hide();
+        ClearImageChoiceButtons();
+        return result;
+    }
+
     public async Task<int> ShowChoicesAsync(IReadOnlyList<ChoiceModule.ChoiceData> choices, CancellationToken ct)
     {
         _choiceTcs = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -131,7 +162,9 @@ public class ChatUI : MonoBehaviour, IChatPresenter
                 Destroy(child.gameObject);
 
         ClearChoiceButtons();
+        ClearImageChoiceButtons();
         choicesAnimator?.HideImmediate();
+        imageChoicesAnimator?.HideImmediate();
     }
 
     // -----------------------------------------------------------------------
@@ -148,6 +181,13 @@ public class ChatUI : MonoBehaviour, IChatPresenter
     {
         if (!choicesParent) return;
         foreach (Transform child in choicesParent)
+            Destroy(child.gameObject);
+    }
+
+    private void ClearImageChoiceButtons()
+    {
+        if (!imageChoicesParent) return;
+        foreach (Transform child in imageChoicesParent)
             Destroy(child.gameObject);
     }
 

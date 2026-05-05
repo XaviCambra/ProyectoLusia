@@ -91,6 +91,23 @@ MonoBehaviour:
     - rid: 1510204080709435476
     - rid: 4079483031377674429
     - rid: 4079483031377674428
+  - GUID: 0adf404b-ca74-42c5-b8a0-3d242c445326
+    nodeRect:
+      serializedVersion: 2
+      x: -250
+      y: 436
+      width: 400
+      height: 947
+    bgColorIndex: 0
+    bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
+    isStart: 1
+    startId: 
+    modules:
+    - rid: 1510204080709435471
+    - rid: 4079483031377674408
+    - rid: 4079483031377674407
+    - rid: 4079483031377674409
+    - rid: 3209439387637776455
   - GUID: 5be5050a-1772-45ff-9c2f-fa7e6cb88ee6
     nodeRect:
       serializedVersion: 2
@@ -107,27 +124,7 @@ MonoBehaviour:
     - rid: 4079483031377674411
     - rid: 1510204106920951901
     - rid: 4079483031377674413
-  - GUID: 0adf404b-ca74-42c5-b8a0-3d242c445326
-    nodeRect:
-      serializedVersion: 2
-      x: -251
-      y: 436
-      width: 400
-      height: 770
-    bgColorIndex: 0
-    bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
-    isStart: 0
-    startId: 
-    modules:
-    - rid: 1510204080709435471
-    - rid: 4079483031377674408
-    - rid: 4079483031377674407
-    - rid: 4079483031377674410
-    - rid: 4079483031377674409
   edges:
-  - fromNodeGUID: 0adf404b-ca74-42c5-b8a0-3d242c445326
-    fromPortName: 01f82a8b
-    toNodeGUID: 5be5050a-1772-45ff-9c2f-fa7e6cb88ee6
   - fromNodeGUID: 2cfe4ca8-e7c5-4d64-a212-f6bda5e68972
     fromPortName: Next
     toNodeGUID: eeba5d35-5e37-47dd-95c7-90f9d6ebe293
@@ -143,6 +140,12 @@ MonoBehaviour:
   - fromNodeGUID: 5be5050a-1772-45ff-9c2f-fa7e6cb88ee6
     fromPortName: Next
     toNodeGUID: 2cfe4ca8-e7c5-4d64-a212-f6bda5e68972
+  - fromNodeGUID: 0adf404b-ca74-42c5-b8a0-3d242c445326
+    fromPortName: 7de46bd9
+    toNodeGUID: 5be5050a-1772-45ff-9c2f-fa7e6cb88ee6
+  - fromNodeGUID: 0adf404b-ca74-42c5-b8a0-3d242c445326
+    fromPortName: bee2e627
+    toNodeGUID: 5be5050a-1772-45ff-9c2f-fa7e6cb88ee6
   frames: []
   references:
     version: 2
@@ -188,6 +191,15 @@ MonoBehaviour:
         runMode: 2
         emoji: {fileID: 8019020588823736630, guid: 0799250051fd8a34cb924887144482db, type: 3}
         isOwn: 1
+    - rid: 3209439387637776455
+      type: {class: ImageChoiceModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        choices:
+        - sprite: {fileID: 7279494265541373513, guid: 59423d3ff44dcd64c867b3a3d6ef51c6, type: 3}
+          portName: 7de46bd9
+        - sprite: {fileID: -3769921367293396773, guid: bef31fc6c02f5fb4ba546b05329b75ee, type: 3}
+          portName: bee2e627
     - rid: 4079483031377674407
       type: {class: TextModule, ns: , asm: Assembly-CSharp}
       data:
@@ -210,26 +222,6 @@ MonoBehaviour:
       data:
         runMode: 2
         duration: 1
-    - rid: 4079483031377674410
-      type: {class: ChoiceModule, ns: , asm: Assembly-CSharp}
-      data:
-        runMode: 2
-        showBlockedChoices: 0
-        choices:
-        - choiceText: I'm good, thanks.
-          portName: 01f82a8b
-          choiceUseLocalization: 0
-          choiceLocKey: 
-          requiresAffinity: 0
-          affinityKey: 
-          requiredAffinity: 0
-          invertRequirement: 0
-          requiresProgress: 0
-          progressMethod: 
-          progressArgType: 0
-          progressArgInt: 0
-          progressArgFloat: 0
-          progressArgString: 
     - rid: 4079483031377674411
       type: {class: TextModule, ns: , asm: Assembly-CSharp}
       data:

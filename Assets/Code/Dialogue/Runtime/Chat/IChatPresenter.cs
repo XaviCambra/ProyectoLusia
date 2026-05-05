@@ -18,8 +18,11 @@ public interface IChatPresenter
     /// </summary>
     Task ShowTypingAsync(CharacterProfile profile, float seconds, CancellationToken ct);
 
-    /// <summary>Presenta las opciones al jugador y devuelve el índice elegido.</summary>
+    /// <summary>Presenta las opciones de texto al jugador y devuelve el índice elegido.</summary>
     Task<int> ShowChoicesAsync(IReadOnlyList<ChoiceModule.ChoiceData> choices, CancellationToken ct);
+
+    /// <summary>Presenta las opciones de imagen al jugador y devuelve el índice elegido.</summary>
+    Task<int> ShowImageChoicesAsync(IReadOnlyList<ImageChoiceModule.ImageChoiceData> choices, CancellationToken ct);
 
     /// <summary>Limpia el historial visible (nuevo chat).</summary>
     void Clear();

@@ -49,8 +49,12 @@ public class DialogueNodeData
     public ChoiceModule GetChoiceModule() =>
         modules?.OfType<ChoiceModule>().FirstOrDefault();
 
-    /// <summary>True si el nodo contiene un ChoiceModule.</summary>
-    public bool IsChoiceNode => GetChoiceModule() != null;
+    /// <summary>Devuelve el primer ImageChoiceModule del nodo, o null si no tiene.</summary>
+    public ImageChoiceModule GetImageChoiceModule() =>
+        modules?.OfType<ImageChoiceModule>().FirstOrDefault();
+
+    /// <summary>True si el nodo contiene un ChoiceModule o ImageChoiceModule.</summary>
+    public bool IsChoiceNode => GetChoiceModule() != null || GetImageChoiceModule() != null;
 
     // ---------- Saneo mínimo ----------
     public void OnValidate()

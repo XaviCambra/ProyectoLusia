@@ -124,7 +124,15 @@ public sealed class ChatRunner : MonoBehaviour
                         ? await _presenter.ShowChoicesAsync(m.choices, ct)
                         : 0;
                     nextPort  = (m.choices.Count > idx) ? m.choices[idx].portName : "Next";
-                    breakLoop = true; // el choice decide la salida; ignorar módulos posteriores
+                    breakLoop = true;
+                    break;
+
+                case ImageChoiceModule m:
+                    var imgIdx = _presenter != null
+                        ? await _presenter.ShowImageChoicesAsync(m.choices, ct)
+                        : 0;
+                    nextPort  = (m.choices.Count > imgIdx) ? m.choices[imgIdx].portName : "Next";
+                    breakLoop = true;
                     break;
 
                 case EventDispatcherModule m:

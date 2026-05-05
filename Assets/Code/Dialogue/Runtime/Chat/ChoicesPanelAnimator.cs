@@ -2,7 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Muestra y oculta el ChoicesPanel ajustando su altura al contenido de forma inmediata.
+/// Muestra y oculta el ChoicesPanel activando/desactivando su GameObject.
+/// Cuando está inactivo no ocupa espacio en el layout del padre.
 /// </summary>
 [RequireComponent(typeof(LayoutElement))]
 public sealed class ChoicesPanelAnimator : MonoBehaviour
@@ -18,12 +19,14 @@ public sealed class ChoicesPanelAnimator : MonoBehaviour
     {
         _layout     = GetComponent<LayoutElement>();
         _parentRect = transform.parent as RectTransform;
-        _layout.preferredHeight = 0f;
         if (divider) divider.SetActive(false);
     }
 
     public void Show()
     {
+        // SetActive(true) llama a Awake si aún no se había ejecutado
+        gameObject.SetActive(true);
+
         if (contentRect) LayoutRebuilder.ForceRebuildLayoutImmediate(contentRect);
         _layout.preferredHeight = contentRect
             ? LayoutUtility.GetPreferredHeight(contentRect)
@@ -36,8 +39,8 @@ public sealed class ChoicesPanelAnimator : MonoBehaviour
 
     public void HideImmediate()
     {
-        _layout.preferredHeight = 0f;
-        if (_parentRect) LayoutRebuilder.MarkLayoutForRebuild(_parentRect);
         if (divider) divider.SetActive(false);
+        gameObject.SetActive(false);
+        if (_parentRect) LayoutRebuilder.MarkLayoutForRebuild(_parentRect);
     }
 }

@@ -29,6 +29,7 @@ public static class ModuleDrawerRegistry
         Register<ProfileModule>(ProfileModuleDrawer.Draw);
         Register<EmojiModule>(EmojiModuleDrawer.Draw);
         Register<ImageModule>(ImageModuleDrawer.Draw);
+        Register<ImageChoiceModule>(ImageChoiceModuleDrawer.Draw);
     }
 
     /// <summary>
@@ -69,6 +70,7 @@ public static class ModuleDrawerRegistry
         ["Profile"]           = typeof(ProfileModule),
         ["Emoji"]             = typeof(EmojiModule),
         ["Image"]             = typeof(ImageModule),
+        ["Image Choice"]      = typeof(ImageChoiceModule),
     };
 }
 #endif
