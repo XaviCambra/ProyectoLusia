@@ -13,6 +13,20 @@ public sealed class CharacterDefinitionEditor : Editor
     private SerializedObject     _mapSO;
     private bool                 _multipleMapWarning;
 
+    private GUIStyle _rowStyle;
+    private GUIStyle RowStyle => _rowStyle ??= new GUIStyle(EditorStyles.helpBox)
+    {
+        padding = new RectOffset(10, 10, 10, 10)
+    };
+
+    private GUIStyle _deleteButtonStyle;
+    private GUIStyle DeleteButtonStyle => _deleteButtonStyle ??= new GUIStyle(EditorStyles.miniButton)
+    {
+        margin = new RectOffset(4, 0, 2, 2)
+    };
+
+    private float _rowContentHeight = IconSize;
+
     // Estado UI para añadir relaciones
     private CharacterDefinition _addOutTarget;
     private int                 _addOutPoints;
@@ -117,6 +131,7 @@ public sealed class CharacterDefinitionEditor : Editor
 
             if (!matches) continue;
 
+            if (hasAny) EditorGUILayout.Space(4);
             hasAny = true;
             var other = outgoing ? toObj : fromObj;
 
@@ -148,22 +163,31 @@ public sealed class CharacterDefinitionEditor : Editor
         int    gMax     = _map.schema.globalMax;
         var    band     = _map.schema.GetBandForPoints(points, trackId);
 
+        bool multiTrack  = _map.schema.Tracks.Count > 1;
         bool wantsDelete = false;
 
-        using (new EditorGUILayout.HorizontalScope(EditorStyles.helpBox))
+        using (new EditorGUILayout.HorizontalScope(RowStyle))
         {
-            // Icono
-            var iconRect = GUILayoutUtility.GetRect(IconSize, IconSize,
-                GUILayout.Width(IconSize), GUILayout.Height(IconSize));
+            // Icono — ancho = alto cacheado del frame anterior → siempre cuadrado
+            var iconRect = GUILayoutUtility.GetRect(
+                _rowContentHeight, _rowContentHeight,
+                GUILayout.Width(_rowContentHeight), GUILayout.ExpandHeight(true));
+
+            if (Event.current.type == EventType.Repaint)
+                _rowContentHeight = iconRect.height;
+
             if (other.icon != null)
                 GUI.DrawTexture(iconRect, other.icon.texture, ScaleMode.ScaleToFit);
             else
                 EditorGUI.DrawRect(iconRect, new Color(0.22f, 0.22f, 0.22f));
 
+            GUILayout.Space(6);
+
             using (new EditorGUILayout.VerticalScope())
             {
                 using (new EditorGUILayout.HorizontalScope())
                 {
+                    GUILayout.Space(-1);
                     EditorGUILayout.LabelField(other.displayName, EditorStyles.boldLabel);
 
                     if (band != null)
@@ -174,8 +198,7 @@ public sealed class CharacterDefinitionEditor : Editor
                         GUI.contentColor = prev;
                     }
 
-                    // Label de track (gris, solo si hay más de uno)
-                    if (_map.schema.Tracks.Count > 1)
+                    if (multiTrack)
                     {
                         var track = _map.schema.GetTrack(trackId);
                         if (track != null)
@@ -188,20 +211,25 @@ public sealed class CharacterDefinitionEditor : Editor
                     }
 
                     GUILayout.FlexibleSpace();
-                    if (GUILayout.Button("✕", EditorStyles.miniButton, GUILayout.Width(22)))
+                    if (GUILayout.Button("✕", DeleteButtonStyle, GUILayout.Width(22)))
                         wantsDelete = true;
                 }
 
+                EditorGUILayout.Space(4);
                 DrawBar(points, gMin, gMax, trackId);
+                EditorGUILayout.Space(5);
 
                 EditorGUI.BeginChangeCheck();
-                int newVal = EditorGUILayout.IntSlider(points, gMin, gMax);
+                Rect sliderRect = GUILayoutUtility.GetRect(0, EditorGUIUtility.singleLineHeight, GUILayout.ExpandWidth(true));
+                int newVal = EditorGUI.IntSlider(sliderRect, points, gMin, gMax);
                 if (EditorGUI.EndChangeCheck())
                     pointsProp.intValue = newVal;
 
-                // Popup de track (solo si hay más de uno)
-                if (_map.schema.Tracks.Count > 1)
+                if (multiTrack)
+                {
+                    EditorGUILayout.Space(5);
                     DrawTrackPopup(trackIdProp, trackId);
+                }
             }
         }
 
@@ -246,14 +274,7 @@ public sealed class CharacterDefinitionEditor : Editor
 
             if (_map.schema.Tracks.Count > 1)
             {
-                var tracks     = _map.schema.Tracks;
-                var trackIds   = new string[tracks.Count];
-                var trackNames = new string[tracks.Count];
-                for (int i = 0; i < tracks.Count; i++)
-                {
-                    trackIds[i]   = tracks[i].id;
-                    trackNames[i] = tracks[i].displayName;
-                }
+                BuildTrackArrays(out var trackIds, out var trackNames);
                 int currIdx = System.Array.IndexOf(trackIds, addTrack);
                 if (currIdx < 0) currIdx = 0;
                 int newIdx = EditorGUILayout.Popup("Track", currIdx, trackNames);
@@ -325,20 +346,28 @@ public sealed class CharacterDefinitionEditor : Editor
     // Helpers de UI
     // -----------------------------------------------------------------------
 
-    private void DrawTrackPopup(SerializedProperty trackIdProp, string currentTrackId)
+    private void BuildTrackArrays(out string[] ids, out string[] names)
     {
-        var tracks     = _map.schema.Tracks;
-        var trackIds   = new string[tracks.Count];
-        var trackNames = new string[tracks.Count];
+        var tracks = _map.schema.Tracks;
+        ids   = new string[tracks.Count];
+        names = new string[tracks.Count];
         for (int i = 0; i < tracks.Count; i++)
         {
-            trackIds[i]   = tracks[i].id;
-            trackNames[i] = tracks[i].displayName;
+            ids[i]   = tracks[i].id;
+            names[i] = tracks[i].displayName;
         }
+    }
+
+    private void DrawTrackPopup(SerializedProperty trackIdProp, string currentTrackId)
+    {
+        BuildTrackArrays(out var trackIds, out var trackNames);
         int currIdx = System.Array.IndexOf(trackIds, currentTrackId);
         if (currIdx < 0) currIdx = 0;
         EditorGUI.BeginChangeCheck();
-        int newIdx = EditorGUILayout.Popup("Track", currIdx, trackNames);
+        Rect popupRect = GUILayoutUtility.GetRect(0, EditorGUIUtility.singleLineHeight, GUILayout.ExpandWidth(true));
+        popupRect.x     -= 1;
+        popupRect.width += 1;
+        int newIdx = EditorGUI.Popup(popupRect, "Track", currIdx, trackNames);
         if (EditorGUI.EndChangeCheck())
             trackIdProp.stringValue = trackIds[newIdx];
     }

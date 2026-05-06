@@ -10,7 +10,6 @@ using System.Linq;
 public sealed class AffinityMapService : IAffinityService
 {
     private readonly AffinitySchema       _schema;
-    private readonly CharacterDatabase    _db;
     private readonly IAffinityPersistence _persistence;
 
     // Estado runtime — clave: (fromId, toId) → (puntos, trackId)
@@ -21,11 +20,9 @@ public sealed class AffinityMapService : IAffinityService
 
     public AffinityMapService(
         CharacterAffinityMap  map,
-        CharacterDatabase     db,
         IAffinityPersistence  persistence = null)
     {
         _schema      = map.schema;
-        _db          = db;
         _persistence = persistence;
         _data        = new Dictionary<(string, string), (int, string)>(64);
 
@@ -59,34 +56,6 @@ public sealed class AffinityMapService : IAffinityService
     {
         if (!from || !to) return DefaultTrackId;
         return _data.TryGetValue(Key(from, to), out var s) ? s.trackId : DefaultTrackId;
-    }
-
-    public IEnumerable<(CharacterDefinition to, int points, AffinityBand level)>
-        GetRelationshipsFrom(CharacterDefinition from)
-    {
-        if (!from) yield break;
-        string fromId = from.CharacterId;
-        foreach (var kvp in _data)
-        {
-            if (kvp.Key.Item1 != fromId) continue;
-            var to = _db.GetById(kvp.Key.Item2);
-            if (!to) continue;
-            yield return (to, kvp.Value.points, _schema?.GetBandForPoints(kvp.Value.points, kvp.Value.trackId));
-        }
-    }
-
-    public IEnumerable<(CharacterDefinition from, int points, AffinityBand level)>
-        GetRelationshipsTo(CharacterDefinition to)
-    {
-        if (!to) yield break;
-        string toId = to.CharacterId;
-        foreach (var kvp in _data)
-        {
-            if (kvp.Key.Item2 != toId) continue;
-            var from = _db.GetById(kvp.Key.Item1);
-            if (!from) continue;
-            yield return (from, kvp.Value.points, _schema?.GetBandForPoints(kvp.Value.points, kvp.Value.trackId));
-        }
     }
 
     // -----------------------------------------------------------------------

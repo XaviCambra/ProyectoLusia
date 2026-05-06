@@ -8,7 +8,6 @@ using UnityEngine;
 public sealed class AffinityServiceBootstrapper : MonoBehaviour
 {
     [SerializeField] private CharacterAffinityMap map;
-    [SerializeField] private CharacterDatabase    characterDatabase;
     [SerializeField] private string               saveFileName = "affinity.json";
 
     public static IAffinityService Service { get; private set; }
@@ -26,7 +25,7 @@ public sealed class AffinityServiceBootstrapper : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         var persistence = new JsonAffinityPersistence(saveFileName);
-        _service = new AffinityMapService(map, characterDatabase, persistence);
+        _service = new AffinityMapService(map, persistence);
         _service.Load();
 
         Service = _service;

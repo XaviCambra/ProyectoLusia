@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 public interface IAffinityService
 {
@@ -16,14 +15,6 @@ public interface IAffinityService
 
     /// <summary>Track de relación activo para este par. Devuelve defaultTrackId si no hay entrada.</summary>
     string       GetTrack(CharacterDefinition from, CharacterDefinition to);
-
-    /// <summary>Todas las relaciones que 'from' tiene hacia otros personajes.</summary>
-    IEnumerable<(CharacterDefinition to, int points, AffinityBand level)>
-        GetRelationshipsFrom(CharacterDefinition from);
-
-    /// <summary>Todas las relaciones de otros personajes hacia 'to'.</summary>
-    IEnumerable<(CharacterDefinition from, int points, AffinityBand level)>
-        GetRelationshipsTo(CharacterDefinition to);
 
     // --- Modificación ---
 
