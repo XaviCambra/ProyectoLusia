@@ -104,17 +104,11 @@ public sealed class AffinitySchema : ScriptableObject
     public int globalMin    = -100;
     public int globalMax    =  100;
 
-    [Header("Puntos de una relación nueva sin datos guardados")]
-    public int defaultPoints = 0;
-
-    [Header("Track usado cuando una relación no tiene track asignado")]
-    public string defaultTrackId = "default";
-
     [SerializeField] private List<AffinityTrack> tracks = new();
 
     public IReadOnlyList<AffinityTrack> Tracks => tracks;
 
-    /// <summary>Devuelve el track con el id indicado, o el defaultTrack, o el primero disponible.</summary>
+    /// <summary>Devuelve el track con el id indicado, o el primero disponible.</summary>
     public AffinityTrack GetTrack(string trackId)
     {
         if (!string.IsNullOrEmpty(trackId))
@@ -122,17 +116,16 @@ public sealed class AffinitySchema : ScriptableObject
             var t = tracks.Find(x => x.id == trackId);
             if (t != null) return t;
         }
-        var def = tracks.Find(x => x.id == defaultTrackId);
-        return def ?? tracks.FirstOrDefault();
+        return tracks.FirstOrDefault();
     }
 
-    /// <summary>Devuelve el AffinityBand para los puntos dados en el track indicado (o el track por defecto).</summary>
+    /// <summary>Devuelve el AffinityBand para los puntos dados en el track indicado (o el primero).</summary>
     public AffinityBand GetBandForPoints(int points, string trackId = null)
-        => GetTrack(trackId ?? defaultTrackId)?.GetBandForPoints(points);
+        => GetTrack(trackId)?.GetBandForPoints(points);
 
     /// <summary>Color interpolado entre bands vecinas para los puntos dados en el track indicado.</summary>
     public Color GetColorForPoints(int points, string trackId = null)
-        => GetTrack(trackId ?? defaultTrackId)?.GetColorForPoints(points) ?? Color.gray;
+        => GetTrack(trackId)?.GetColorForPoints(points) ?? Color.gray;
 
     private void OnEnable()   => InvalidateAllCaches();
     private void OnValidate() => InvalidateAllCaches();

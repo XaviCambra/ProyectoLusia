@@ -51,7 +51,7 @@ MonoBehaviour:
       minInclusive: 80
       maxExclusive: 101
   - id: love
-    displayName: Amor
+    displayName: Love
     bands:
     - name: Odio
       localizationKey: 

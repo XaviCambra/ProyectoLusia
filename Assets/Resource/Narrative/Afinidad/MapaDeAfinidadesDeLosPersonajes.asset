@@ -17,11 +17,11 @@ MonoBehaviour:
   - from: {fileID: 11400000, guid: e744c8cb8231bfd4f8e1adca3bdc2b82, type: 2}
     to: {fileID: 11400000, guid: 1b09f8852bf5d2c4583b3524efbd8f95, type: 2}
     points: 23
-    trackId: default
+    trackId: social
   - from: {fileID: 11400000, guid: e744c8cb8231bfd4f8e1adca3bdc2b82, type: 2}
     to: {fileID: 11400000, guid: 47d22d363a3c5f347adff1cd49c8c3e9, type: 2}
     points: -47
-    trackId: default
+    trackId: social
   - from: {fileID: 11400000, guid: e744c8cb8231bfd4f8e1adca3bdc2b82, type: 2}
     to: {fileID: 11400000, guid: c359a6749d86a6d4face7e0153a1191e, type: 2}
     points: 24

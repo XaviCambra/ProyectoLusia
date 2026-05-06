@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -272,7 +273,7 @@ public sealed class CharacterDefinitionEditor : Editor
                                  addPts, addTrack);
                         addTarget = null;
                         addPts    = 0;
-                        addTrack  = _map.schema.defaultTrackId;
+                        addTrack  = _map.schema.Tracks.FirstOrDefault()?.id ?? "default";
                         show      = false;
                     }
                 }
@@ -307,7 +308,7 @@ public sealed class CharacterDefinitionEditor : Editor
         newEntry.FindPropertyRelative("from").objectReferenceValue = from;
         newEntry.FindPropertyRelative("to").objectReferenceValue   = to;
         newEntry.FindPropertyRelative("points").intValue           = points;
-        newEntry.FindPropertyRelative("trackId").stringValue       = trackId ?? _map.schema.defaultTrackId;
+        newEntry.FindPropertyRelative("trackId").stringValue       = trackId ?? _map.schema.Tracks.FirstOrDefault()?.id ?? "default";
 
         _mapSO.ApplyModifiedProperties();
     }

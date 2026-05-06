@@ -7,17 +7,13 @@ public sealed class AffinitySchemaEditor : Editor
 {
     private SerializedProperty _globalMin;
     private SerializedProperty _globalMax;
-    private SerializedProperty _defaultPoints;
-    private SerializedProperty _defaultTrackId;
     private SerializedProperty _tracks;
 
     private void OnEnable()
     {
-        _globalMin      = serializedObject.FindProperty("globalMin");
-        _globalMax      = serializedObject.FindProperty("globalMax");
-        _defaultPoints  = serializedObject.FindProperty("defaultPoints");
-        _defaultTrackId = serializedObject.FindProperty("defaultTrackId");
-        _tracks         = serializedObject.FindProperty("tracks");
+        _globalMin = serializedObject.FindProperty("globalMin");
+        _globalMax = serializedObject.FindProperty("globalMax");
+        _tracks    = serializedObject.FindProperty("tracks");
     }
 
     public override void OnInspectorGUI()
@@ -47,33 +43,6 @@ public sealed class AffinitySchemaEditor : Editor
             _globalMax.intValue = EditorGUILayout.IntField(_globalMax.intValue, GUILayout.Width(60));
         }
 
-        EditorGUILayout.PropertyField(_defaultPoints, new GUIContent("Puntos iniciales"));
-        DrawDefaultTrackDropdown();
-    }
-
-    private void DrawDefaultTrackDropdown()
-    {
-        int count = _tracks.arraySize;
-        if (count == 0)
-        {
-            EditorGUILayout.PropertyField(_defaultTrackId, new GUIContent("Track por defecto"));
-            return;
-        }
-
-        var ids   = new string[count];
-        var names = new string[count];
-        for (int i = 0; i < count; i++)
-        {
-            var t  = _tracks.GetArrayElementAtIndex(i);
-            ids[i]   = t.FindPropertyRelative("id").stringValue;
-            names[i] = t.FindPropertyRelative("displayName").stringValue;
-            if (string.IsNullOrEmpty(names[i])) names[i] = ids[i];
-        }
-
-        int current  = System.Array.IndexOf(ids, _defaultTrackId.stringValue);
-        if (current < 0) current = 0;
-        int selected = EditorGUILayout.Popup("Track por defecto", current, names);
-        _defaultTrackId.stringValue = ids[selected];
     }
 
     // -----------------------------------------------------------------------

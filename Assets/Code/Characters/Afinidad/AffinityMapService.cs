@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// Implementación de IAffinityService con lookups O(1) mediante Dictionary.
@@ -37,8 +38,8 @@ public sealed class AffinityMapService : IAffinityService
 
     public int GetPoints(CharacterDefinition from, CharacterDefinition to)
     {
-        if (!from || !to) return DefaultPoints;
-        return _data.TryGetValue(Key(from, to), out var s) ? s.points : DefaultPoints;
+        if (!from || !to) return 0;
+        return _data.TryGetValue(Key(from, to), out var s) ? s.points : 0;
     }
 
     public AffinityBand GetLevel(CharacterDefinition from, CharacterDefinition to)
@@ -122,7 +123,7 @@ public sealed class AffinityMapService : IAffinityService
         if (!from || !to) return;
         string resolved = string.IsNullOrEmpty(trackId) ? DefaultTrackId : trackId;
         var    key      = Key(from, to);
-        int    points   = _data.TryGetValue(key, out var s) ? s.points : DefaultPoints;
+        int    points   = _data.TryGetValue(key, out var s) ? s.points : 0;
         _data[key] = (points, resolved);
     }
 
@@ -150,8 +151,7 @@ public sealed class AffinityMapService : IAffinityService
     // Internos
     // -----------------------------------------------------------------------
 
-    private int    DefaultPoints  => _schema?.defaultPoints  ?? 0;
-    private string DefaultTrackId => _schema?.defaultTrackId ?? "default";
+    private string DefaultTrackId => _schema?.Tracks.FirstOrDefault()?.id ?? "default";
 
     private static (string, string) Key(CharacterDefinition from, CharacterDefinition to)
         => (from.CharacterId, to.CharacterId);

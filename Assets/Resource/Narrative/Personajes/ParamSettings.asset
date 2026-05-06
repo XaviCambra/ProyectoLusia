@@ -10,14 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 20fcbd07b39e6c04e800cc58ca064c55, type: 3}
-  m_Name: ParamSettingsTest
+  m_Name: ParamSettings
   m_EditorClassIdentifier: 
-  floats:
-  - key: Guille
-    value: 5
-  - key: Dark
-    value: 13
-  - key: Sora
-    value: 29
-  colors: []
-  curves: []
+  floats: []
