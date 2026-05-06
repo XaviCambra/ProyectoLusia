@@ -3,18 +3,17 @@ using System.Collections.Generic;
 
 /// <summary>
 /// Implementación de IAffinityService con lookups O(1) mediante Dictionary.
-/// Todo el estado mutable vive aquí en memoria — el CharacterAffinityMap SO es solo
-/// datos de diseño (estado inicial) y nunca se modifica en runtime.
+/// Cada par almacena (points, trackId) — el track determina qué línea de progreso sigue la relación.
+/// El CharacterAffinityMap SO es solo datos de diseño (estado inicial) y nunca se modifica en runtime.
 /// </summary>
 public sealed class AffinityMapService : IAffinityService
 {
     private readonly AffinitySchema       _schema;
     private readonly CharacterDatabase    _db;
-    private readonly AffinitySymmetry     _symmetry;
     private readonly IAffinityPersistence _persistence;
 
-    // Estado runtime — clave: (fromId GUID, toId GUID) → puntos
-    private readonly Dictionary<(string, string), int> _data;
+    // Estado runtime — clave: (fromId, toId) → (puntos, trackId)
+    private readonly Dictionary<(string, string), (int points, string trackId)> _data;
 
     public event Action<AffinityChangedArgs>      OnAffinityChanged;
     public event Action<AffinityLevelChangedArgs> OnLevelChanged;
@@ -26,9 +25,8 @@ public sealed class AffinityMapService : IAffinityService
     {
         _schema      = map.schema;
         _db          = db;
-        _symmetry    = map.symmetry;
         _persistence = persistence;
-        _data        = new Dictionary<(string, string), int>(64);
+        _data        = new Dictionary<(string, string), (int, string)>(64);
 
         InitializeFromMap(map);
     }
@@ -40,16 +38,26 @@ public sealed class AffinityMapService : IAffinityService
     public int GetPoints(CharacterDefinition from, CharacterDefinition to)
     {
         if (!from || !to) return DefaultPoints;
-        return _data.TryGetValue(Key(from, to), out int p) ? p : DefaultPoints;
+        return _data.TryGetValue(Key(from, to), out var s) ? s.points : DefaultPoints;
     }
 
     public AffinityBand GetLevel(CharacterDefinition from, CharacterDefinition to)
-        => _schema?.GetBandForPoints(GetPoints(from, to));
+    {
+        if (!from || !to) return null;
+        var trackId = _data.TryGetValue(Key(from, to), out var s) ? s.trackId : DefaultTrackId;
+        return _schema?.GetBandForPoints(GetPoints(from, to), trackId);
+    }
 
     public bool HasRelationship(CharacterDefinition from, CharacterDefinition to)
     {
         if (!from || !to) return false;
         return _data.ContainsKey(Key(from, to));
+    }
+
+    public string GetTrack(CharacterDefinition from, CharacterDefinition to)
+    {
+        if (!from || !to) return DefaultTrackId;
+        return _data.TryGetValue(Key(from, to), out var s) ? s.trackId : DefaultTrackId;
     }
 
     public IEnumerable<(CharacterDefinition to, int points, AffinityBand level)>
@@ -62,7 +70,7 @@ public sealed class AffinityMapService : IAffinityService
             if (kvp.Key.Item1 != fromId) continue;
             var to = _db.GetById(kvp.Key.Item2);
             if (!to) continue;
-            yield return (to, kvp.Value, _schema?.GetBandForPoints(kvp.Value));
+            yield return (to, kvp.Value.points, _schema?.GetBandForPoints(kvp.Value.points, kvp.Value.trackId));
         }
     }
 
@@ -76,7 +84,7 @@ public sealed class AffinityMapService : IAffinityService
             if (kvp.Key.Item2 != toId) continue;
             var from = _db.GetById(kvp.Key.Item1);
             if (!from) continue;
-            yield return (from, kvp.Value, _schema?.GetBandForPoints(kvp.Value));
+            yield return (from, kvp.Value.points, _schema?.GetBandForPoints(kvp.Value.points, kvp.Value.trackId));
         }
     }
 
@@ -93,7 +101,6 @@ public sealed class AffinityMapService : IAffinityService
         int          clamped   = Clamp(points);
 
         Write(from, to, clamped);
-
         FireEvents(from, to, oldPoints, clamped, oldLevel);
     }
 
@@ -106,9 +113,17 @@ public sealed class AffinityMapService : IAffinityService
         int          clamped   = Clamp(oldPoints + delta);
 
         Write(from, to, clamped);
-
         FireEvents(from, to, oldPoints, clamped, oldLevel);
         return clamped;
+    }
+
+    public void SetTrack(CharacterDefinition from, CharacterDefinition to, string trackId)
+    {
+        if (!from || !to) return;
+        string resolved = string.IsNullOrEmpty(trackId) ? DefaultTrackId : trackId;
+        var    key      = Key(from, to);
+        int    points   = _data.TryGetValue(key, out var s) ? s.points : DefaultPoints;
+        _data[key] = (points, resolved);
     }
 
     // -----------------------------------------------------------------------
@@ -122,11 +137,11 @@ public sealed class AffinityMapService : IAffinityService
         if (_persistence == null) return;
 
         var saved = _persistence.Load();
-        if (saved == null) return; // sin archivo → mantener estado inicial del SO
+        if (saved == null) return;
 
         _data.Clear();
         foreach (var kvp in saved)
-            _data[kvp.Key] = Clamp(kvp.Value);
+            _data[kvp.Key] = (Clamp(kvp.Value.points), kvp.Value.trackId ?? DefaultTrackId);
     }
 
     public void ResetAll() => _data.Clear();
@@ -135,7 +150,8 @@ public sealed class AffinityMapService : IAffinityService
     // Internos
     // -----------------------------------------------------------------------
 
-    private int DefaultPoints => _schema?.defaultPoints ?? 0;
+    private int    DefaultPoints  => _schema?.defaultPoints  ?? 0;
+    private string DefaultTrackId => _schema?.defaultTrackId ?? "default";
 
     private static (string, string) Key(CharacterDefinition from, CharacterDefinition to)
         => (from.CharacterId, to.CharacterId);
@@ -146,11 +162,12 @@ public sealed class AffinityMapService : IAffinityService
         return Math.Clamp(points, _schema.globalMin, _schema.globalMax);
     }
 
+    // Write preserva el trackId existente; solo actualiza los puntos.
     private void Write(CharacterDefinition from, CharacterDefinition to, int points)
     {
-        _data[Key(from, to)] = points;
-        if (_symmetry == AffinitySymmetry.Mirror)
-            _data[Key(to, from)] = points;
+        var key     = Key(from, to);
+        var trackId = _data.TryGetValue(key, out var s) ? s.trackId : DefaultTrackId;
+        _data[key] = (points, trackId);
     }
 
     private void FireEvents(CharacterDefinition from, CharacterDefinition to,
@@ -170,10 +187,9 @@ public sealed class AffinityMapService : IAffinityService
         foreach (var entry in map.InitialEntries)
         {
             if (!entry.from || !entry.to) continue;
-            int clamped = Clamp(entry.points);
-            _data[Key(entry.from, entry.to)] = clamped;
-            if (_symmetry == AffinitySymmetry.Mirror && !_data.ContainsKey(Key(entry.to, entry.from)))
-                _data[Key(entry.to, entry.from)] = clamped;
+            int    clamped = Clamp(entry.points);
+            string track   = string.IsNullOrEmpty(entry.trackId) ? DefaultTrackId : entry.trackId;
+            _data[Key(entry.from, entry.to)] = (clamped, track);
         }
     }
 }

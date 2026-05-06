@@ -15,10 +15,12 @@ public sealed class CharacterDefinitionEditor : Editor
     // Estado UI para añadir relaciones
     private CharacterDefinition _addOutTarget;
     private int                 _addOutPoints;
+    private string              _addOutTrackId = "default";
     private bool                _showAddOut;
 
     private CharacterDefinition _addInTarget;
     private int                 _addInPoints;
+    private string              _addInTrackId  = "default";
     private bool                _showAddIn;
 
     private void OnEnable()
@@ -99,8 +101,8 @@ public sealed class CharacterDefinitionEditor : Editor
         EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
 
         var entries = _mapSO.FindProperty("entries");
-        bool hasAny     = false;
-        int  deleteAt   = -1;
+        bool hasAny   = false;
+        int  deleteAt = -1;
 
         for (int i = 0; i < entries.arraySize; i++)
         {
@@ -137,11 +139,13 @@ public sealed class CharacterDefinitionEditor : Editor
     /// <returns>True si el usuario pulsó Eliminar.</returns>
     private bool DrawEditableRow(SerializedProperty entry, CharacterDefinition other)
     {
-        var pointsProp = entry.FindPropertyRelative("points");
-        int points     = pointsProp.intValue;
-        int gMin       = _map.schema.globalMin;
-        int gMax       = _map.schema.globalMax;
-        var band       = _map.schema.GetBandForPoints(points);
+        var pointsProp  = entry.FindPropertyRelative("points");
+        var trackIdProp = entry.FindPropertyRelative("trackId");
+        int    points   = pointsProp.intValue;
+        string trackId  = trackIdProp.stringValue;
+        int    gMin     = _map.schema.globalMin;
+        int    gMax     = _map.schema.globalMax;
+        var    band     = _map.schema.GetBandForPoints(points, trackId);
 
         bool wantsDelete = false;
 
@@ -157,17 +161,29 @@ public sealed class CharacterDefinitionEditor : Editor
 
             using (new EditorGUILayout.VerticalScope())
             {
-                // Nombre + nivel coloreado
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     EditorGUILayout.LabelField(other.displayName, EditorStyles.boldLabel);
 
                     if (band != null)
                     {
-                        var prev  = GUI.contentColor;
+                        var prev = GUI.contentColor;
                         GUI.contentColor = band.color;
                         EditorGUILayout.LabelField(band.name, EditorStyles.boldLabel, GUILayout.Width(110));
                         GUI.contentColor = prev;
+                    }
+
+                    // Label de track (gris, solo si hay más de uno)
+                    if (_map.schema.Tracks.Count > 1)
+                    {
+                        var track = _map.schema.GetTrack(trackId);
+                        if (track != null)
+                        {
+                            var prev = GUI.contentColor;
+                            GUI.contentColor = new Color(0.55f, 0.55f, 0.55f);
+                            EditorGUILayout.LabelField($"[{track.displayName}]", EditorStyles.miniLabel, GUILayout.Width(80));
+                            GUI.contentColor = prev;
+                        }
                     }
 
                     GUILayout.FlexibleSpace();
@@ -175,14 +191,16 @@ public sealed class CharacterDefinitionEditor : Editor
                         wantsDelete = true;
                 }
 
-                // Barra de progreso
-                DrawBar(points, gMin, gMax, band);
+                DrawBar(points, gMin, gMax, trackId);
 
-                // Slider editable + valor numérico
                 EditorGUI.BeginChangeCheck();
                 int newVal = EditorGUILayout.IntSlider(points, gMin, gMax);
                 if (EditorGUI.EndChangeCheck())
                     pointsProp.intValue = newVal;
+
+                // Popup de track (solo si hay más de uno)
+                if (_map.schema.Tracks.Count > 1)
+                    DrawTrackPopup(trackIdProp, trackId);
             }
         }
 
@@ -195,9 +213,10 @@ public sealed class CharacterDefinitionEditor : Editor
 
     private void DrawAddPanel(CharacterDefinition character, bool outgoing)
     {
-        ref bool        show   = ref outgoing ? ref _showAddOut : ref _showAddIn;
-        ref CharacterDefinition addTarget = ref outgoing ? ref _addOutTarget : ref _addInTarget;
-        ref int         addPts = ref outgoing ? ref _addOutPoints : ref _addInPoints;
+        ref bool                show     = ref outgoing ? ref _showAddOut : ref _showAddIn;
+        ref CharacterDefinition addTarget= ref outgoing ? ref _addOutTarget : ref _addInTarget;
+        ref int                 addPts   = ref outgoing ? ref _addOutPoints : ref _addInPoints;
+        ref string              addTrack = ref outgoing ? ref _addOutTrackId : ref _addInTrackId;
 
         if (!show)
         {
@@ -215,13 +234,29 @@ public sealed class CharacterDefinitionEditor : Editor
             addPts = EditorGUILayout.IntSlider("Puntos iniciales", addPts,
                 _map.schema.globalMin, _map.schema.globalMax);
 
-            var band = _map.schema.GetBandForPoints(addPts);
+            var band = _map.schema.GetBandForPoints(addPts, addTrack);
             if (band != null)
             {
                 var prev = GUI.contentColor;
                 GUI.contentColor = band.color;
                 EditorGUILayout.LabelField(band.name, EditorStyles.boldLabel);
                 GUI.contentColor = prev;
+            }
+
+            if (_map.schema.Tracks.Count > 1)
+            {
+                var tracks     = _map.schema.Tracks;
+                var trackIds   = new string[tracks.Count];
+                var trackNames = new string[tracks.Count];
+                for (int i = 0; i < tracks.Count; i++)
+                {
+                    trackIds[i]   = tracks[i].id;
+                    trackNames[i] = tracks[i].displayName;
+                }
+                int currIdx = System.Array.IndexOf(trackIds, addTrack);
+                if (currIdx < 0) currIdx = 0;
+                int newIdx = EditorGUILayout.Popup("Track", currIdx, trackNames);
+                addTrack = trackIds[newIdx];
             }
 
             EditorGUILayout.Space(2);
@@ -234,9 +269,10 @@ public sealed class CharacterDefinitionEditor : Editor
                     {
                         AddEntry(outgoing ? character : addTarget,
                                  outgoing ? addTarget  : character,
-                                 addPts);
+                                 addPts, addTrack);
                         addTarget = null;
                         addPts    = 0;
+                        addTrack  = _map.schema.defaultTrackId;
                         show      = false;
                     }
                 }
@@ -253,12 +289,11 @@ public sealed class CharacterDefinitionEditor : Editor
     // Mutaciones sobre el mapa
     // -----------------------------------------------------------------------
 
-    private void AddEntry(CharacterDefinition from, CharacterDefinition to, int points)
+    private void AddEntry(CharacterDefinition from, CharacterDefinition to, int points, string trackId)
     {
         _mapSO.Update();
         var entries = _mapSO.FindProperty("entries");
 
-        // Evitar duplicado
         for (int i = 0; i < entries.arraySize; i++)
         {
             var e    = entries.GetArrayElementAtIndex(i);
@@ -269,9 +304,10 @@ public sealed class CharacterDefinitionEditor : Editor
 
         entries.InsertArrayElementAtIndex(entries.arraySize);
         var newEntry = entries.GetArrayElementAtIndex(entries.arraySize - 1);
-        newEntry.FindPropertyRelative("from").objectReferenceValue   = from;
-        newEntry.FindPropertyRelative("to").objectReferenceValue     = to;
-        newEntry.FindPropertyRelative("points").intValue             = points;
+        newEntry.FindPropertyRelative("from").objectReferenceValue = from;
+        newEntry.FindPropertyRelative("to").objectReferenceValue   = to;
+        newEntry.FindPropertyRelative("points").intValue           = points;
+        newEntry.FindPropertyRelative("trackId").stringValue       = trackId ?? _map.schema.defaultTrackId;
 
         _mapSO.ApplyModifiedProperties();
     }
@@ -285,16 +321,34 @@ public sealed class CharacterDefinitionEditor : Editor
     }
 
     // -----------------------------------------------------------------------
-    // Barra de puntos
+    // Helpers de UI
     // -----------------------------------------------------------------------
 
-    private void DrawBar(int points, int gMin, int gMax, AffinityBand band)
+    private void DrawTrackPopup(SerializedProperty trackIdProp, string currentTrackId)
+    {
+        var tracks     = _map.schema.Tracks;
+        var trackIds   = new string[tracks.Count];
+        var trackNames = new string[tracks.Count];
+        for (int i = 0; i < tracks.Count; i++)
+        {
+            trackIds[i]   = tracks[i].id;
+            trackNames[i] = tracks[i].displayName;
+        }
+        int currIdx = System.Array.IndexOf(trackIds, currentTrackId);
+        if (currIdx < 0) currIdx = 0;
+        EditorGUI.BeginChangeCheck();
+        int newIdx = EditorGUILayout.Popup("Track", currIdx, trackNames);
+        if (EditorGUI.EndChangeCheck())
+            trackIdProp.stringValue = trackIds[newIdx];
+    }
+
+    private void DrawBar(int points, int gMin, int gMax, string trackId)
     {
         float range = gMax - gMin;
         if (range <= 0) return;
-        float t      = Mathf.InverseLerp(gMin, gMax, points);
-        Color color  = band?.color ?? Color.gray;
-        Rect  bg     = GUILayoutUtility.GetRect(0, BarHeight, GUILayout.ExpandWidth(true));
+        float t     = Mathf.InverseLerp(gMin, gMax, points);
+        Color color = _map.schema.GetColorForPoints(points, trackId);
+        Rect  bg    = GUILayoutUtility.GetRect(0, BarHeight, GUILayout.ExpandWidth(true));
         EditorGUI.DrawRect(bg, new Color(0.15f, 0.15f, 0.15f));
         EditorGUI.DrawRect(new Rect(bg.x, bg.y, bg.width * t, bg.height), color);
     }

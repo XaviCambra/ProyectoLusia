@@ -8,11 +8,14 @@ public interface IAffinityService
     /// <summary>Puntos de afinidad de 'from' hacia 'to'. Devuelve defaultPoints si no existe relación.</summary>
     int          GetPoints(CharacterDefinition from, CharacterDefinition to);
 
-    /// <summary>Nivel de afinidad según el AffinitySchema. Null si no hay schema o puntos fuera de rango.</summary>
+    /// <summary>Nivel de afinidad según el track asignado al par. Null si no hay schema o puntos fuera de rango.</summary>
     AffinityBand GetLevel(CharacterDefinition from, CharacterDefinition to);
 
     /// <summary>True solo si existe una entrada registrada para este par.</summary>
     bool         HasRelationship(CharacterDefinition from, CharacterDefinition to);
+
+    /// <summary>Track de relación activo para este par. Devuelve defaultTrackId si no hay entrada.</summary>
+    string       GetTrack(CharacterDefinition from, CharacterDefinition to);
 
     /// <summary>Todas las relaciones que 'from' tiene hacia otros personajes.</summary>
     IEnumerable<(CharacterDefinition to, int points, AffinityBand level)>
@@ -24,11 +27,14 @@ public interface IAffinityService
 
     // --- Modificación ---
 
-    /// <summary>Establece los puntos exactos (clampeado a globalMin/globalMax).</summary>
+    /// <summary>Establece los puntos exactos (clampeado a globalMin/globalMax). Preserva el track actual.</summary>
     void SetPoints(CharacterDefinition from, CharacterDefinition to, int points);
 
     /// <summary>Añade delta a los puntos actuales (clampeado). Devuelve el nuevo valor.</summary>
     int  AddPoints(CharacterDefinition from, CharacterDefinition to, int delta);
+
+    /// <summary>Cambia el track de la relación sin alterar los puntos.</summary>
+    void SetTrack(CharacterDefinition from, CharacterDefinition to, string trackId);
 
     // --- Eventos ---
 

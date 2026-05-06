@@ -2,18 +2,15 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public enum AffinitySymmetry
-{
-    Directional, // A→B independiente de B→A
-    Mirror       // Cambiar A→B refleja el mismo valor en B→A
-}
-
 [System.Serializable]
 public sealed class AffinityEntry
 {
     public CharacterDefinition from;
     public CharacterDefinition to;
     public int                 points;
+
+    [Tooltip("Track de relación. Ej: 'default', 'romance'. Vacío usa el defaultTrackId del schema.")]
+    public string trackId = "default";
 
     public bool Matches(CharacterDefinition a, CharacterDefinition b) => from == a && to == b;
 }
@@ -26,8 +23,7 @@ public sealed class AffinityEntry
 public sealed class CharacterAffinityMap : ScriptableObject
 {
     [Header("Config")]
-    public AffinitySchema   schema;
-    public AffinitySymmetry symmetry = AffinitySymmetry.Directional;
+    public AffinitySchema schema;
 
     [Header("Relaciones iniciales")]
     [SerializeField] private List<AffinityEntry> entries = new();
@@ -36,19 +32,19 @@ public sealed class CharacterAffinityMap : ScriptableObject
 
     // --- Helpers para editores (solo lectura sobre datos de diseño) ---
 
-    public IEnumerable<(CharacterDefinition other, int points, AffinityBand level)>
+    public IEnumerable<(CharacterDefinition other, int points, AffinityBand level, string trackId)>
         GetAllFor(CharacterDefinition origin)
     {
         if (!schema) yield break;
         foreach (var e in entries.Where(e => e.from == origin && e.to))
-            yield return (e.to, e.points, schema.GetBandForPoints(e.points));
+            yield return (e.to, e.points, schema.GetBandForPoints(e.points, e.trackId), e.trackId);
     }
 
-    public IEnumerable<(CharacterDefinition other, int points, AffinityBand level)>
+    public IEnumerable<(CharacterDefinition other, int points, AffinityBand level, string trackId)>
         GetAllTowards(CharacterDefinition target)
     {
         if (!schema) yield break;
         foreach (var e in entries.Where(e => e.to == target && e.from))
-            yield return (e.from, e.points, schema.GetBandForPoints(e.points));
+            yield return (e.from, e.points, schema.GetBandForPoints(e.points, e.trackId), e.trackId);
     }
 }
