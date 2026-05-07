@@ -16,7 +16,7 @@ public sealed class AffinityMapService : IAffinityService
     private readonly Dictionary<(string, string), (int points, string trackId)> _data;
 
     public event Action<AffinityChangedArgs>      OnAffinityChanged;
-    public event Action<AffinityLevelChangedArgs> OnLevelChanged;
+    public event Action<AffinityRelationshipChangedArgs> OnRelationshipChanged;
 
     public AffinityMapService(
         CharacterAffinityMap  map,
@@ -41,11 +41,11 @@ public sealed class AffinityMapService : IAffinityService
         return _data.TryGetValue(Key(from, to), out var s) ? s.points : 0;
     }
 
-    public AffinityBand GetLevel(CharacterDefinition from, CharacterDefinition to)
+    public AffinityRelationship GetRelationship(CharacterDefinition from, CharacterDefinition to)
     {
         if (!from || !to) return null;
         var trackId = _data.TryGetValue(Key(from, to), out var s) ? s.trackId : DefaultTrackId;
-        return _schema?.GetBandForPoints(GetPoints(from, to), trackId);
+        return _schema?.GetRelationshipForPoints(GetPoints(from, to), trackId);
     }
 
     public bool HasRelationship(CharacterDefinition from, CharacterDefinition to)
@@ -69,7 +69,7 @@ public sealed class AffinityMapService : IAffinityService
         if (!from || !to) return;
 
         int          oldPoints = GetPoints(from, to);
-        AffinityBand oldLevel  = GetLevel(from, to);
+        AffinityRelationship oldLevel  = GetRelationship(from, to);
         int          clamped   = Clamp(points);
 
         Write(from, to, clamped);
@@ -81,7 +81,7 @@ public sealed class AffinityMapService : IAffinityService
         if (!from || !to) return GetPoints(from, to);
 
         int          oldPoints = GetPoints(from, to);
-        AffinityBand oldLevel  = GetLevel(from, to);
+        AffinityRelationship oldLevel  = GetRelationship(from, to);
         int          clamped   = Clamp(oldPoints + delta);
 
         Write(from, to, clamped);
@@ -142,15 +142,15 @@ public sealed class AffinityMapService : IAffinityService
     }
 
     private void FireEvents(CharacterDefinition from, CharacterDefinition to,
-                            int oldPoints, int newPoints, AffinityBand oldLevel)
+                            int oldPoints, int newPoints, AffinityRelationship oldLevel)
     {
         if (oldPoints == newPoints) return;
 
         OnAffinityChanged?.Invoke(new AffinityChangedArgs(from, to, oldPoints, newPoints));
 
-        AffinityBand newLevel = GetLevel(from, to);
+        AffinityRelationship newLevel = GetRelationship(from, to);
         if (oldLevel?.name != newLevel?.name)
-            OnLevelChanged?.Invoke(new AffinityLevelChangedArgs(from, to, oldLevel, newLevel));
+            OnRelationshipChanged?.Invoke(new AffinityRelationshipChangedArgs(from, to, oldLevel, newLevel));
     }
 
     private void InitializeFromMap(CharacterAffinityMap map)

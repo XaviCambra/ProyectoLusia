@@ -1,14 +1,18 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 [DisallowMultipleComponent]
 public sealed class ConditionEvaluator : MonoBehaviour, IConditionEvaluator
 {
-    private readonly IChoiceCondition _affinity = new AffinityCondition();
-    private readonly IChoiceCondition _progress  = new ProgressCondition();
+    private readonly List<IChoiceCondition> _conditions = new()
+    {
+        new AffinityCondition(),
+        new ProgressCondition()
+    };
 
     public bool IsAllowed(ChoiceModule.ChoiceData c)
-        => _affinity.IsMet(c) && _progress.IsMet(c);
+        => _conditions.All(cond => cond.IsMet(c));
 }
 
 public sealed class AffinityCondition : IChoiceCondition
@@ -21,11 +25,11 @@ public sealed class AffinityCondition : IChoiceCondition
 
         int     current = svc.GetPoints(c.affinityFrom, c.affinityTo);
         string  trackId = svc.GetTrack(c.affinityFrom, c.affinityTo);
-        var     band    = svc.Schema.GetTrack(trackId)?.Bands
-                            .FirstOrDefault(b => b.name == c.requiredAffinityBand);
+        var     relationship = svc.Schema.GetTrack(trackId)?.Relationships
+                            .FirstOrDefault(b => b.name == c.requiredAffinityRelationship);
 
-        if (band == null) return true;
-        return c.invertRequirement ? current < band.minInclusive : current >= band.minInclusive;
+        if (relationship == null) return true;
+        return c.invertRequirement ? current < relationship.minInclusive : current >= relationship.minInclusive;
     }
 }
 

@@ -13,7 +13,7 @@ public interface IAffinityService
     int GetPoints(CharacterDefinition from, CharacterDefinition to);
 
     /// <summary>Nivel de afinidad según el track asignado al par. Null si no hay schema o puntos fuera de rango.</summary>
-    AffinityBand GetLevel(CharacterDefinition from, CharacterDefinition to);
+    AffinityRelationship GetRelationship(CharacterDefinition from, CharacterDefinition to);
 
     /// <summary>True solo si existe una entrada registrada para este par.</summary>
     bool HasRelationship(CharacterDefinition from, CharacterDefinition to);
@@ -38,7 +38,7 @@ public interface IAffinityService
     event Action<AffinityChangedArgs>      OnAffinityChanged;
 
     /// <summary>Se dispara solo cuando el cambio de puntos cruza un umbral de nivel.</summary>
-    event Action<AffinityLevelChangedArgs> OnLevelChanged;
+    event Action<AffinityRelationshipChangedArgs> OnRelationshipChanged;
 
     // --- Persistencia ---
 

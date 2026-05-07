@@ -76,7 +76,7 @@ public sealed class AffinitySchemaEditor : Editor
             var t = _tracks.GetArrayElementAtIndex(_tracks.arraySize - 1);
             t.FindPropertyRelative("id").stringValue          = $"track_{_tracks.arraySize}";
             t.FindPropertyRelative("displayName").stringValue = $"Track {_tracks.arraySize}";
-            t.FindPropertyRelative("bands").ClearArray();
+            t.FindPropertyRelative("relationships").ClearArray();
         }
     }
 
@@ -85,7 +85,7 @@ public sealed class AffinitySchemaEditor : Editor
     {
         var idProp          = trackProp.FindPropertyRelative("id");
         var displayNameProp = trackProp.FindPropertyRelative("displayName");
-        var bandsProp       = trackProp.FindPropertyRelative("bands");
+        var relationshipsProp       = trackProp.FindPropertyRelative("relationships");
 
         bool wantsDelete = false;
 
@@ -111,17 +111,17 @@ public sealed class AffinitySchemaEditor : Editor
             EditorGUILayout.Space(4);
             EditorGUILayout.LabelField("Niveles", EditorStyles.miniBoldLabel);
 
-            int bandDeleteAt = -1;
-            for (int i = 0; i < bandsProp.arraySize; i++)
+            int relationshipDeleteAt = -1;
+            for (int i = 0; i < relationshipsProp.arraySize; i++)
             {
                 EditorGUILayout.Space(2);
-                if (DrawBand(bandsProp.GetArrayElementAtIndex(i), i))
-                    bandDeleteAt = i;
+                if (DrawRelationship(relationshipsProp.GetArrayElementAtIndex(i), i))
+                    relationshipDeleteAt = i;
             }
 
-            if (bandDeleteAt >= 0)
+            if (relationshipDeleteAt >= 0)
             {
-                bandsProp.DeleteArrayElementAtIndex(bandDeleteAt);
+                relationshipsProp.DeleteArrayElementAtIndex(relationshipDeleteAt);
                 EditorGUI.indentLevel--;
                 return false;
             }
@@ -129,10 +129,10 @@ public sealed class AffinitySchemaEditor : Editor
             EditorGUILayout.Space(4);
             if (GUILayout.Button("+ Añadir nivel", GUILayout.Height(22)))
             {
-                bandsProp.InsertArrayElementAtIndex(bandsProp.arraySize);
-                var b = bandsProp.GetArrayElementAtIndex(bandsProp.arraySize - 1);
+                relationshipsProp.InsertArrayElementAtIndex(relationshipsProp.arraySize);
+                var b = relationshipsProp.GetArrayElementAtIndex(relationshipsProp.arraySize - 1);
                 b.FindPropertyRelative("name").stringValue      = "Nuevo nivel";
-                b.FindPropertyRelative("ordinal").intValue      = bandsProp.arraySize - 1;
+                b.FindPropertyRelative("ordinal").intValue      = relationshipsProp.arraySize - 1;
                 b.FindPropertyRelative("color").colorValue      = Color.gray;
                 b.FindPropertyRelative("minInclusive").intValue = 0;
                 b.FindPropertyRelative("maxExclusive").intValue = 10;
@@ -149,7 +149,7 @@ public sealed class AffinitySchemaEditor : Editor
     // -----------------------------------------------------------------------
 
     /// <returns>True si el usuario pulsó eliminar.</returns>
-    private bool DrawBand(SerializedProperty band, int index)
+    private bool DrawRelationship(SerializedProperty band, int index)
     {
         var nameProp    = band.FindPropertyRelative("name");
         var colorProp   = band.FindPropertyRelative("color");

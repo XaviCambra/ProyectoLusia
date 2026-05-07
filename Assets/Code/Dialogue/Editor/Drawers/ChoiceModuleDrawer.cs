@@ -153,9 +153,9 @@ public static class ChoiceModuleDrawer
         void RebuildBandDropdown()
         {
             bandContainer.Clear();
-            var bandNames = GetBandNames(c.affinityFrom, c.affinityTo);
+            var relationshipNames = GetRelationshipNames(c.affinityFrom, c.affinityTo);
 
-            if (bandNames == null)
+            if (relationshipNames == null)
             {
                 var warning = new HelpBox(
                     c.affinityFrom == null || c.affinityTo == null
@@ -166,11 +166,11 @@ public static class ChoiceModuleDrawer
                 return;
             }
 
-            int idx = bandNames.IndexOf(c.requiredAffinityBand);
-            if (idx < 0) { idx = 0; c.requiredAffinityBand = bandNames[0]; }
-            var dropdown = new DropdownField("Required Band", bandNames, idx);
+            int idx = relationshipNames.IndexOf(c.requiredAffinityRelationship);
+            if (idx < 0) { idx = 0; c.requiredAffinityRelationship = relationshipNames[0]; }
+            var dropdown = new DropdownField("Required Relationship", relationshipNames, idx);
             ModuleDrawerStyles.ApplyFieldMargins(dropdown);
-            dropdown.RegisterValueChangedCallback(e => { c.requiredAffinityBand = e.newValue; onChanged?.Invoke(); });
+            dropdown.RegisterValueChangedCallback(e => { c.requiredAffinityRelationship = e.newValue; onChanged?.Invoke(); });
             bandContainer.Add(dropdown);
         }
 
@@ -204,7 +204,7 @@ public static class ChoiceModuleDrawer
     }
 
     // Devuelve null si el par no tiene relación registrada en el mapa.
-    private static List<string> GetBandNames(CharacterDefinition from, CharacterDefinition to)
+    private static List<string> GetRelationshipNames(CharacterDefinition from, CharacterDefinition to)
     {
         if (from == null || to == null) return null;
 
@@ -219,7 +219,7 @@ public static class ChoiceModuleDrawer
         var entry = map.InitialEntries.FirstOrDefault(e => e.from == from && e.to == to);
         if (entry == null) return null;
 
-        return schema.GetTrack(entry.trackId)?.Bands.Select(b => b.name).ToList();
+        return schema.GetTrack(entry.trackId)?.Relationships.Select(b => b.name).ToList();
     }
 
     private static Foldout BuildProgressFoldout(ChoiceModule.ChoiceData c, Action onChanged)

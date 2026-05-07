@@ -22,19 +22,19 @@ public sealed class AffinityQueryExample : MonoBehaviour
         // ── Leer estado actual ───────────────────────────────────────────────
         // GetPoints  → devuelve los puntos numéricos de la relación de A hacia B.
         //              Si no existe la relación devuelve 0.
-        // GetLevel   → devuelve la AffinityBand activa (nombre, color, rango de puntos).
+        // GetRelationship   → devuelve la AffinityRelationship activa (nombre, color, rango de puntos).
         //              Null si los puntos no caen en ninguna banda definida.
         // HasRelationship → true solo si la relación fue registrada en el CharacterAffinityMap.
 
         int          puntos = Svc.GetPoints(player, npcA);
-        AffinityBand nivel  = Svc.GetLevel(player, npcA);
+        AffinityRelationship nivel  = Svc.GetRelationship(player, npcA);
         bool         existe = Svc.HasRelationship(player, npcA);
 
         Debug.Log($"{player.displayName} → {npcA.displayName}: {puntos} pts | Nivel: {nivel?.name} | Relación: {existe}");
 
         // ── Condiciones típicas en combate ───────────────────────────────────
         // Compara puntos directamente para activar lógica de juego.
-        // Usa GetLevel si prefieres comparar por nombre de banda en lugar de por número.
+        // Usa GetRelationship si prefieres comparar por nombre de banda en lugar de por número.
 
         if (Svc.GetPoints(player, npcA) >= 50)
             Debug.Log("Son aliados fuertes — se pueden pedir favores o refuerzos.");
@@ -42,7 +42,7 @@ public sealed class AffinityQueryExample : MonoBehaviour
         if (Svc.GetPoints(player, npcB) < 0)
             Debug.Log($"{player.displayName} y {npcB.displayName} son hostiles — pueden atacarse.");
 
-        if (Svc.GetLevel(player, npcA)?.name == "Aliado")
+        if (Svc.GetRelationship(player, npcA)?.name == "Aliado")
             Debug.Log("Están en banda Aliado — desbloquea diálogos especiales.");
 
         // ── Modificar afinidad ───────────────────────────────────────────────
@@ -82,16 +82,16 @@ public sealed class AffinityQueryExample : MonoBehaviour
 
         // ── Eventos ──────────────────────────────────────────────────────────
         // OnAffinityChanged → se dispara cada vez que cambian los puntos entre dos personajes.
-        // OnLevelChanged    → se dispara solo cuando el cambio cruza un umbral de banda.
+        // OnRelationshipChanged    → se dispara solo cuando el cambio cruza un umbral de banda.
         //                     Útil para mostrar notificaciones o desbloquear contenido.
 
         Svc.OnAffinityChanged += args => Debug.Log(
             $"Cambio de afinidad: {args.From.displayName}→{args.To.displayName} " +
             $"{args.OldPoints} → {args.NewPoints}");
 
-        Svc.OnLevelChanged += args => Debug.Log(
+        Svc.OnRelationshipChanged += args => Debug.Log(
             $"Cambio de nivel: {args.From.displayName}→{args.To.displayName} " +
-            $"{args.OldLevel?.name} → {args.NewLevel?.name}");
+            $"{args.OldRelationship?.name} → {args.NewRelationship?.name}");
 
         // ── Consultar tracks y bandas del schema ─────────────────────────────
         // El schema define los tracks disponibles y sus bandas (niveles).
@@ -99,19 +99,22 @@ public sealed class AffinityQueryExample : MonoBehaviour
 
         // Lista todos los tracks configurados en el AffinitySchema
         foreach (var track in Svc.Schema.Tracks)
-            Debug.Log($"Track '{track.id}' — {track.Bands.Count} bandas");
+            Debug.Log($"Track '{track.id}' — {track.Relationships.Count} bandas");
 
-        // Obtiene un track concreto por su ID y lista sus bandas con sus rangos de puntos
-        var trackSocial = Svc.Schema.GetTrack("social");
-        foreach (var banda in trackSocial.Bands)
+        // Obtiene el track asignado al par player→npcA (sin hardcodear el ID)
+        // GetTrack devuelve el ID del track que tiene este par en el CharacterAffinityMap.
+        string trackIdPlayerA = Svc.GetTrack(player, npcA);
+        var trackPlayerA = Svc.Schema.GetTrack(trackIdPlayerA);
+        foreach (var banda in trackPlayerA.Relationships)
             Debug.Log($"  Banda '{banda.name}': puntos [{banda.minInclusive}, {banda.maxExclusive})  ordinal: {banda.ordinal}");
 
         // ── Condición por banda concreta (mínimo y máximo) ───────────────────
         // Caso de uso: "activa esta condición si la afinidad supera el mínimo de la banda 'Aliado'".
-        // Se busca la banda por nombre dentro del track deseado y se comparan sus límites
-        // con los puntos actuales entre los dos personajes.
+        // Se usa GetTrack para obtener el track real del par en lugar de hardcodear "social".
+        // Esto es importante: distintos pares pueden usar tracks distintos.
 
-        var bandaObjetivo = Svc.Schema.GetTrack("social").Bands
+        string trackId = Svc.GetTrack(player, npcA);
+        var bandaObjetivo = Svc.Schema.GetTrack(trackId)?.Relationships
             .FirstOrDefault(b => b.name == "Aliado");
 
         if (bandaObjetivo != null)

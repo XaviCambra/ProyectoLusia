@@ -14,72 +14,70 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   globalMin: -100
   globalMax: 100
-  defaultPoints: 0
-  defaultTrackId: social
   tracks:
   - id: social
     displayName: Social
-    bands:
+    relationships:
     - name: Odio
       localizationKey: 
       ordinal: 0
-      color: {r: 0.54509807, g: 0.101960786, b: 0.101960786, a: 1}
+      color: {r: 0.7137255, g: 0.23137255, b: 0.23137255, a: 1}
       minInclusive: -100
       maxExclusive: -40
     - name: Neutro
       localizationKey: 
       ordinal: 1
-      color: {r: 0.47843137, g: 0.5411765, b: 0.54901963, a: 1}
+      color: {r: 0.4862745, g: 0.4862745, b: 0.4862745, a: 1}
       minInclusive: -40
       maxExclusive: 10
     - name: Conocido
       localizationKey: 
       ordinal: 2
-      color: {r: 0.35686275, g: 0.5411765, b: 0.41960785, a: 1}
+      color: {r: 0.3480331, g: 0.745283, b: 0.40701464, a: 1}
       minInclusive: 10
       maxExclusive: 35
     - name: Amistad
       localizationKey: 
       ordinal: 3
-      color: {r: 0.9098039, g: 0.65882355, b: 0.29803923, a: 1}
+      color: {r: 0.2901961, g: 0.48235294, b: 0.654902, a: 1}
       minInclusive: 35
       maxExclusive: 80
     - name: Familiar
       localizationKey: 
       ordinal: 4
-      color: {r: 0.48235294, g: 0.36862746, b: 0.654902, a: 1}
+      color: {r: 0.6981132, g: 0.30624774, b: 0.6487952, a: 1}
       minInclusive: 80
       maxExclusive: 101
   - id: love
     displayName: Love
-    bands:
+    relationships:
     - name: Odio
       localizationKey: 
       ordinal: 0
-      color: {r: 0.54509807, g: 0.101960786, b: 0.101960786, a: 1}
-      minInclusive: 100
+      color: {r: 0.7137255, g: 0.23137255, b: 0.23137255, a: 1}
+      minInclusive: -100
       maxExclusive: -40
     - name: Neutro
       localizationKey: 
       ordinal: 1
-      color: {r: 0.47843137, g: 0.5411765, b: 0.54901963, a: 1}
+      color: {r: 0.4862745, g: 0.4862745, b: 0.4862745, a: 1}
       minInclusive: -40
       maxExclusive: 10
     - name: Conocido
       localizationKey: 
       ordinal: 2
-      color: {r: 0.35686275, g: 0.5411765, b: 0.41960785, a: 1}
+      color: {r: 0.34901962, g: 0.74509805, b: 0.40784314, a: 1}
       minInclusive: 10
       maxExclusive: 35
     - name: Amistad
       localizationKey: 
       ordinal: 3
-      color: {r: 0.9098039, g: 0.65882355, b: 0.29803923, a: 1}
+      color: {r: 0.2901961, g: 0.48235294, b: 0.654902, a: 1}
       minInclusive: 35
       maxExclusive: 70
     - name: Amor
       localizationKey: 
       ordinal: 4
-      color: {r: 0.8784314, g: 0.3529412, b: 0.47843137, a: 1}
+      color: {r: 0.77254903, g: 0.5372549, b: 0.65882355, a: 1}
       minInclusive: 70
       maxExclusive: 101

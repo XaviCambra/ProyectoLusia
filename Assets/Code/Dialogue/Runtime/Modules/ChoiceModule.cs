@@ -59,7 +59,7 @@ public class ChoiceModule : DialogueModuleBase
         public CharacterDefinition affinityTo;
 
         [Tooltip("Banda mínima requerida (nombre del estado del track).")]
-        public string requiredAffinityBand = "";
+        public string requiredAffinityRelationship = "";
 
         [Tooltip("Si está activo, invierte el requisito (la afinidad debe ser MENOR que el umbral).")]
         public bool invertRequirement = false;

@@ -32,19 +32,19 @@ public sealed class CharacterAffinityMap : ScriptableObject
 
     // --- Helpers para editores (solo lectura sobre datos de diseño) ---
 
-    public IEnumerable<(CharacterDefinition other, int points, AffinityBand level, string trackId)>
+    public IEnumerable<(CharacterDefinition other, int points, AffinityRelationship level, string trackId)>
         GetAllFor(CharacterDefinition origin)
     {
         if (!schema) yield break;
         foreach (var e in entries.Where(e => e.from == origin && e.to))
-            yield return (e.to, e.points, schema.GetBandForPoints(e.points, e.trackId), e.trackId);
+            yield return (e.to, e.points, schema.GetRelationshipForPoints(e.points, e.trackId), e.trackId);
     }
 
-    public IEnumerable<(CharacterDefinition other, int points, AffinityBand level, string trackId)>
+    public IEnumerable<(CharacterDefinition other, int points, AffinityRelationship level, string trackId)>
         GetAllTowards(CharacterDefinition target)
     {
         if (!schema) yield break;
         foreach (var e in entries.Where(e => e.to == target && e.from))
-            yield return (e.from, e.points, schema.GetBandForPoints(e.points, e.trackId), e.trackId);
+            yield return (e.from, e.points, schema.GetRelationshipForPoints(e.points, e.trackId), e.trackId);
     }
 }

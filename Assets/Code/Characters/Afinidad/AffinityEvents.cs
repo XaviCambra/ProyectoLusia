@@ -14,18 +14,18 @@ public sealed class AffinityChangedArgs
     }
 }
 
-public sealed class AffinityLevelChangedArgs
+public sealed class AffinityRelationshipChangedArgs
 {
     public CharacterDefinition From      { get; }
     public CharacterDefinition To        { get; }
-    public AffinityBand        OldLevel  { get; }
-    public AffinityBand        NewLevel  { get; }
+    public AffinityRelationship        OldRelationship  { get; }
+    public AffinityRelationship        NewRelationship  { get; }
 
-    public AffinityLevelChangedArgs(CharacterDefinition from, CharacterDefinition to, AffinityBand oldLevel, AffinityBand newLevel)
+    public AffinityRelationshipChangedArgs(CharacterDefinition from, CharacterDefinition to, AffinityRelationship oldLevel, AffinityRelationship newLevel)
     {
         From     = from;
         To       = to;
-        OldLevel = oldLevel;
-        NewLevel = newLevel;
+        OldRelationship = oldLevel;
+        NewRelationship = newLevel;
     }
 }

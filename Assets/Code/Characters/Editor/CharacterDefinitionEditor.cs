@@ -161,7 +161,7 @@ public sealed class CharacterDefinitionEditor : Editor
         string trackId  = trackIdProp.stringValue;
         int    gMin     = _map.schema.globalMin;
         int    gMax     = _map.schema.globalMax;
-        var    band     = _map.schema.GetBandForPoints(points, trackId);
+        var    level    = _map.schema.GetRelationshipForPoints(points, trackId);
 
         bool multiTrack  = _map.schema.Tracks.Count > 1;
         bool wantsDelete = false;
@@ -190,13 +190,8 @@ public sealed class CharacterDefinitionEditor : Editor
                     GUILayout.Space(-1);
                     EditorGUILayout.LabelField(other.displayName, EditorStyles.boldLabel);
 
-                    if (band != null)
-                    {
-                        var prev = GUI.contentColor;
-                        GUI.contentColor = band.color;
-                        EditorGUILayout.LabelField(band.name, EditorStyles.boldLabel, GUILayout.Width(110));
-                        GUI.contentColor = prev;
-                    }
+                    if (level != null)
+                        EditorGUILayout.LabelField(level.name, EditorStyles.boldLabel, GUILayout.Width(110));
 
                     if (multiTrack)
                     {
@@ -263,14 +258,9 @@ public sealed class CharacterDefinitionEditor : Editor
             addPts = EditorGUILayout.IntSlider("Puntos iniciales", addPts,
                 _map.schema.globalMin, _map.schema.globalMax);
 
-            var band = _map.schema.GetBandForPoints(addPts, addTrack);
-            if (band != null)
-            {
-                var prev = GUI.contentColor;
-                GUI.contentColor = band.color;
-                EditorGUILayout.LabelField(band.name, EditorStyles.boldLabel);
-                GUI.contentColor = prev;
-            }
+            var level = _map.schema.GetRelationshipForPoints(addPts, addTrack);
+            if (level != null)
+                EditorGUILayout.LabelField(level.name, EditorStyles.boldLabel);
 
             if (_map.schema.Tracks.Count > 1)
             {

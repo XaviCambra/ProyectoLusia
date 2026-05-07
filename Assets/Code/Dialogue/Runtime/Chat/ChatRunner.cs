@@ -21,9 +21,11 @@ public sealed class ChatRunner : MonoBehaviour
 
     [Header("Referencias")]
     [SerializeField] private GraphNavigator navigator;
-    [SerializeField] private MonoBehaviour  presenterRef; // debe implementar IChatPresenter
+    [SerializeField] private MonoBehaviour  presenterRef;         // debe implementar IChatPresenter
+    [SerializeField] private MonoBehaviour  conditionEvaluatorRef; // debe implementar IConditionEvaluator (opcional)
 
     private IChatPresenter           _presenter;
+    private IConditionEvaluator      _conditionEvaluator;
     private CancellationTokenSource  _cts;
     private CharacterDefinition      _currentProfile;
 
@@ -39,7 +41,8 @@ public sealed class ChatRunner : MonoBehaviour
 
     private void Awake()
     {
-        _presenter = presenterRef as IChatPresenter;
+        _presenter          = presenterRef as IChatPresenter;
+        _conditionEvaluator = conditionEvaluatorRef as IConditionEvaluator;
         if (_presenter == null)
             enabled = false;
     }
@@ -120,10 +123,13 @@ public sealed class ChatRunner : MonoBehaviour
                     break;
 
                 case ChoiceModule m:
+                    var visible = _conditionEvaluator != null
+                        ? m.choices.FindAll(_conditionEvaluator.IsAllowed)
+                        : m.choices;
                     var idx = _presenter != null
-                        ? await _presenter.ShowChoicesAsync(m.choices, ct)
+                        ? await _presenter.ShowChoicesAsync(visible, ct)
                         : 0;
-                    nextPort  = (m.choices.Count > idx) ? m.choices[idx].portName : "Next";
+                    nextPort  = (visible.Count > idx) ? visible[idx].portName : "Next";
                     breakLoop = true;
                     break;
 

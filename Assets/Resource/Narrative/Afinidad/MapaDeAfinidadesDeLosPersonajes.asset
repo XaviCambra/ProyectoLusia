@@ -80,7 +80,7 @@ MonoBehaviour:
     trackId: social
   - from: {fileID: 11400000, guid: 6559f6b57d3b7914b8fb957930ecca9c, type: 2}
     to: {fileID: 11400000, guid: e744c8cb8231bfd4f8e1adca3bdc2b82, type: 2}
-    points: 23
+    points: 39
     trackId: social
   - from: {fileID: 11400000, guid: 6559f6b57d3b7914b8fb957930ecca9c, type: 2}
     to: {fileID: 11400000, guid: 1b09f8852bf5d2c4583b3524efbd8f95, type: 2}
@@ -88,7 +88,7 @@ MonoBehaviour:
     trackId: social
   - from: {fileID: 11400000, guid: 6559f6b57d3b7914b8fb957930ecca9c, type: 2}
     to: {fileID: 11400000, guid: c359a6749d86a6d4face7e0153a1191e, type: 2}
-    points: 90
+    points: 85
     trackId: social
   - from: {fileID: 11400000, guid: 6559f6b57d3b7914b8fb957930ecca9c, type: 2}
     to: {fileID: 11400000, guid: 47d22d363a3c5f347adff1cd49c8c3e9, type: 2}

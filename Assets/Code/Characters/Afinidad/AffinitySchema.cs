@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 [Serializable]
-public sealed class AffinityBand
+public sealed class AffinityRelationship
 {
     [Tooltip("Nombre visible. Ej: Rechazo / Vigilante / Cómplice / Con confianza / Vínculo emocional")]
     public string name;
@@ -42,20 +42,21 @@ public sealed class AffinityTrack
     [Tooltip("Nombre legible en el editor.")]
     public string displayName = "Default";
 
-    [SerializeField] private List<AffinityBand> bands = new();
+    [SerializeField] private List<AffinityRelationship> relationships = new();
 
-    private List<AffinityBand> _sortedCache;
-    private List<AffinityBand> SortedBands => _sortedCache ??= bands.OrderBy(b => b.ordinal).ToList();
+    private List<AffinityRelationship> _sortedCache;
+    private List<AffinityRelationship> SortedRelationships => _sortedCache ??= relationships.OrderBy(b => b.ordinal).ToList();
 
-    public IReadOnlyList<AffinityBand> Bands => SortedBands;
+    public IReadOnlyList<AffinityRelationship> Relationships => SortedRelationships;
     public void InvalidateCache() => _sortedCache = null;
 
-    public AffinityBand GetBandForPoints(int points)
+    public AffinityRelationship GetRelationshipForPoints(int points)
     {
-        var sorted = SortedBands;
+        var sorted = SortedRelationships;
         for (int i = 0; i < sorted.Count; i++)
             if (sorted[i].Contains(points)) return sorted[i];
         return null;
+
     }
 
     /// <summary>
@@ -64,7 +65,7 @@ public sealed class AffinityTrack
     /// </summary>
     public Color GetColorForPoints(int points)
     {
-        var sorted = SortedBands;
+        var sorted = SortedRelationships;
         if (sorted.Count == 0) return Color.gray;
         if (sorted.Count == 1) return sorted[0].color;
 
@@ -119,9 +120,9 @@ public sealed class AffinitySchema : ScriptableObject
         return tracks.FirstOrDefault();
     }
 
-    /// <summary>Devuelve el AffinityBand para los puntos dados en el track indicado (o el primero).</summary>
-    public AffinityBand GetBandForPoints(int points, string trackId = null)
-        => GetTrack(trackId)?.GetBandForPoints(points);
+    /// <summary>Devuelve el AffinityRelationship para los puntos dados en el track indicado (o el primero).</summary>
+    public AffinityRelationship GetRelationshipForPoints(int points, string trackId = null)
+        => GetTrack(trackId)?.GetRelationshipForPoints(points);
 
     /// <summary>Color interpolado entre bands vecinas para los puntos dados en el track indicado.</summary>
     public Color GetColorForPoints(int points, string trackId = null)
