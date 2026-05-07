@@ -2,19 +2,24 @@ using System;
 
 public interface IAffinityService
 {
+    // --- Schema ---
+
+    /// <summary>Acceso al schema de afinidad: tracks disponibles, bandas y sus rangos de puntos.</summary>
+    AffinitySchema Schema { get; }
+
     // --- Consulta ---
 
     /// <summary>Puntos de afinidad de 'from' hacia 'to'. Devuelve defaultPoints si no existe relación.</summary>
-    int          GetPoints(CharacterDefinition from, CharacterDefinition to);
+    int GetPoints(CharacterDefinition from, CharacterDefinition to);
 
     /// <summary>Nivel de afinidad según el track asignado al par. Null si no hay schema o puntos fuera de rango.</summary>
     AffinityBand GetLevel(CharacterDefinition from, CharacterDefinition to);
 
     /// <summary>True solo si existe una entrada registrada para este par.</summary>
-    bool         HasRelationship(CharacterDefinition from, CharacterDefinition to);
+    bool HasRelationship(CharacterDefinition from, CharacterDefinition to);
 
     /// <summary>Track de relación activo para este par. Devuelve defaultTrackId si no hay entrada.</summary>
-    string       GetTrack(CharacterDefinition from, CharacterDefinition to);
+    string GetTrack(CharacterDefinition from, CharacterDefinition to);
 
     // --- Modificación ---
 

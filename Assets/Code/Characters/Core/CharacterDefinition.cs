@@ -5,7 +5,7 @@ using UnityEngine;
 public enum Sex { Unknown, Male, Female, Other }
 public enum RaceKind { Beast, Parasite, Undead, Ethereal, Infernal, Deity, Machine, Curse, Human }
 
-[CreateAssetMenu(menuName = "Dialogue/Characters/Character Definition", fileName = "NewCharacter")]
+[CreateAssetMenu(menuName = "Characters/Character Definition", fileName = "NewCharacter")]
 public class CharacterDefinition : ScriptableObject
 {
     [SerializeField, HideInInspector] private string characterId;

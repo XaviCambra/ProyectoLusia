@@ -97,7 +97,7 @@ public sealed class AffinityTrack
     }
 }
 
-[CreateAssetMenu(menuName = "Dialogue/Characters/Affinity Schema", fileName = "AffinitySchema")]
+[CreateAssetMenu(menuName = "Characters/Affinity/Affinity Schema", fileName = "AffinitySchema")]
 public sealed class AffinitySchema : ScriptableObject
 {
     [Header("Límites globales de puntos")]

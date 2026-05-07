@@ -52,11 +52,14 @@ public class ChoiceModule : DialogueModuleBase
         [Tooltip("Si está activo, esta opción requiere un nivel mínimo de afinidad.")]
         public bool requiresAffinity = false;
 
-        [Tooltip("Clave del parámetro de afinidad a evaluar.")]
-        public string affinityKey = "";
+        [Tooltip("Personaje origen de la relación a evaluar.")]
+        public CharacterDefinition affinityFrom;
 
-        [Tooltip("Valor mínimo requerido de afinidad.")]
-        public float requiredAffinity = 0f;
+        [Tooltip("Personaje destino de la relación a evaluar.")]
+        public CharacterDefinition affinityTo;
+
+        [Tooltip("Banda mínima requerida (nombre del estado del track).")]
+        public string requiredAffinityBand = "";
 
         [Tooltip("Si está activo, invierte el requisito (la afinidad debe ser MENOR que el umbral).")]
         public bool invertRequirement = false;

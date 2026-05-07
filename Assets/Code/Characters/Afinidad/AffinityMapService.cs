@@ -29,6 +29,8 @@ public sealed class AffinityMapService : IAffinityService
         InitializeFromMap(map);
     }
 
+    public AffinitySchema Schema => _schema;
+
     // -----------------------------------------------------------------------
     // Consulta
     // -----------------------------------------------------------------------

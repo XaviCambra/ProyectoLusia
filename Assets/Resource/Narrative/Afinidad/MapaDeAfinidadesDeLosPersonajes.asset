@@ -94,3 +94,7 @@ MonoBehaviour:
     to: {fileID: 11400000, guid: 47d22d363a3c5f347adff1cd49c8c3e9, type: 2}
     points: 57
     trackId: social
+  - from: {fileID: 11400000, guid: 43f523793dfa29c499ab0e270525c52a, type: 2}
+    to: {fileID: 11400000, guid: f4aa8da4c00b83a4b8fabc61cf5b0464, type: 2}
+    points: 87
+    trackId: love

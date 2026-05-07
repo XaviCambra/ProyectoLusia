@@ -19,7 +19,7 @@ public sealed class AffinityEntry
 /// Datos de diseño: estado inicial de las relaciones y configuración de simetría.
 /// Solo lectura en runtime — el estado mutable vive en AffinityMapService.
 /// </summary>
-[CreateAssetMenu(menuName = "Dialogue/Characters/Character Affinity Map", fileName = "CharacterAffinityMap")]
+[CreateAssetMenu(menuName = "Characters/Affinity/Character Affinity Map", fileName = "CharacterAffinityMap")]
 public sealed class CharacterAffinityMap : ScriptableObject
 {
     [Header("Config")]

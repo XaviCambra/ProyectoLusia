@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -15,9 +16,16 @@ public sealed class AffinityCondition : IChoiceCondition
     public bool IsMet(ChoiceModule.ChoiceData c)
     {
         if (c == null || !c.requiresAffinity) return true;
-        var key = c.affinityKey ?? string.Empty;
-        float current = ParamService.GetFloat(key, 0f);
-        return c.invertRequirement ? current < c.requiredAffinity : current >= c.requiredAffinity;
+        var svc = AffinityServiceBootstrapper.Service;
+        if (svc == null) return true;
+
+        int     current = svc.GetPoints(c.affinityFrom, c.affinityTo);
+        string  trackId = svc.GetTrack(c.affinityFrom, c.affinityTo);
+        var     band    = svc.Schema.GetTrack(trackId)?.Bands
+                            .FirstOrDefault(b => b.name == c.requiredAffinityBand);
+
+        if (band == null) return true;
+        return c.invertRequirement ? current < band.minInclusive : current >= band.minInclusive;
     }
 }
 

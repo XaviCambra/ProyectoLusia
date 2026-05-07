@@ -128,6 +128,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 551434845}
+  - component: {fileID: 551434846}
+  - component: {fileID: 551434847}
   m_Layer: 0
   m_Name: AffinityServiceBootstrapper
   m_TagString: Untagged
@@ -150,6 +152,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &551434846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 551434844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2b279376d84fae41bfe691fca404e90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 11400000, guid: 1b09f8852bf5d2c4583b3524efbd8f95, type: 2}
+  npcA: {fileID: 11400000, guid: 6559f6b57d3b7914b8fb957930ecca9c, type: 2}
+  npcB: {fileID: 11400000, guid: e744c8cb8231bfd4f8e1adca3bdc2b82, type: 2}
+  npcC: {fileID: 11400000, guid: 47d22d363a3c5f347adff1cd49c8c3e9, type: 2}
+--- !u!114 &551434847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 551434844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e99b6367a9848904a87acee40923e627, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  map: {fileID: 11400000, guid: a9f55bd0c97e42b459cccb1325008bcd, type: 2}
+  saveFileName: affinity.json
 --- !u!1 &1200666079
 GameObject:
   m_ObjectHideFlags: 0
