@@ -5,40 +5,45 @@ using UnityEngine;
 /// <summary>
 /// Executor para <see cref="ChoiceModule"/>.
 /// Muestra las opciones de elección y espera a que el jugador seleccione una.
-/// La Task completa cuando el jugador elige, devolviendo el nombre del puerto seleccionado
-/// a través de <see cref="OnChoiceSelected"/>.
+/// Implementa <see cref="IChoiceExecutor"/> para que el runner dependa
+/// de la interfaz, no de esta clase concreta (DIP).
+/// Las hotkeys numéricas (1-4) se gestionan en el propio Update,
+/// eliminando la dependencia del runner en este tipo concreto.
 /// </summary>
 [DisallowMultipleComponent]
-public sealed class ChoiceModuleExecutor : MonoBehaviour, IModuleExecutor
+public sealed class ChoiceModuleExecutor : ModuleExecutorBase, IChoiceExecutor
 {
-    [SerializeField] private MonoBehaviour choiceUIRef;   // IChoiceUIController
+    [SerializeField] private MonoBehaviour choiceUIRef; // IChoiceUIController
 
     private IChoiceUIController _choiceUI;
     private TaskCompletionSource<bool> _waitTcs;
 
-    /// <summary>
-    /// El runner se suscribe a este evento para recibir el puerto seleccionado
-    /// y navegar al nodo correspondiente.
-    /// </summary>
+    /// <inheritdoc/>
     public event Action<string> OnChoiceSelected;
 
-    public Type ModuleType => typeof(ChoiceModule);
+    public override Type ModuleType => typeof(ChoiceModule);
 
     private void Awake()
     {
         _choiceUI = choiceUIRef as IChoiceUIController;
-        if (_choiceUI == null)
-            Debug.LogError("[ChoiceModuleExecutor] Falta IChoiceUIController.");
     }
 
-    public void Initialize(DialogueGraph graph) { }
-
-    public void OnNodeBegin()
+    /// <summary>
+    /// Sondea las hotkeys numéricas cada frame sin necesitar que el runner lo llame.
+    /// </summary>
+    private void Update()
     {
-        _choiceUI?.BeginNode();
+        if (_choiceUI == null) return;
+        if (!_choiceUI.TryConsumeHotkey(out var chosenPort)) return;
+
+        _choiceUI.Hide();
+        _waitTcs?.TrySetResult(true);
+        OnChoiceSelected?.Invoke(chosenPort);
     }
 
-    public async Task ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
+    public override void OnNodeBegin() => _choiceUI?.BeginNode();
+
+    public override async Task ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
     {
         if (_choiceUI == null) return;
 
@@ -58,35 +63,16 @@ public sealed class ChoiceModuleExecutor : MonoBehaviour, IModuleExecutor
             return;
         }
 
-        // Esperar a que el usuario elija (o a cancelación)
         await Task.WhenAny(_waitTcs.Task, ctx.Token.AsTask());
     }
 
-    public void Cancel()
+    public override void Cancel()
     {
         _waitTcs?.TrySetCanceled();
         _choiceUI?.Hide();
     }
 
-    public bool TryFastForward() => false;
-    public void ResetAll() => Cancel();
-
-    /// <summary>
-    /// Intenta consumir una tecla numérica (1-4) como hotkey de elección.
-    /// Devuelve true si se consumió una elección.
-    /// </summary>
-    public bool TryConsumeHotkey(out string chosenPort)
-    {
-        if (_choiceUI != null && _choiceUI.TryConsumeHotkey(out chosenPort))
-        {
-            _choiceUI.Hide();
-            _waitTcs?.TrySetResult(true);
-            OnChoiceSelected?.Invoke(chosenPort);
-            return true;
-        }
-        chosenPort = null;
-        return false;
-    }
+    public override void ResetAll() => Cancel();
 }
 
 /// <summary>

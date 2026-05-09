@@ -9,7 +9,7 @@ using UnityEngine;
 /// Soporta localización a través de un <see cref="ILocalizationService"/> opcional.
 /// </summary>
 [DisallowMultipleComponent]
-public sealed class TextModuleExecutor : MonoBehaviour, IModuleExecutor
+public sealed class TextModuleExecutor : ModuleExecutorBase
 {
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI speakerText;
@@ -18,18 +18,16 @@ public sealed class TextModuleExecutor : MonoBehaviour, IModuleExecutor
     [Header("Servicios")]
     [SerializeField] private MonoBehaviour typewriterRef;      // ITypewriterPresenter
     [SerializeField] private MonoBehaviour localizationRef;    // ILocalizationService (opcional)
-    [SerializeField] private TypewriterProfile defaultProfile; // Perfil base de puntuación y opciones
+    [SerializeField] private TypewriterProfile defaultProfile;
 
     private ITypewriterPresenter _typewriter;
     private ILocalizationService _loc;
 
-    public Type ModuleType => typeof(TextModule);
+    public override Type ModuleType => typeof(TextModule);
 
     private void Awake()
     {
         _typewriter = typewriterRef as ITypewriterPresenter;
-        if (_typewriter == null)
-            Debug.LogError("[TextModuleExecutor] Falta ITypewriterPresenter.");
 
         _loc = localizationRef as ILocalizationService;
 
@@ -37,15 +35,13 @@ public sealed class TextModuleExecutor : MonoBehaviour, IModuleExecutor
             _typewriter.Init(bodyText);
     }
 
-    public void Initialize(DialogueGraph graph) { }
-
-    public void OnNodeBegin()
+    public override void OnNodeBegin()
     {
         if (speakerText) speakerText.text = string.Empty;
         _typewriter?.Cancel();
     }
 
-    public async Task ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
+    public override async Task ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
     {
         var m = (TextModule)module;
 
@@ -65,10 +61,10 @@ public sealed class TextModuleExecutor : MonoBehaviour, IModuleExecutor
         }
     }
 
-    public void Cancel() => _typewriter?.Cancel();
-    public bool TryFastForward() => _typewriter != null && _typewriter.FastForwardOrIgnore();
+    public override void Cancel() => _typewriter?.Cancel();
+    public override bool TryFastForward() => _typewriter != null && _typewriter.FastForwardOrIgnore();
 
-    public void ResetAll()
+    public override void ResetAll()
     {
         _typewriter?.Cancel();
         if (speakerText) speakerText.text = string.Empty;
@@ -82,7 +78,6 @@ public sealed class TextModuleExecutor : MonoBehaviour, IModuleExecutor
             if (_loc.TryGet(m.locKey, out var localized))
                 return localized;
 
-            Debug.LogWarning($"[TextModuleExecutor] Clave de localización no encontrada: {m.locKey}");
         }
         return m.text ?? string.Empty;
     }

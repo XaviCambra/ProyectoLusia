@@ -13,12 +13,12 @@ public static class ChatTypingModuleDrawer
 
         var profileField = new ObjectField("Profile")
         {
-            objectType = typeof(CharacterProfile),
+            objectType = typeof(CharacterDefinition),
             value      = m.profile
         };
         profileField.RegisterValueChangedCallback(e =>
         {
-            m.profile = e.newValue as CharacterProfile;
+            m.profile = e.newValue as CharacterDefinition;
             onChanged?.Invoke();
         });
         ModuleDrawerStyles.ApplyFieldMargins(profileField);

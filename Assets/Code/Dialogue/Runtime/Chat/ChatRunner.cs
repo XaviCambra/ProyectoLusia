@@ -21,10 +21,13 @@ public sealed class ChatRunner : MonoBehaviour
 
     [Header("Referencias")]
     [SerializeField] private GraphNavigator navigator;
-    [SerializeField] private MonoBehaviour  presenterRef; // debe implementar IChatPresenter
+    [SerializeField] private MonoBehaviour  presenterRef;         // debe implementar IChatPresenter
+    [SerializeField] private MonoBehaviour  conditionEvaluatorRef; // debe implementar IConditionEvaluator (opcional)
 
     private IChatPresenter           _presenter;
+    private IConditionEvaluator      _conditionEvaluator;
     private CancellationTokenSource  _cts;
+    private CharacterDefinition      _currentProfile;
 
     private readonly List<ChatEntry> _history = new();
 
@@ -38,9 +41,10 @@ public sealed class ChatRunner : MonoBehaviour
 
     private void Awake()
     {
-        _presenter = presenterRef as IChatPresenter;
+        _presenter          = presenterRef as IChatPresenter;
+        _conditionEvaluator = conditionEvaluatorRef as IConditionEvaluator;
         if (_presenter == null)
-            Debug.LogError("[ChatRunner] presenterRef no implementa IChatPresenter.");
+            enabled = false;
     }
 
     private void Start()
@@ -59,6 +63,7 @@ public sealed class ChatRunner : MonoBehaviour
         Stop();
         _cts = new CancellationTokenSource();
         _history.Clear();
+        _currentProfile = null;
         _presenter?.Clear();
         navigator.Init(graph);
         _ = RunAsync(navigator.StartNode(), _cts.Token);
@@ -90,10 +95,7 @@ public sealed class ChatRunner : MonoBehaviour
             OnChatComplete?.Invoke();
         }
         catch (OperationCanceledException) { /* cancelación normal */ }
-        catch (Exception e)
-        {
-            Debug.LogError($"[ChatRunner] Error inesperado: {e}");
-        }
+        catch (Exception e) { Debug.LogException(e); }
     }
 
     /// <summary>
@@ -110,18 +112,33 @@ public sealed class ChatRunner : MonoBehaviour
 
             switch (module)
             {
+                case ProfileModule m:
+                    _currentProfile = m.profile;
+                    break;
+
                 case TextModule m:
-                    var entry = new ChatEntry(m.speakerName, m.text, m.isOwn);
+                    var entry = ChatEntry.ForText(m.speakerName, m.text, m.isOwn, _currentProfile?.avatarSprite);
                     _history.Add(entry);
                     _presenter?.AddMessage(entry);
                     break;
 
                 case ChoiceModule m:
+                    var visible = _conditionEvaluator != null
+                        ? m.choices.FindAll(_conditionEvaluator.IsAllowed)
+                        : m.choices;
                     var idx = _presenter != null
-                        ? await _presenter.ShowChoicesAsync(m.choices, ct)
+                        ? await _presenter.ShowChoicesAsync(visible, ct)
                         : 0;
-                    nextPort  = (m.choices.Count > idx) ? m.choices[idx].portName : "Next";
-                    breakLoop = true; // el choice decide la salida; ignorar módulos posteriores
+                    nextPort  = (visible.Count > idx) ? visible[idx].portName : "Next";
+                    breakLoop = true;
+                    break;
+
+                case ImageChoiceModule m:
+                    var imgIdx = _presenter != null
+                        ? await _presenter.ShowImageChoicesAsync(m.choices, ct)
+                        : 0;
+                    nextPort  = (m.choices.Count > imgIdx) ? m.choices[imgIdx].portName : "Next";
+                    breakLoop = true;
                     break;
 
                 case EventDispatcherModule m:
@@ -138,6 +155,20 @@ public sealed class ChatRunner : MonoBehaviour
 
                 case WaitForSignalModule m when m.signal != null:
                     await WaitForSignalAsync(m.signal, ct);
+                    break;
+
+                case EmojiModule m when m.emoji != null:
+                    var emojiEntry = ChatEntry.ForEmoji(
+                        _currentProfile?.displayName, m.emoji, m.isOwn, _currentProfile?.avatarSprite);
+                    _history.Add(emojiEntry);
+                    _presenter?.AddMessage(emojiEntry);
+                    break;
+
+                case ImageModule m when m.image != null:
+                    var imageEntry = ChatEntry.ForImage(
+                        _currentProfile?.displayName, m.image, m.isOwn, _currentProfile?.avatarSprite);
+                    _history.Add(imageEntry);
+                    _presenter?.AddMessage(imageEntry);
                     break;
             }
 

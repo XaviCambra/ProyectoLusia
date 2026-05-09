@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+// USO: Solo sistema de Chat Bubble. Sin executor implementado (módulo reservado para uso futuro).
 /// <summary>
 /// Detiene la ejecución indefinidamente hasta que alguien llame a
 /// <see cref="SignalSO.Raise"/> en la señal configurada.

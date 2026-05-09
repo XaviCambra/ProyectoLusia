@@ -86,7 +86,6 @@ public sealed class GraphNavigator : MonoBehaviour, IGraphNavigator
     {
         if (_graph == null)
         {
-            Debug.LogError("[GraphNavigator] No hay DialogueGraph asignado en Init().");
             return false;
         }
 
@@ -100,7 +99,6 @@ public sealed class GraphNavigator : MonoBehaviour, IGraphNavigator
 
         if (_byGuid.Count == 0)
         {
-            Debug.LogError("[GraphNavigator] El grafo no contiene nodos válidos.");
             return false;
         }
         return true;
@@ -124,7 +122,6 @@ public sealed class GraphNavigator : MonoBehaviour, IGraphNavigator
 
             if (_edges.ContainsKey(edgeKey))
             {
-                Debug.LogWarning($"[GraphNavigator] Puerto duplicado: {edgeKey.fromGuid}:{edgeKey.fromPort}. Ignorando adicional.");
                 continue;
             }
 

@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+// USO: Solo sistema de Chat Bubble. Ignorado por DialogueRunner.
 /// <summary>
 /// Pausa silenciosa: detiene la ejecución del ChatRunner durante
 /// <see cref="duration"/> segundos antes de continuar al siguiente módulo.

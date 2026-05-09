@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,30 +8,63 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Implementación de referencia de <see cref="IChatPresenter"/> usando uGUI + TMP.
-/// Instancia burbujas de chat, muestra el indicador de escritura y
-/// presenta botones de elección al jugador.
+/// Instancia burbujas de chat según <see cref="ChatContentType"/>, muestra el indicador
+/// de escritura y presenta botones de elección al jugador.
 ///
-/// Prefabs requeridos:
-///   - <see cref="bubblePrefab"/>  : GameObject con componente <see cref="ChatBubble"/>
-///   - <see cref="choiceButtonPrefab"/> : GameObject con Button + TMP_Text en un hijo
+/// Configura <see cref="bubblePrefabs"/> en el inspector: una entrada por cada
+/// <see cref="ChatContentType"/> que quieras soportar (Text, Emoji, Image…).
+/// Añadir un nuevo tipo no requiere cambios de código, solo un nuevo prefab y una entrada en la lista.
 /// </summary>
 public class ChatUI : MonoBehaviour, IChatPresenter
 {
+    [Serializable]
+    public class BubblePrefabMapping
+    {
+        public ChatContentType contentType;
+        public ChatBubble      prefab;
+        [Tooltip("Si se asigna, se usa para mensajes propios (isOwn = true).")]
+        public ChatBubble      ownPrefab;
+    }
+
     [Header("Scroll")]
-    [SerializeField] private ScrollRect scrollRect;
-    [SerializeField] private Transform  contentParent;
-    [SerializeField] private ChatBubble bubblePrefab;
-    [SerializeField] private ChatBubble ownBubblePrefab; // si se asigna, se usa para mensajes propios (isOwn=true)
+    [SerializeField] private ScrollRect          scrollRect;
+    [SerializeField] private Transform           contentParent;
+    [SerializeField] private ContentSizeListener contentSizeListener;
+
+    [Header("Burbujas")]
+    [SerializeField] private List<BubblePrefabMapping> bubblePrefabs = new();
 
     [Header("Indicador de escritura")]
-    [SerializeField] private GameObject typingIndicator;
-    [SerializeField] private TMP_Text   typingLabel;
+    [SerializeField] private TypingBubble typingBubblePrefab;
 
-    [Header("Opciones")]
-    [SerializeField] private Transform choicesParent;
-    [SerializeField] private Button    choiceButtonPrefab;
+    [Header("Opciones de texto")]
+    [SerializeField] private Transform            choicesParent;
+    [SerializeField] private Button               choiceButtonPrefab;
+    [SerializeField] private ChoicesPanelAnimator choicesAnimator;
 
-    private TaskCompletionSource<int> _choiceTcs;
+    [Header("Opciones de imagen")]
+    [SerializeField] private Transform            imageChoicesParent;
+    [SerializeField] private ImageChoiceButton    imageChoiceButtonPrefab;
+    [SerializeField] private ChoicesPanelAnimator imageChoicesAnimator;
+
+    private Dictionary<ChatContentType, BubblePrefabMapping> _bubbleMap;
+    private TaskCompletionSource<int>                        _choiceTcs;
+
+    private void Awake()
+    {
+        _bubbleMap = new Dictionary<ChatContentType, BubblePrefabMapping>(bubblePrefabs.Count);
+        foreach (var mapping in bubblePrefabs)
+            _bubbleMap[mapping.contentType] = mapping;
+
+        if (contentSizeListener)
+            contentSizeListener.OnSizeChanged += ScrollToBottom;
+    }
+
+    private void OnDestroy()
+    {
+        if (contentSizeListener)
+            contentSizeListener.OnSizeChanged -= ScrollToBottom;
+    }
 
     // -----------------------------------------------------------------------
     // IChatPresenter
@@ -40,24 +72,23 @@ public class ChatUI : MonoBehaviour, IChatPresenter
 
     public void AddMessage(ChatEntry entry)
     {
-        if (!bubblePrefab || !contentParent) return;
+        if (!contentParent) return;
+        if (!_bubbleMap.TryGetValue(entry.contentType, out var mapping)) return;
 
-        var prefab = (entry.isOwn && ownBubblePrefab) ? ownBubblePrefab : bubblePrefab;
+        var prefab = (entry.isOwn && mapping.ownPrefab) ? mapping.ownPrefab : mapping.prefab;
+        if (!prefab) return;
+
         var bubble = Instantiate(prefab, contentParent);
         bubble.Set(entry);
-        StartCoroutine(ScrollToBottomNextFrame());
     }
 
-    public async Task ShowTypingAsync(CharacterProfile profile, float seconds, CancellationToken ct)
+    public async Task ShowTypingAsync(CharacterDefinition profile, float seconds, CancellationToken ct)
     {
-        if (typingIndicator)
+        TypingBubble instance = null;
+        if (typingBubblePrefab && contentParent)
         {
-            if (typingLabel)
-                typingLabel.text = profile != null
-                    ? $"{profile.displayName} está escribiendo..."
-                    : "Escribiendo...";
-
-            typingIndicator.SetActive(true);
+            instance = Instantiate(typingBubblePrefab, contentParent);
+            instance.Set(profile);
         }
 
         try
@@ -66,8 +97,34 @@ public class ChatUI : MonoBehaviour, IChatPresenter
         }
         finally
         {
-            if (typingIndicator) typingIndicator.SetActive(false);
+            if (instance) Destroy(instance.gameObject);
         }
+    }
+
+    public async Task<int> ShowImageChoicesAsync(IReadOnlyList<ImageChoiceModule.ImageChoiceData> choices, CancellationToken ct)
+    {
+        _choiceTcs = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        for (int i = 0; i < choices.Count; i++)
+        {
+            var idx = i;
+            var btn = Instantiate(imageChoiceButtonPrefab, imageChoicesParent);
+            btn.Set(choices[i].sprite, () => SelectChoice(idx));
+        }
+
+        imageChoicesAnimator?.Show();
+
+        using var reg = ct.Register(() =>
+        {
+            _choiceTcs?.TrySetCanceled();
+            if (imageChoicesAnimator) imageChoicesAnimator.HideImmediate();
+            ClearImageChoiceButtons();
+        });
+
+        int result = await _choiceTcs.Task;
+        imageChoicesAnimator?.Hide();
+        ClearImageChoiceButtons();
+        return result;
     }
 
     public async Task<int> ShowChoicesAsync(IReadOnlyList<ChoiceModule.ChoiceData> choices, CancellationToken ct)
@@ -83,21 +140,31 @@ public class ChatUI : MonoBehaviour, IChatPresenter
             btn.onClick.AddListener(() => SelectChoice(idx));
         }
 
-        ct.Register(ClearChoiceButtons);
+        choicesAnimator?.Show();
+
+        using var reg = ct.Register(() =>
+        {
+            _choiceTcs?.TrySetCanceled();
+            if (choicesAnimator) choicesAnimator.HideImmediate();
+            ClearChoiceButtons();
+        });
 
         int result = await _choiceTcs.Task;
+        choicesAnimator?.Hide();
         ClearChoiceButtons();
         return result;
     }
 
     public void Clear()
     {
-        foreach (Transform child in contentParent)
-            Destroy(child.gameObject);
+        if (contentParent)
+            foreach (Transform child in contentParent)
+                Destroy(child.gameObject);
 
         ClearChoiceButtons();
-
-        if (typingIndicator) typingIndicator.SetActive(false);
+        ClearImageChoiceButtons();
+        choicesAnimator?.HideImmediate();
+        imageChoicesAnimator?.HideImmediate();
     }
 
     // -----------------------------------------------------------------------
@@ -117,12 +184,15 @@ public class ChatUI : MonoBehaviour, IChatPresenter
             Destroy(child.gameObject);
     }
 
-    /// <summary>
-    /// Espera un frame para que el LayoutGroup recalcule antes de hacer scroll.
-    /// </summary>
-    private IEnumerator ScrollToBottomNextFrame()
+    private void ClearImageChoiceButtons()
     {
-        yield return null;
+        if (!imageChoicesParent) return;
+        foreach (Transform child in imageChoicesParent)
+            Destroy(child.gameObject);
+    }
+
+    private void ScrollToBottom()
+    {
         if (scrollRect) scrollRect.verticalNormalizedPosition = 0f;
     }
 }

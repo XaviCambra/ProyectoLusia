@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+// USO: Ambos sistemas. En Retratos muestra botones de elección en pantalla; en Chat Bubble muestra opciones como burbujas.
 /// <summary>
 /// Módulo de elección: presenta al jugador un conjunto de opciones
 /// y espera a que seleccione una. Siempre es bloqueante.
@@ -51,11 +52,14 @@ public class ChoiceModule : DialogueModuleBase
         [Tooltip("Si está activo, esta opción requiere un nivel mínimo de afinidad.")]
         public bool requiresAffinity = false;
 
-        [Tooltip("Clave del parámetro de afinidad a evaluar.")]
-        public string affinityKey = "";
+        [Tooltip("Personaje origen de la relación a evaluar.")]
+        public CharacterDefinition affinityFrom;
 
-        [Tooltip("Valor mínimo requerido de afinidad.")]
-        public float requiredAffinity = 0f;
+        [Tooltip("Personaje destino de la relación a evaluar.")]
+        public CharacterDefinition affinityTo;
+
+        [Tooltip("Banda mínima requerida (nombre del estado del track).")]
+        public string requiredAffinityRelationship = "";
 
         [Tooltip("Si está activo, invierte el requisito (la afinidad debe ser MENOR que el umbral).")]
         public bool invertRequirement = false;

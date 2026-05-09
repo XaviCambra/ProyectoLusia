@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+// USO: Solo sistema de Retratos (DialogueRunner). Ignorado por Chat Bubble.
 /// <summary>
 /// Módulo de retrato: gestiona la aparición, posición, animación y
 /// efecto de fade del retrato de un personaje en pantalla.
@@ -12,7 +13,7 @@ public class PortraitModule : DialogueModuleBase
 
     // --- Perfil ---
     [Tooltip("Perfil del personaje.")]
-    public CharacterProfile profileRef;
+    public CharacterDefinition profileRef;
 
     [Tooltip("Clave del sprite dentro del perfil del personaje.")]
     public string portraitKey = "";

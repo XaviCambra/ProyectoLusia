@@ -5,17 +5,17 @@ using UnityEngine;
 
 public static class ProgressConditionInvoker
 {
-    // Registro: nombre -> función (arg -> bool)
+    // Registro: nombre -> funciï¿½n (arg -> bool)
     private static readonly Dictionary<string, Func<object, bool>> _registry = new();
 
-    /// <summary>Registra un método evaluador de progreso por nombre.</summary>
+    /// <summary>Registra un mï¿½todo evaluador de progreso por nombre.</summary>
     public static void Register(string methodName, Func<object, bool> fn)
     {
         if (string.IsNullOrWhiteSpace(methodName) || fn == null) return;
         _registry[methodName] = fn;
     }
 
-    /// <summary>Desregistra un método previamente registrado.</summary>
+    /// <summary>Desregistra un mï¿½todo previamente registrado.</summary>
     public static void Unregister(string methodName)
     {
         if (string.IsNullOrWhiteSpace(methodName)) return;
@@ -23,7 +23,7 @@ public static class ProgressConditionInvoker
     }
 
     /// <summary>
-    /// Intenta invocar el evaluador. Devuelve true si existe y se invoca sin excepción.
+    /// Intenta invocar el evaluador. Devuelve true si existe y se invoca sin excepciï¿½n.
     /// </summary>
     public static bool TryInvoke(string methodName, object arg, out bool result)
     {
@@ -37,15 +37,14 @@ public static class ProgressConditionInvoker
                 result = fn.Invoke(arg);
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Debug.LogError($"[ProgressConditionInvoker] Excepción invocando '{methodName}': {ex.Message}");
                 return false;
             }
         }
         return false;
     }
 
-    /// <summary>Vacía el registro (útil en tests o recargas).</summary>
+    /// <summary>Vacï¿½a el registro (ï¿½til en tests o recargas).</summary>
     public static void Clear() => _registry.Clear();
 }

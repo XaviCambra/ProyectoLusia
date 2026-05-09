@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+// USO: Solo sistema de Retratos (DialogueRunner). Ignorado por Chat Bubble.
 /// <summary>
 /// Módulo de audio: reproduce un AudioClip cuando el nodo llega
 /// a este módulo. Puede configurarse como bloqueante (espera a que

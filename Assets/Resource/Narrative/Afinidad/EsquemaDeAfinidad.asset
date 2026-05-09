@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcf3f7bda198da54a939b959f9dcb2f0, type: 3}
+  m_Name: EsquemaDeAfinidad
+  m_EditorClassIdentifier: 
+  globalMin: -100
+  globalMax: 100
+  tracks:
+  - id: social
+    displayName: Social
+    relationships:
+    - name: Odio
+      localizationKey: 
+      ordinal: 0
+      color: {r: 0.7137255, g: 0.23137255, b: 0.23137255, a: 1}
+      minInclusive: -100
+      maxExclusive: -40
+    - name: Neutro
+      localizationKey: 
+      ordinal: 1
+      color: {r: 0.4862745, g: 0.4862745, b: 0.4862745, a: 1}
+      minInclusive: -40
+      maxExclusive: 10
+    - name: Conocido
+      localizationKey: 
+      ordinal: 2
+      color: {r: 0.3480331, g: 0.745283, b: 0.40701464, a: 1}
+      minInclusive: 10
+      maxExclusive: 35
+    - name: Amistad
+      localizationKey: 
+      ordinal: 3
+      color: {r: 0.2901961, g: 0.48235294, b: 0.654902, a: 1}
+      minInclusive: 35
+      maxExclusive: 80
+    - name: Familiar
+      localizationKey: 
+      ordinal: 4
+      color: {r: 0.6981132, g: 0.30624774, b: 0.6487952, a: 1}
+      minInclusive: 80
+      maxExclusive: 101
+  - id: love
+    displayName: Love
+    relationships:
+    - name: Odio
+      localizationKey: 
+      ordinal: 0
+      color: {r: 0.7137255, g: 0.23137255, b: 0.23137255, a: 1}
+      minInclusive: -100
+      maxExclusive: -40
+    - name: Neutro
+      localizationKey: 
+      ordinal: 1
+      color: {r: 0.4862745, g: 0.4862745, b: 0.4862745, a: 1}
+      minInclusive: -40
+      maxExclusive: 10
+    - name: Conocido
+      localizationKey: 
+      ordinal: 2
+      color: {r: 0.34901962, g: 0.74509805, b: 0.40784314, a: 1}
+      minInclusive: 10
+      maxExclusive: 35
+    - name: Amistad
+      localizationKey: 
+      ordinal: 3
+      color: {r: 0.2901961, g: 0.48235294, b: 0.654902, a: 1}
+      minInclusive: 35
+      maxExclusive: 70
+    - name: Amor
+      localizationKey: 
+      ordinal: 4
+      color: {r: 0.77254903, g: 0.5372549, b: 0.65882355, a: 1}
+      minInclusive: 70
+      maxExclusive: 101

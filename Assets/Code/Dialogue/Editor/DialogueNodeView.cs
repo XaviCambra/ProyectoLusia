@@ -323,9 +323,9 @@ public class DialogueNodeView : Node
         nameLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
         nameLabel.style.marginLeft = ModuleNameMarginLeft;
 
-        // RunMode (excepto ChoiceModule que siempre es Blocking)
+        // RunMode (excepto ChoiceModule e ImageChoiceModule que siempre son Blocking)
         VisualElement blocksElement;
-        if (module is ChoiceModule)
+        if (module is ChoiceModule || module is ImageChoiceModule)
         {
             var fixedLabel = new Label("Blocking ✓");
             fixedLabel.style.color    = ColBlockingLabel;
@@ -381,8 +381,7 @@ public class DialogueNodeView : Node
 
         Action onChanged = () =>
         {
-            // Si el módulo es ChoiceModule, reconstruimos los puertos
-            if (module is ChoiceModule)
+            if (module is ChoiceModule || module is ImageChoiceModule)
                 RebuildOutputPorts();
             Notify();
         };
@@ -420,7 +419,9 @@ public class DialogueNodeView : Node
         outputContainer.Clear();
 
         // 3. Reconstruir puertos
-        var choiceModule = Data.GetChoiceModule();
+        var choiceModule      = Data.GetChoiceModule();
+        var imageChoiceModule = Data.GetImageChoiceModule();
+
         if (choiceModule != null)
         {
             foreach (var choice in choiceModule.choices)
@@ -433,6 +434,30 @@ public class DialogueNodeView : Node
                 var port = PortUtils.CreatePort(this, Direction.Output, Port.Capacity.Single, portName);
 
                 var label = new Label(string.IsNullOrEmpty(choice.choiceText) ? portName : choice.choiceText);
+                label.style.marginRight = ChoiceLabelMarginRight;
+
+                var row = new VisualElement();
+                row.style.flexDirection = FlexDirection.Row;
+                row.style.alignItems    = Align.Center;
+                row.Add(label);
+                row.Add(port);
+                outputContainer.Add(row);
+            }
+        }
+        else if (imageChoiceModule != null)
+        {
+            for (int i = 0; i < imageChoiceModule.choices.Count; i++)
+            {
+                var choice = imageChoiceModule.choices[i];
+                if (choice == null) continue;
+                var portName = string.IsNullOrEmpty(choice.portName)
+                    ? $"img_{i}"
+                    : choice.portName;
+
+                var port = PortUtils.CreatePort(this, Direction.Output, Port.Capacity.Single, portName);
+
+                var spriteName = choice.sprite != null ? choice.sprite.name : $"Image {i + 1}";
+                var label = new Label(spriteName);
                 label.style.marginRight = ChoiceLabelMarginRight;
 
                 var row = new VisualElement();

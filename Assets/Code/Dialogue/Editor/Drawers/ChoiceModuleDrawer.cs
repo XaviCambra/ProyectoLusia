@@ -1,6 +1,11 @@
 #if UNITY_EDITOR
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEditor;
+using UnityEditor.UIElements;
 
 /// <summary>Drawer del editor para <see cref="ChoiceModule"/>.</summary>
 public static class ChoiceModuleDrawer
@@ -137,24 +142,84 @@ public static class ChoiceModuleDrawer
             onChanged?.Invoke();
         });
 
-        var keyField  = new TextField("Affinity Key") { value = c.affinityKey };
-        keyField.RegisterValueChangedCallback(e => { c.affinityKey = e.newValue; onChanged?.Invoke(); });
-        ModuleDrawerStyles.ApplyFieldMargins(keyField);
+        var fromField = new ObjectField("From") { objectType = typeof(CharacterDefinition), value = c.affinityFrom };
+        ModuleDrawerStyles.ApplyFieldMargins(fromField);
 
-        var valField  = new FloatField("Required Value") { value = c.requiredAffinity };
-        valField.RegisterValueChangedCallback(e => { c.requiredAffinity = e.newValue; onChanged?.Invoke(); });
-        ModuleDrawerStyles.ApplyFieldMargins(valField);
+        var toField = new ObjectField("To") { objectType = typeof(CharacterDefinition), value = c.affinityTo };
+        ModuleDrawerStyles.ApplyFieldMargins(toField);
+
+        var bandContainer = new VisualElement();
+
+        void RebuildBandDropdown()
+        {
+            bandContainer.Clear();
+            var relationshipNames = GetRelationshipNames(c.affinityFrom, c.affinityTo);
+
+            if (relationshipNames == null)
+            {
+                var warning = new HelpBox(
+                    c.affinityFrom == null || c.affinityTo == null
+                        ? "Asigna From y To."
+                        : $"{c.affinityFrom.displayName} → {c.affinityTo.displayName} no tiene relación en el mapa.",
+                    HelpBoxMessageType.Warning);
+                bandContainer.Add(warning);
+                return;
+            }
+
+            int idx = relationshipNames.IndexOf(c.requiredAffinityRelationship);
+            if (idx < 0) { idx = 0; c.requiredAffinityRelationship = relationshipNames[0]; }
+            var dropdown = new DropdownField("Required Relationship", relationshipNames, idx);
+            ModuleDrawerStyles.ApplyFieldMargins(dropdown);
+            dropdown.RegisterValueChangedCallback(e => { c.requiredAffinityRelationship = e.newValue; onChanged?.Invoke(); });
+            bandContainer.Add(dropdown);
+        }
+
+        fromField.RegisterValueChangedCallback(e =>
+        {
+            c.affinityFrom = e.newValue as CharacterDefinition;
+            RebuildBandDropdown();
+            onChanged?.Invoke();
+        });
+
+        toField.RegisterValueChangedCallback(e =>
+        {
+            c.affinityTo = e.newValue as CharacterDefinition;
+            RebuildBandDropdown();
+            onChanged?.Invoke();
+        });
+
+        RebuildBandDropdown();
 
         var invToggle = new Toggle("Invert") { value = c.invertRequirement };
         invToggle.RegisterValueChangedCallback(e => { c.invertRequirement = e.newValue; onChanged?.Invoke(); });
         ModuleDrawerStyles.ApplyToggleMargins(invToggle);
 
-        fields.Add(keyField);
-        fields.Add(valField);
+        fields.Add(fromField);
+        fields.Add(toField);
+        fields.Add(bandContainer);
         fields.Add(invToggle);
         foldout.Add(toggle);
         foldout.Add(fields);
         return foldout;
+    }
+
+    // Devuelve null si el par no tiene relación registrada en el mapa.
+    private static List<string> GetRelationshipNames(CharacterDefinition from, CharacterDefinition to)
+    {
+        if (from == null || to == null) return null;
+
+        var schemaGuids = AssetDatabase.FindAssets("t:AffinitySchema");
+        if (schemaGuids.Length == 0) return null;
+
+        var schema  = AssetDatabase.LoadAssetAtPath<AffinitySchema>(AssetDatabase.GUIDToAssetPath(schemaGuids[0]));
+        var mapGuids = AssetDatabase.FindAssets("t:CharacterAffinityMap");
+        if (mapGuids.Length == 0) return null;
+
+        var map   = AssetDatabase.LoadAssetAtPath<CharacterAffinityMap>(AssetDatabase.GUIDToAssetPath(mapGuids[0]));
+        var entry = map.InitialEntries.FirstOrDefault(e => e.from == from && e.to == to);
+        if (entry == null) return null;
+
+        return schema.GetTrack(entry.trackId)?.Relationships.Select(b => b.name).ToList();
     }
 
     private static Foldout BuildProgressFoldout(ChoiceModule.ChoiceData c, Action onChanged)

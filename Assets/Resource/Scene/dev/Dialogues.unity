@@ -2191,6 +2191,7 @@ GameObject:
   - component: {fileID: 2059072029}
   - component: {fileID: 2059072030}
   - component: {fileID: 2059072035}
+  - component: {fileID: 2059072041}
   - component: {fileID: 2059072034}
   - component: {fileID: 2059072033}
   - component: {fileID: 2059072032}
@@ -2236,13 +2237,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000, guid: 7ebeb2d8589dbd24396b989a7d31e4c7, type: 2}
   navigatorBehaviour: {fileID: 2059072035}
-  textExecutor: {fileID: 2059072037}
-  portraitExecutor: {fileID: 2059072038}
-  emoteExecutor: {fileID: 2059072039}
-  eventExecutor: {fileID: 2059072040}
-  audioExecutor: {fileID: 0}
-  choiceExecutor: {fileID: 2059072036}
-  advanceKey: 110
+  inputController: {fileID: 2059072041}
 --- !u!114 &2059072031
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2448,6 +2443,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc126fa357bb6a44aac71e2e026543e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2059072041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2059072028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c755c602c37c354791188be1098126f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  advanceKey: 110
+  gameplayAdvanceKey: 109
 --- !u!1 &2146046527
 GameObject:
   m_ObjectHideFlags: 0

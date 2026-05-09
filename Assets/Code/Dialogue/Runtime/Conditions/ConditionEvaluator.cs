@@ -1,13 +1,18 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [DisallowMultipleComponent]
 public sealed class ConditionEvaluator : MonoBehaviour, IConditionEvaluator
 {
-    private readonly IChoiceCondition _affinity = new AffinityCondition();
-    private readonly IChoiceCondition _progress  = new ProgressCondition();
+    private readonly List<IChoiceCondition> _conditions = new()
+    {
+        new AffinityCondition(),
+        new ProgressCondition()
+    };
 
     public bool IsAllowed(ChoiceModule.ChoiceData c)
-        => _affinity.IsMet(c) && _progress.IsMet(c);
+        => _conditions.All(cond => cond.IsMet(c));
 }
 
 public sealed class AffinityCondition : IChoiceCondition
@@ -15,9 +20,16 @@ public sealed class AffinityCondition : IChoiceCondition
     public bool IsMet(ChoiceModule.ChoiceData c)
     {
         if (c == null || !c.requiresAffinity) return true;
-        var key = c.affinityKey ?? string.Empty;
-        float current = ParamService.GetFloat(key, 0f);
-        return c.invertRequirement ? current < c.requiredAffinity : current >= c.requiredAffinity;
+        var svc = AffinityServiceBootstrapper.Service;
+        if (svc == null) return true;
+
+        int     current = svc.GetPoints(c.affinityFrom, c.affinityTo);
+        string  trackId = svc.GetTrack(c.affinityFrom, c.affinityTo);
+        var     relationship = svc.Schema.GetTrack(trackId)?.Relationships
+                            .FirstOrDefault(b => b.name == c.requiredAffinityRelationship);
+
+        if (relationship == null) return true;
+        return c.invertRequirement ? current < relationship.minInclusive : current >= relationship.minInclusive;
     }
 }
 

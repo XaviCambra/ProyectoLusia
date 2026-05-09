@@ -8,34 +8,28 @@ using UnityEngine;
 /// Si <see cref="AudioModule.waitForCompletion"/> está activo, la Task espera a que el clip termine.
 /// </summary>
 [DisallowMultipleComponent]
-public sealed class AudioModuleExecutor : MonoBehaviour, IModuleExecutor
+public sealed class AudioModuleExecutor : ModuleExecutorBase
 {
     [SerializeField] private AudioSource audioSource;
 
-    public Type ModuleType => typeof(AudioModule);
+    public override Type ModuleType => typeof(AudioModule);
 
     private void Awake()
     {
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
 
-        if (audioSource == null)
-            Debug.LogWarning("[AudioModuleExecutor] No hay AudioSource asignado ni en el GameObject.");
     }
 
-    public void Initialize(DialogueGraph graph) { }
-    public void OnNodeBegin() { }
-    public void ResetAll() => Cancel();
-
-    public void Cancel()
+    public override void Cancel()
     {
         if (audioSource && audioSource.isPlaying)
             audioSource.Stop();
     }
 
-    public bool TryFastForward() => false;
+    public override void ResetAll() => Cancel();
 
-    public async Task ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
+    public override async Task ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
     {
         var m = (AudioModule)module;
 
@@ -46,7 +40,7 @@ public sealed class AudioModuleExecutor : MonoBehaviour, IModuleExecutor
 
         if (m.waitForCompletion)
         {
-            float elapsed = 0f;
+            float elapsed  = 0f;
             float duration = m.clip.length;
 
             while (elapsed < duration && !ctx.Token.IsCancellationRequested)
