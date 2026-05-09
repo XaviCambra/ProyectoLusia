@@ -44,7 +44,7 @@ MonoBehaviour:
     trackId: social
   - from: {fileID: 11400000, guid: e744c8cb8231bfd4f8e1adca3bdc2b82, type: 2}
     to: {fileID: 11400000, guid: 6559f6b57d3b7914b8fb957930ecca9c, type: 2}
-    points: 4
+    points: -4
     trackId: social
   - from: {fileID: 11400000, guid: 47d22d363a3c5f347adff1cd49c8c3e9, type: 2}
     to: {fileID: 11400000, guid: e744c8cb8231bfd4f8e1adca3bdc2b82, type: 2}
@@ -96,5 +96,5 @@ MonoBehaviour:
     trackId: social
   - from: {fileID: 11400000, guid: 43f523793dfa29c499ab0e270525c52a, type: 2}
     to: {fileID: 11400000, guid: f4aa8da4c00b83a4b8fabc61cf5b0464, type: 2}
-    points: 87
+    points: 83
     trackId: love
