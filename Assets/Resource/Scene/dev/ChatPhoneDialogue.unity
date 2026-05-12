@@ -605,7 +605,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 25
   m_ChildAlignment: 4
-  m_Spacing: 0
+  m_Spacing: 10
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 1
@@ -693,9 +693,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c84374ed3a4cb684390740c83c693409, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  autoStartGraph: {fileID: 11400000, guid: 58e0539491894ab498183d4b753356bf, type: 2}
+  autoStartGraph: {fileID: 11400000, guid: 840b7649253f1da438d0b7f40d995897, type: 2}
   navigator: {fileID: 896115426}
   presenterRef: {fileID: 896115429}
+  conditionEvaluatorRef: {fileID: 0}
 --- !u!4 &896115428
 Transform:
   m_ObjectHideFlags: 0
@@ -1120,7 +1121,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -1200, y: -100}
+  m_SizeDelta: {x: -1100, y: -100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1807141949
 MonoBehaviour:

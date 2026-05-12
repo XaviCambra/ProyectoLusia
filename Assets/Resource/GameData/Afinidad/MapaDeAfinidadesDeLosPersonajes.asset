@@ -94,7 +94,27 @@ MonoBehaviour:
     to: {fileID: 11400000, guid: 47d22d363a3c5f347adff1cd49c8c3e9, type: 2}
     points: 57
     trackId: social
+  - from: {fileID: 11400000, guid: f4aa8da4c00b83a4b8fabc61cf5b0464, type: 2}
+    to: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+    points: -47
+    trackId: social
+  - from: {fileID: 11400000, guid: f4aa8da4c00b83a4b8fabc61cf5b0464, type: 2}
+    to: {fileID: 11400000, guid: 43f523793dfa29c499ab0e270525c52a, type: 2}
+    points: 59
+    trackId: social
+  - from: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+    to: {fileID: 11400000, guid: f4aa8da4c00b83a4b8fabc61cf5b0464, type: 2}
+    points: -29
+    trackId: social
   - from: {fileID: 11400000, guid: 43f523793dfa29c499ab0e270525c52a, type: 2}
     to: {fileID: 11400000, guid: f4aa8da4c00b83a4b8fabc61cf5b0464, type: 2}
-    points: 83
-    trackId: love
+    points: 43
+    trackId: social
+  - from: {fileID: 11400000, guid: 43f523793dfa29c499ab0e270525c52a, type: 2}
+    to: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+    points: 93
+    trackId: social
+  - from: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+    to: {fileID: 11400000, guid: 43f523793dfa29c499ab0e270525c52a, type: 2}
+    points: 73
+    trackId: social

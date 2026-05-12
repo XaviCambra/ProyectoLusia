@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: bef31fc6c02f5fb4ba546b05329b75ee
+guid: b50636cbab492e9478ba3d568d20548e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3769921367293396773
-    second: SoraSad_0
+      213: -8862081451628272188
+    second: PlacerholderEmptyMissingImage_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: SoraSad_0
+      name: PlacerholderEmptyMissingImage_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 128
-        height: 113
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: bd872578d7c8eabc0800000000000000
-      internalID: -3769921367293396773
+      spriteID: 4c56e118fdf830580800000000000000
+      internalID: -8862081451628272188
       vertices: []
       indices: 
       edges: []
@@ -134,8 +134,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      SoraSad_0: -3769921367293396773
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

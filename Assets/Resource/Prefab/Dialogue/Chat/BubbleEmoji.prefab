@@ -203,6 +203,10 @@ PrefabInstance:
       propertyPath: contentImage
       value: 
       objectReference: {fileID: 6315524930565230175}
+    - target: {fileID: 6311583140945930074, guid: c0a38f80a996aa3448e6ec1c9a02ea90, type: 3}
+      propertyPath: defaultAvatar
+      value: 
+      objectReference: {fileID: -8862081451628272188, guid: b50636cbab492e9478ba3d568d20548e, type: 3}
     - target: {fileID: 7070069155086373376, guid: c0a38f80a996aa3448e6ec1c9a02ea90, type: 3}
       propertyPath: m_Name
       value: BubbleEmoji

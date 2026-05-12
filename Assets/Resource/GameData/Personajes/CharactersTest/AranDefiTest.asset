@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e8ed4ab4fc7e0c4449996b86780f8ac2, type: 3}
-  m_Name: JoseLuisDefinitionTest
+  m_Name: AranDefiTest
   m_EditorClassIdentifier: 
-  characterId: 82fd5d61848e42be926a356f12e84562
-  displayName: Jose Luis
+  characterId: cd94abe2f3d1468ca55d7fa27f717c8b
+  displayName: Aran
   icon: {fileID: 0}
-  sex: 0
+  sex: 1
   race: 8
-  age: 0
+  age: 24
   avatarSprite: {fileID: 0}
   portraits: []
