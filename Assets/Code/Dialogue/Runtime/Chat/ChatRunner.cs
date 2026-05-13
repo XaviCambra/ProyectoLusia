@@ -5,36 +5,31 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
-/// Runner de chat: recorre un <see cref="DialogueGraph"/> procesando únicamente
-/// <see cref="TextModule"/>, <see cref="ChoiceModule"/>, <see cref="EventDispatcherModule"/>,
-/// <see cref="ChatPauseModule"/>, <see cref="ChatTypingModule"/> y <see cref="WaitForSignalModule"/>.
-/// Acumula las entradas en <see cref="History"/> y delega la presentación
-/// en un <see cref="IChatPresenter"/>.
-///
-/// No toca ni modifica <see cref="DialogueRunner"/>; comparte solo el grafo y el navegador.
+/// Orquesta la ejecución de un <see cref="DialogueGraph"/> en el sistema de chat.
+/// No conoce el contenido de los módulos: itera y despacha mediante un diccionario
+/// de handlers registrados. Para añadir soporte a un módulo nuevo: una línea en
+/// <see cref="RegisterHandlers"/>.
 /// </summary>
 [DisallowMultipleComponent]
 public sealed class ChatRunner : MonoBehaviour
 {
     [Header("Graph")]
-    [SerializeField] private DialogueGraph  autoStartGraph; // si se asigna, arranca automáticamente en Start
+    [SerializeField] private DialogueGraph autoStartGraph;
 
     [Header("Referencias")]
     [SerializeField] private GraphNavigator navigator;
-    [SerializeField] private MonoBehaviour  presenterRef;         // debe implementar IChatPresenter
-    [SerializeField] private MonoBehaviour  conditionEvaluatorRef; // debe implementar IConditionEvaluator (opcional)
+    [SerializeField] private MonoBehaviour  presenterRef;
+    [SerializeField] private MonoBehaviour  conditionEvaluatorRef;
 
-    private IChatPresenter           _presenter;
-    private IConditionEvaluator      _conditionEvaluator;
-    private CancellationTokenSource  _cts;
-    private CharacterDefinition      _currentProfile;
+    private IChatPresenter          _presenter;
+    private IConditionEvaluator     _conditionEvaluator;
+    private CancellationTokenSource _cts;
+    private CharacterDefinition     _currentProfile;
 
+    private readonly Dictionary<Type, Func<IDialogueModule, ChatExecutionContext, CancellationToken, Task<string>>> _handlers = new();
     private readonly List<ChatEntry> _history = new();
 
-    /// <summary>Historial acumulado de mensajes desde el último <see cref="StartChat"/>.</summary>
     public IReadOnlyList<ChatEntry> History => _history;
-
-    /// <summary>Se invoca cuando el grafo llega a su fin sin cancelación.</summary>
     public event Action OnChatComplete;
 
     // -----------------------------------------------------------------------
@@ -43,8 +38,9 @@ public sealed class ChatRunner : MonoBehaviour
     {
         _presenter          = presenterRef as IChatPresenter;
         _conditionEvaluator = conditionEvaluatorRef as IConditionEvaluator;
-        if (_presenter == null)
-            enabled = false;
+        if (_presenter == null) { enabled = false; return; }
+
+        RegisterHandlers();
     }
 
     private void Start()
@@ -57,7 +53,6 @@ public sealed class ChatRunner : MonoBehaviour
 
     // -----------------------------------------------------------------------
 
-    /// <summary>Inicia el recorrido del grafo desde su nodo de inicio.</summary>
     public void StartChat(DialogueGraph graph)
     {
         Stop();
@@ -69,7 +64,6 @@ public sealed class ChatRunner : MonoBehaviour
         _ = RunAsync(navigator.StartNode(), _cts.Token);
     }
 
-    /// <summary>Cancela la ejecución en curso.</summary>
     public void Stop()
     {
         _cts?.Cancel();
@@ -87,115 +81,135 @@ public sealed class ChatRunner : MonoBehaviour
             while (current != null)
             {
                 ct.ThrowIfCancellationRequested();
-
                 var nextPort = await ProcessNodeAsync(current, ct);
                 current = navigator.NextFrom(current, nextPort);
             }
-
             OnChatComplete?.Invoke();
         }
-        catch (OperationCanceledException) { /* cancelación normal */ }
+        catch (OperationCanceledException) { }
         catch (Exception e) { Debug.LogException(e); }
     }
 
-    /// <summary>
-    /// Procesa todos los módulos del nodo y devuelve el puerto de salida a usar.
-    /// </summary>
     private async Task<string> ProcessNodeAsync(DialogueNodeData node, CancellationToken ct)
     {
-        var nextPort  = "Next";
-        var breakLoop = false;
+        var ctx = new ChatExecutionContext(_presenter, _conditionEvaluator, _history, _currentProfile);
 
         foreach (var module in node.modules)
         {
             ct.ThrowIfCancellationRequested();
+            if (!_handlers.TryGetValue(module.GetType(), out var handler)) continue;
 
-            switch (module)
+            var port = await handler(module, ctx, ct);
+            if (port != null)
             {
-                case ProfileModule m:
-                    _currentProfile = m.profile;
-                    break;
-
-                case TextModule m:
-                    var entry = ChatEntry.ForText(m.speakerName, m.text, m.isOwn, _currentProfile?.avatarSprite);
-                    _history.Add(entry);
-                    _presenter?.AddMessage(entry);
-                    break;
-
-                case ChoiceModule m:
-                    var visible = _conditionEvaluator != null
-                        ? m.choices.FindAll(_conditionEvaluator.IsAllowed)
-                        : m.choices;
-                    var idx = _presenter != null
-                        ? await _presenter.ShowChoicesAsync(visible, ct)
-                        : 0;
-                    nextPort  = (visible.Count > idx) ? visible[idx].portName : "Next";
-                    breakLoop = true;
-                    break;
-
-                case ImageChoiceModule m:
-                    var imgIdx = _presenter != null
-                        ? await _presenter.ShowImageChoicesAsync(m.choices, ct)
-                        : 0;
-                    nextPort  = (m.choices.Count > imgIdx) ? m.choices[imgIdx].portName : "Next";
-                    breakLoop = true;
-                    break;
-
-                case EventDispatcherModule m:
-                    GlobalDialogueEvents.Fire(m.BuildPayload());
-                    break;
-
-                case ChatTypingModule m when _presenter != null:
-                    await _presenter.ShowTypingAsync(m.profile, m.duration, ct);
-                    break;
-
-                case ChatPauseModule m when m.duration > 0f:
-                    await Task.Delay(TimeSpan.FromSeconds(m.duration), ct);
-                    break;
-
-                case WaitForSignalModule m when m.signal != null:
-                    await WaitForSignalAsync(m.signal, ct);
-                    break;
-
-                case EmojiModule m when m.emoji != null:
-                    var emojiEntry = ChatEntry.ForEmoji(
-                        _currentProfile?.displayName, m.emoji, m.isOwn, _currentProfile?.avatarSprite);
-                    _history.Add(emojiEntry);
-                    _presenter?.AddMessage(emojiEntry);
-                    break;
-
-                case ImageModule m when m.image != null:
-                    var imageEntry = ChatEntry.ForImage(
-                        _currentProfile?.displayName, m.image, m.isOwn, _currentProfile?.avatarSprite);
-                    _history.Add(imageEntry);
-                    _presenter?.AddMessage(imageEntry);
-                    break;
+                _currentProfile = ctx.CurrentProfile;
+                return port;
             }
-
-            if (breakLoop) break;
         }
 
-        return nextPort;
+        _currentProfile = ctx.CurrentProfile;
+        return "Next";
     }
 
-    /// <summary>
-    /// Espera de forma asíncrona hasta que <paramref name="signal"/> emita,
-    /// o hasta que <paramref name="ct"/> sea cancelado.
-    /// </summary>
+    // -----------------------------------------------------------------------
+
+    private void RegisterHandlers()
+    {
+        Register<ProfileModule>((m, ctx, ct) =>
+        {
+            ctx.CurrentProfile = m.profile;
+            return Task.FromResult<string>(null);
+        });
+
+        Register<TextModule>((m, ctx, ct) =>
+        {
+            var entry = ChatEntry.ForText(m.speakerName, m.text, m.isOwn, ctx.CurrentProfile?.avatarSprite);
+            ctx.History.Add(entry);
+            ctx.Presenter?.AddMessage(entry);
+            return Task.FromResult<string>(null);
+        });
+
+        Register<EmojiModule>((m, ctx, ct) =>
+        {
+            if (m.emoji == null) return Task.FromResult<string>(null);
+            var entry = ChatEntry.ForEmoji(ctx.CurrentProfile?.displayName, m.emoji, m.isOwn, ctx.CurrentProfile?.avatarSprite);
+            ctx.History.Add(entry);
+            ctx.Presenter?.AddMessage(entry);
+            return Task.FromResult<string>(null);
+        });
+
+        Register<ImageModule>((m, ctx, ct) =>
+        {
+            if (m.image == null) return Task.FromResult<string>(null);
+            var entry = ChatEntry.ForImage(ctx.CurrentProfile?.displayName, m.image, m.isOwn, ctx.CurrentProfile?.avatarSprite);
+            ctx.History.Add(entry);
+            ctx.Presenter?.AddMessage(entry);
+            return Task.FromResult<string>(null);
+        });
+
+        Register<EventDispatcherModule>((m, ctx, ct) =>
+        {
+            GlobalDialogueEvents.Fire(m.BuildPayload());
+            return Task.FromResult<string>(null);
+        });
+
+        Register<ChatTypingModule>(async (m, ctx, ct) =>
+        {
+            if (ctx.Presenter != null)
+                await ctx.Presenter.ShowTypingAsync(ctx.CurrentProfile, m.duration, ct);
+            return null;
+        });
+
+        Register<ChatPauseModule>(async (m, ctx, ct) =>
+        {
+            if (m.duration > 0f)
+                await Task.Delay(TimeSpan.FromSeconds(m.duration), ct);
+            return null;
+        });
+
+        Register<WaitForSignalModule>(async (m, ctx, ct) =>
+        {
+            if (m.signal != null)
+                await WaitForSignalAsync(m.signal, ct);
+            return null;
+        });
+
+        Register<ChoiceModule>(async (m, ctx, ct) =>
+        {
+            var visible = ctx.ConditionEvaluator != null
+                ? m.choices.FindAll(ctx.ConditionEvaluator.IsAllowed)
+                : m.choices;
+            var idx = ctx.Presenter != null
+                ? await ctx.Presenter.ShowChoicesAsync(visible, ctx.CurrentProfile, ct)
+                : 0;
+            return visible.Count > idx ? visible[idx].portName : "Next";
+        });
+
+        Register<ImageChoiceModule>(async (m, ctx, ct) =>
+        {
+            var idx = ctx.Presenter != null
+                ? await ctx.Presenter.ShowImageChoicesAsync(m.choices, ct)
+                : 0;
+            return m.choices.Count > idx ? m.choices[idx].portName : "Next";
+        });
+    }
+
+    private void Register<TModule>(Func<TModule, ChatExecutionContext, CancellationToken, Task<string>> handler)
+        where TModule : IDialogueModule
+        => _handlers[typeof(TModule)] = (m, ctx, ct) => handler((TModule)m, ctx, ct);
+
     private static Task WaitForSignalAsync(SignalSO signal, CancellationToken ct)
     {
-        if (ct.IsCancellationRequested)
-            return Task.FromCanceled(ct);
+        if (ct.IsCancellationRequested) return Task.FromCanceled(ct);
 
         var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
         Action handler = null;
         CancellationTokenRegistration reg = default;
 
         handler = () =>
         {
-            reg.Dispose();              // limpia el registro de ct
-            signal.OnRaised -= handler; // se desuscribe a sí mismo
+            reg.Dispose();
+            signal.OnRaised -= handler;
             tcs.TrySetResult(true);
         };
 
