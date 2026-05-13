@@ -188,7 +188,7 @@ public sealed class ChatRunner : MonoBehaviour
         Register<ImageChoiceModule>(async (m, ctx, ct) =>
         {
             var idx = ctx.Presenter != null
-                ? await ctx.Presenter.ShowImageChoicesAsync(m.choices, ct)
+                ? await ctx.Presenter.ShowImageChoicesAsync(m.choices, ctx.CurrentProfile, ct)
                 : 0;
             return m.choices.Count > idx ? m.choices[idx].portName : "Next";
         });

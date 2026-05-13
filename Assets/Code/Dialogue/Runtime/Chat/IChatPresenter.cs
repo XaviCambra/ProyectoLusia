@@ -22,7 +22,7 @@ public interface IChatPresenter
     Task<int> ShowChoicesAsync(IReadOnlyList<ChoiceModule.ChoiceData> choices, CharacterDefinition speaker, CancellationToken ct);
 
     /// <summary>Presenta las opciones de imagen al jugador y devuelve el índice elegido.</summary>
-    Task<int> ShowImageChoicesAsync(IReadOnlyList<ImageChoiceModule.ImageChoiceData> choices, CancellationToken ct);
+    Task<int> ShowImageChoicesAsync(IReadOnlyList<ImageChoiceModule.ImageChoiceData> choices, CharacterDefinition speaker, CancellationToken ct);
 
     /// <summary>Limpia el historial visible (nuevo chat).</summary>
     void Clear();
