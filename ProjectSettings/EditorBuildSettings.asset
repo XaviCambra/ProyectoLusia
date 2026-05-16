@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Resource/Scene/dev/Dialogues.unity
+    path: Assets/Resource/Scene/dev/Guille/Dialogues.unity
     guid: 87968c575d81163469a0176bb3bb9b83
   - enabled: 1
     path: Assets/Resource/Scene/SampleScene.unity
