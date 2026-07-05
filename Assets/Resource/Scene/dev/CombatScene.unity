@@ -128,6 +128,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 45631024}
+  - component: {fileID: 45631025}
   m_Layer: 0
   m_Name: CombatCharacter T2_2
   m_TagString: Untagged
@@ -151,6 +152,18 @@ Transform:
   - {fileID: 918456949}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &45631025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 45631023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f3d70c399e71f64bbe3685a0bb641eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &62556701
 GameObject:
   m_ObjectHideFlags: 0
@@ -571,6 +584,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 312382244}
+  - component: {fileID: 312382245}
   m_Layer: 0
   m_Name: CombatCharacter T2_3
   m_TagString: Untagged
@@ -594,6 +608,18 @@ Transform:
   - {fileID: 2044555153}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &312382245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312382243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f3d70c399e71f64bbe3685a0bb641eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &403888699
 GameObject:
   m_ObjectHideFlags: 0
@@ -603,6 +629,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 403888700}
+  - component: {fileID: 403888701}
   m_Layer: 0
   m_Name: CombatCharacter T1_1
   m_TagString: Untagged
@@ -626,6 +653,18 @@ Transform:
   - {fileID: 1163013706}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &403888701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 403888699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f3d70c399e71f64bbe3685a0bb641eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &413924945
 GameObject:
   m_ObjectHideFlags: 0
@@ -635,6 +674,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 413924946}
+  - component: {fileID: 413924947}
   m_Layer: 0
   m_Name: CombatCharacter T2_1
   m_TagString: Untagged
@@ -658,6 +698,18 @@ Transform:
   - {fileID: 205634437}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &413924947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 413924945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f3d70c399e71f64bbe3685a0bb641eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &506393199
 GameObject:
   m_ObjectHideFlags: 0
@@ -920,6 +972,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1006235603}
+  - component: {fileID: 1006235604}
   m_Layer: 0
   m_Name: CombatCharacter T1_4
   m_TagString: Untagged
@@ -943,6 +996,18 @@ Transform:
   - {fileID: 917764221}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1006235604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1006235602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f3d70c399e71f64bbe3685a0bb641eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1163013704
 GameObject:
   m_ObjectHideFlags: 0
@@ -1126,6 +1191,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1228537138}
+  - component: {fileID: 1228537139}
   m_Layer: 0
   m_Name: CombatCharacter T1_2
   m_TagString: Untagged
@@ -1149,6 +1215,18 @@ Transform:
   - {fileID: 1210442250}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1228537139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1228537137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f3d70c399e71f64bbe3685a0bb641eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1283988765
 GameObject:
   m_ObjectHideFlags: 0
@@ -1158,6 +1236,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1283988766}
+  - component: {fileID: 1283988767}
   m_Layer: 0
   m_Name: CombatCharacter T1_3
   m_TagString: Untagged
@@ -1181,6 +1260,18 @@ Transform:
   - {fileID: 237487059}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1283988767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1283988765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f3d70c399e71f64bbe3685a0bb641eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1320018816
 GameObject:
   m_ObjectHideFlags: 0
@@ -1559,6 +1650,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1745293849}
+  - component: {fileID: 1745293850}
   m_Layer: 0
   m_Name: CombatCharacter T2_4
   m_TagString: Untagged
@@ -1582,6 +1674,18 @@ Transform:
   - {fileID: 1682557169}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1745293850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1745293848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f3d70c399e71f64bbe3685a0bb641eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1775348320
 GameObject:
   m_ObjectHideFlags: 0
