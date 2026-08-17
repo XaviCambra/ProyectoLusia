@@ -10,7 +10,7 @@ using UnityEngine;
 public abstract class ModuleExecutorBase : MonoBehaviour, IModuleExecutor
 {
     public abstract Type ModuleType { get; }
-    public abstract Task ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx);
+    public abstract Task<string> ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx);
 
     public virtual void Initialize(DialogueGraph graph) { }
     public virtual void OnNodeBegin()                   { }

@@ -29,11 +29,11 @@ public sealed class AudioModuleExecutor : ModuleExecutorBase
 
     public override void ResetAll() => Cancel();
 
-    public override async Task ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
+    public override async Task<string> ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
     {
         var m = (AudioModule)module;
 
-        if (audioSource == null || m.clip == null) return;
+        if (audioSource == null || m.clip == null) return null;
 
         audioSource.volume = m.volume;
         audioSource.PlayOneShot(m.clip);
@@ -49,5 +49,7 @@ public sealed class AudioModuleExecutor : ModuleExecutorBase
                 await Task.Yield();
             }
         }
+
+        return null;
     }
 }

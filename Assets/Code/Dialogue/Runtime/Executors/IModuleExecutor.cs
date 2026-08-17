@@ -23,8 +23,11 @@ public interface IModuleExecutor
     /// <summary>
     /// Ejecuta el módulo. Si el módulo es bloqueante, el caller espera a que la Task complete.
     /// Si no es bloqueante, el caller puede ignorar el resultado (fire and forget).
+    /// El valor devuelto es el nombre del puerto de salida por el que navegar, o
+    /// <c>null</c> si el módulo no decide navegación (el runner sigue con el flujo normal).
+    /// Solo se consulta el valor devuelto de módulos con RunMode Blocking.
     /// </summary>
-    Task ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx);
+    Task<string> ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx);
 
     /// <summary>Cancela cualquier operación en curso (ej. al navegar al siguiente nodo).</summary>
     void Cancel();

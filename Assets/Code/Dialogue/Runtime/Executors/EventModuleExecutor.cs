@@ -12,7 +12,7 @@ public sealed class EventModuleExecutor : ModuleExecutorBase
 {
     public override Type ModuleType => typeof(EventDispatcherModule);
 
-    public override Task ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
+    public override Task<string> ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
     {
         var m = (EventDispatcherModule)module;
 
@@ -21,6 +21,6 @@ public sealed class EventModuleExecutor : ModuleExecutorBase
             GlobalDialogueEvents.Fire(m.BuildPayload());
         }
 
-        return Task.CompletedTask;
+        return Task.FromResult<string>(null);
     }
 }
