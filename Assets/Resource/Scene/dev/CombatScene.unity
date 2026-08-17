@@ -164,6 +164,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f3d70c399e71f64bbe3685a0bb641eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Character: {fileID: 0}
+  m_Stats:
+    m_Vitalidad:
+      m_BaseValue: 0
+    m_Fuerza:
+      m_BaseValue: 0
+    m_Resistencia:
+      m_BaseValue: 0
+    m_Velocidad:
+      m_BaseValue: 0
+    m_Suerte:
+      m_BaseValue: 0
 --- !u!1 &62556701
 GameObject:
   m_ObjectHideFlags: 0
@@ -601,7 +613,7 @@ Transform:
   m_GameObject: {fileID: 312382243}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.25, y: 1.5, z: 0}
+  m_LocalPosition: {x: 6.25, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -620,6 +632,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f3d70c399e71f64bbe3685a0bb641eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Character: {fileID: 0}
+  m_Stats:
+    m_Vitalidad:
+      m_BaseValue: 0
+    m_Fuerza:
+      m_BaseValue: 0
+    m_Resistencia:
+      m_BaseValue: 0
+    m_Velocidad:
+      m_BaseValue: 0
+    m_Suerte:
+      m_BaseValue: 0
 --- !u!1 &403888699
 GameObject:
   m_ObjectHideFlags: 0
@@ -665,6 +689,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f3d70c399e71f64bbe3685a0bb641eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Character: {fileID: 0}
+  m_Stats:
+    m_Vitalidad:
+      m_BaseValue: 0
+    m_Fuerza:
+      m_BaseValue: 0
+    m_Resistencia:
+      m_BaseValue: 0
+    m_Velocidad:
+      m_BaseValue: 0
+    m_Suerte:
+      m_BaseValue: 0
 --- !u!1 &413924945
 GameObject:
   m_ObjectHideFlags: 0
@@ -691,7 +727,7 @@ Transform:
   m_GameObject: {fileID: 413924945}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.5, y: 1.5, z: 0}
+  m_LocalPosition: {x: 2.75, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -710,6 +746,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f3d70c399e71f64bbe3685a0bb641eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Character: {fileID: 0}
+  m_Stats:
+    m_Vitalidad:
+      m_BaseValue: 0
+    m_Fuerza:
+      m_BaseValue: 0
+    m_Resistencia:
+      m_BaseValue: 0
+    m_Velocidad:
+      m_BaseValue: 0
+    m_Suerte:
+      m_BaseValue: 0
 --- !u!1 &506393199
 GameObject:
   m_ObjectHideFlags: 0
@@ -989,7 +1037,7 @@ Transform:
   m_GameObject: {fileID: 1006235602}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.5, y: 1.5, z: 0}
+  m_LocalPosition: {x: -2.75, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1008,6 +1056,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f3d70c399e71f64bbe3685a0bb641eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Character: {fileID: 0}
+  m_Stats:
+    m_Vitalidad:
+      m_BaseValue: 0
+    m_Fuerza:
+      m_BaseValue: 0
+    m_Resistencia:
+      m_BaseValue: 0
+    m_Velocidad:
+      m_BaseValue: 0
+    m_Suerte:
+      m_BaseValue: 0
 --- !u!1 &1163013704
 GameObject:
   m_ObjectHideFlags: 0
@@ -1208,7 +1268,7 @@ Transform:
   m_GameObject: {fileID: 1228537137}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.25, y: 1.5, z: 0}
+  m_LocalPosition: {x: -6.25, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1227,6 +1287,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f3d70c399e71f64bbe3685a0bb641eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Character: {fileID: 0}
+  m_Stats:
+    m_Vitalidad:
+      m_BaseValue: 0
+    m_Fuerza:
+      m_BaseValue: 0
+    m_Resistencia:
+      m_BaseValue: 0
+    m_Velocidad:
+      m_BaseValue: 0
+    m_Suerte:
+      m_BaseValue: 0
 --- !u!1 &1283988765
 GameObject:
   m_ObjectHideFlags: 0
@@ -1272,6 +1344,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f3d70c399e71f64bbe3685a0bb641eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Character: {fileID: 0}
+  m_Stats:
+    m_Vitalidad:
+      m_BaseValue: 0
+    m_Fuerza:
+      m_BaseValue: 0
+    m_Resistencia:
+      m_BaseValue: 0
+    m_Velocidad:
+      m_BaseValue: 0
+    m_Suerte:
+      m_BaseValue: 0
 --- !u!1 &1320018816
 GameObject:
   m_ObjectHideFlags: 0
@@ -1283,6 +1367,7 @@ GameObject:
   - component: {fileID: 1320018818}
   - component: {fileID: 1320018819}
   - component: {fileID: 1320018821}
+  - component: {fileID: 1320018822}
   - component: {fileID: 1320018820}
   m_Layer: 0
   m_Name: Test
@@ -1335,7 +1420,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6d9643d5d4ab08f4ca18c8ff50ea96f0, type: 2}
   - {fileID: 11400000, guid: a2b4f21ebc9e8574780618024fc0b55f, type: 2}
   - {fileID: 11400000, guid: 6f3a75a48eda76b4f80919bb9c62acf4, type: 2}
-  orderManager: {fileID: 1320018819}
+  - {fileID: 11400000, guid: 2d73362dc002fc9429d64204760c52f9, type: 2}
+  - {fileID: 11400000, guid: 0138b589ab48f164382eeccd360f94c4, type: 2}
+  - {fileID: 11400000, guid: 8f7c69c05d5797d45b1869046961bd27, type: 2}
+  - {fileID: 11400000, guid: ce379ce1fed636740a93cfb7ea904c6e, type: 2}
+  _CombatManager: {fileID: 1320018819}
 --- !u!114 &1320018821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1352,6 +1441,35 @@ MonoBehaviour:
   actionPanel: {fileID: 146759471}
   targetPanel: {fileID: 2023965032}
   turnOrderPanel: {fileID: 1359592887}
+--- !u!114 &1320018822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1320018816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c184ee9680d292346ae05f69aa6249d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CombatCharacterList:
+  - m_CombatCharacter: {fileID: 0}
+    m_Team: 0
+  - m_CombatCharacter: {fileID: 0}
+    m_Team: 0
+  - m_CombatCharacter: {fileID: 0}
+    m_Team: 0
+  - m_CombatCharacter: {fileID: 0}
+    m_Team: 0
+  - m_CombatCharacter: {fileID: 0}
+    m_Team: 0
+  - m_CombatCharacter: {fileID: 0}
+    m_Team: 0
+  - m_CombatCharacter: {fileID: 0}
+    m_Team: 0
+  - m_CombatCharacter: {fileID: 0}
+    m_Team: 0
 --- !u!1 &1359592887
 GameObject:
   m_ObjectHideFlags: 0
@@ -1686,6 +1804,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f3d70c399e71f64bbe3685a0bb641eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Character: {fileID: 0}
+  m_Stats:
+    m_Vitalidad:
+      m_BaseValue: 0
+    m_Fuerza:
+      m_BaseValue: 0
+    m_Resistencia:
+      m_BaseValue: 0
+    m_Velocidad:
+      m_BaseValue: 0
+    m_Suerte:
+      m_BaseValue: 0
 --- !u!1 &1775348320
 GameObject:
   m_ObjectHideFlags: 0

@@ -21,7 +21,7 @@ public class CombatUIManager : MonoBehaviour
 
     private List<GameObject> icons = new List<GameObject>();
 
-    public System.Action<Character> OnCharacterClicked;
+    public System.Action<CombatCharacter> OnCharacterClicked;
 
     public void BuildUI(IReadOnlyList<CharacterTurn> turnOrder)
     {
@@ -33,7 +33,7 @@ public class CombatUIManager : MonoBehaviour
         {
             GameObject icon = Instantiate(iconPrefab, turnOrderPanel.transform);
             icons.Add(icon);
-            icon.GetComponent<Image>().sprite = ct.m_Character.sprite;
+            icon.GetComponent<Image>().sprite = ct.m_Character.GetCharacter().sprite;
             var clickable = icon.GetComponent<ImagenClickable>();
             clickable.onClicked = () => OnCharacterClicked?.Invoke(ct.m_Character);
         }
@@ -68,7 +68,7 @@ public class CombatUIManager : MonoBehaviour
         foreach (var ct in turnOrder)
         {
             GameObject icon = icons.Find(i =>
-                i.GetComponent<Image>().sprite == ct.m_Character.sprite);
+                i.GetComponent<Image>().sprite == ct.m_Character.GetCharacter().sprite);
 
             newOrder.Add(icon);
         }

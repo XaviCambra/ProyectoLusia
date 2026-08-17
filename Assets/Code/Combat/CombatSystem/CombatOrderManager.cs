@@ -8,18 +8,18 @@ public class CombatOrderManager
 
     public IReadOnlyList<CharacterTurn> TurnOrder => turnOrder;
 
-    public void AddCharacter(Character character)
+    public void AddCharacter(CombatCharacter character)
     {
         var ct = new CharacterTurn
         {
             m_Character = character,
-            m_TurnID = character.GetStats().m_Velocidad
+            m_TurnID = character.GetStats().m_Velocidad.m_Value
         };
 
         turnOrder.Add(ct);
     }
 
-    public void RemoveCharacter(Character character)
+    public void RemoveCharacter(CombatCharacter character)
     {
         var ct = turnOrder.FirstOrDefault(t => t.m_Character == character);
         if (ct != null)
@@ -33,7 +33,7 @@ public class CombatOrderManager
             .ToList();
     }
 
-    public Character GetActiveCharacter()
+    public CombatCharacter GetActiveCharacter()
     {
         return turnOrder.Count > 0 ? turnOrder[0].m_Character : null;
     }
@@ -51,6 +51,6 @@ public class CombatOrderManager
 [Serializable]
 public class CharacterTurn
 {
-    public Character m_Character;
+    public CombatCharacter m_Character;
     public float m_TurnID;
 }

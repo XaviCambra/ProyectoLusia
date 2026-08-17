@@ -1,16 +1,31 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CombatCharacterManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] List<CombatCharacterTeam> m_CombatCharacterTeamList = new List<CombatCharacterTeam>();
+    [SerializeField] List<CombatCharacter> m_CombatCharacterList = new List<CombatCharacter>();
+    public void AddCharacterToTeam(CombatCharacter _CombatCharacter, int _Team = 0)
     {
-        
+        if (_CombatCharacter == null)
+            return;
+        m_CombatCharacterTeamList.Add(new CombatCharacterTeam(_CombatCharacter, _Team));
     }
 
-    // Update is called once per frame
-    void Update()
+}
+
+[Serializable]
+public class CombatCharacterTeam
+{
+    public CombatCharacterTeam(CombatCharacter combatCharacter, int team)
     {
-        
+        m_CombatCharacter = combatCharacter;
+        m_Team = team;
     }
+    public CombatCharacter CombatCharacter => m_CombatCharacter;
+    public int Team => m_Team;
+
+    [SerializeField] private CombatCharacter m_CombatCharacter;
+    [SerializeField] private int m_Team;
 }

@@ -1,71 +1,75 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static CombatTurnManager;
 
 public class CombatManager : MonoBehaviour
 {
-    private CombatOrderManager orderManager = new CombatOrderManager();
-    private CombatTurnManager turnManager = new CombatTurnManager();
-    private CombatUIManager uiManager;
+    private CombatCharacterManager l_CombatCharacterManager = new CombatCharacterManager();
+    private CombatOrderManager l_OrderManager = new CombatOrderManager();
+    private CombatTurnManager l_TurnManager = new CombatTurnManager();
+    private CombatUIManager l_UiManager;
 
-    private bool combatStarted = false;
-    private bool isTransitioningTurn = false;
+    private bool l_CombatStarted = false;
+    private bool l_IsTransitioningTurn = false;
 
 
     private void Awake()
     {
-        uiManager = GetComponent<CombatUIManager>();
+        l_UiManager = GetComponent<CombatUIManager>();
     }
 
-    public void StartCombat(List<Character> characters)
+    public void StartCombat(List<Character> _Characters)
     {
-        foreach (var c in characters)
-            orderManager.AddCharacter(c);
+        foreach (var c in _Characters)
+        {
+            CombatCharacter l_CombatCharacter = new CombatCharacter();
+            l_CombatCharacter.SetCharacter(c);
+            l_OrderManager.AddCharacter(l_CombatCharacter);
+        }
 
-        orderManager.SortByTurnID();
+        l_OrderManager.SortByTurnID();
 
-        uiManager.BuildUI(orderManager.TurnOrder);
+        l_UiManager.BuildUI(l_OrderManager.TurnOrder);
 
-        turnManager.SetActiveCharacter(orderManager.GetActiveCharacter());
+        l_TurnManager.SetActiveCharacter(l_OrderManager.GetActiveCharacter());
 
-        uiManager.OnCharacterClicked = OnCharacterClicked;
+        l_UiManager.OnCharacterClicked = OnCharacterClicked;
 
-        combatStarted = true;
+        l_CombatStarted = true;
     }
 
     private void Update()
     {
-        if (!combatStarted)
+        if (!l_CombatStarted)
             return;
 
-        if (isTransitioningTurn)
+        if (l_IsTransitioningTurn)
             return;
 
-        turnManager.Tick();
-        uiManager.UpdateUI(turnManager.CurrentState);
+        l_TurnManager.Tick();
+        l_UiManager.UpdateUI(l_TurnManager.CurrentState);
 
-        if (turnManager.TurnFinished)
+        if (l_TurnManager.TurnFinished)
             EndTurn();
     }
 
     private void EndTurn()
     {
-        isTransitioningTurn = true;
+        l_IsTransitioningTurn = true;
 
-        orderManager.AdvanceTurn(5f);
+        l_OrderManager.AdvanceTurn(5f);
 
-        uiManager.AnimateReorder(orderManager.TurnOrder, OnTurnReorderFinished);
+        l_UiManager.AnimateReorder(l_OrderManager.TurnOrder, OnTurnReorderFinished);
     }
 
     private void OnTurnReorderFinished()
     {
-        turnManager.SetActiveCharacter(orderManager.GetActiveCharacter());
+        l_TurnManager.SetActiveCharacter(l_OrderManager.GetActiveCharacter());
 
-        isTransitioningTurn = false;
+        l_IsTransitioningTurn = false;
     }
 
 
-    private void OnCharacterClicked(Character clicked)
+    private void OnCharacterClicked(CombatCharacter clicked)
     {
         Debug.Log("Has hecho clic en " + clicked.name);
 

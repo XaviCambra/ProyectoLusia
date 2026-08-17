@@ -14,7 +14,7 @@ public class CombatTurnManager
 
     public bool TurnFinished { get; private set; }
 
-    public void SetActiveCharacter(Character _Character)
+    public void SetActiveCharacter(CombatCharacter _Character)
     {
         m_TurnState = ETurnState.PickAction;
         TurnFinished = false;
