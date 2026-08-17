@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -37,18 +36,11 @@ public class ChatUI : MonoBehaviour, IChatPresenter
     [Header("Indicador de escritura")]
     [SerializeField] private TypingBubble typingBubblePrefab;
 
-    [Header("Opciones de texto")]
-    [SerializeField] private Transform            choicesParent;
-    [SerializeField] private Button               choiceButtonPrefab;
-    [SerializeField] private ChoicesPanelAnimator choicesAnimator;
-
-    [Header("Opciones de imagen")]
-    [SerializeField] private Transform            imageChoicesParent;
-    [SerializeField] private ImageChoiceButton    imageChoiceButtonPrefab;
-    [SerializeField] private ChoicesPanelAnimator imageChoicesAnimator;
+    [Header("Opciones (inline)")]
+    [SerializeField] private ChoicesBubble      choicesBubblePrefab;
+    [SerializeField] private ImageChoicesBubble imageChoicesBubblePrefab;
 
     private Dictionary<ChatContentType, BubblePrefabMapping> _bubbleMap;
-    private TaskCompletionSource<int>                        _choiceTcs;
 
     private void Awake()
     {
@@ -82,13 +74,13 @@ public class ChatUI : MonoBehaviour, IChatPresenter
         bubble.Set(entry);
     }
 
-    public async Task ShowTypingAsync(CharacterDefinition profile, float seconds, CancellationToken ct)
+    public async Task ShowTypingAsync(CharacterDefinition speaker, float seconds, CancellationToken ct)
     {
         TypingBubble instance = null;
         if (typingBubblePrefab && contentParent)
         {
             instance = Instantiate(typingBubblePrefab, contentParent);
-            instance.Set(profile);
+            instance.Set(speaker);
         }
 
         try
@@ -101,58 +93,34 @@ public class ChatUI : MonoBehaviour, IChatPresenter
         }
     }
 
-    public async Task<int> ShowImageChoicesAsync(IReadOnlyList<ImageChoiceModule.ImageChoiceData> choices, CancellationToken ct)
+    public async Task<int> ShowImageChoicesAsync(IReadOnlyList<ImageChoiceModule.ImageChoiceData> choices, CharacterDefinition speaker, CancellationToken ct)
     {
-        _choiceTcs = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
+        if (!imageChoicesBubblePrefab || !contentParent) return 0;
 
-        for (int i = 0; i < choices.Count; i++)
+        var bubble = Instantiate(imageChoicesBubblePrefab, contentParent);
+        try
         {
-            var idx = i;
-            var btn = Instantiate(imageChoiceButtonPrefab, imageChoicesParent);
-            btn.Set(choices[i].sprite, () => SelectChoice(idx));
+            return await bubble.ShowAsync(choices, speaker, ct);
         }
-
-        imageChoicesAnimator?.Show();
-
-        using var reg = ct.Register(() =>
+        finally
         {
-            _choiceTcs?.TrySetCanceled();
-            if (imageChoicesAnimator) imageChoicesAnimator.HideImmediate();
-            ClearImageChoiceButtons();
-        });
-
-        int result = await _choiceTcs.Task;
-        imageChoicesAnimator?.Hide();
-        ClearImageChoiceButtons();
-        return result;
+            if (bubble) Destroy(bubble.gameObject);
+        }
     }
 
-    public async Task<int> ShowChoicesAsync(IReadOnlyList<ChoiceModule.ChoiceData> choices, CancellationToken ct)
+    public async Task<int> ShowChoicesAsync(IReadOnlyList<ChoiceModule.ChoiceData> choices, CharacterDefinition speaker, CancellationToken ct)
     {
-        _choiceTcs = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
+        if (!choicesBubblePrefab || !contentParent) return 0;
 
-        for (int i = 0; i < choices.Count; i++)
+        var bubble = Instantiate(choicesBubblePrefab, contentParent);
+        try
         {
-            var idx = i;
-            var btn = Instantiate(choiceButtonPrefab, choicesParent);
-            var label = btn.GetComponentInChildren<TMP_Text>();
-            if (label) label.text = choices[i].choiceText;
-            btn.onClick.AddListener(() => SelectChoice(idx));
+            return await bubble.ShowAsync(choices, speaker, ct);
         }
-
-        choicesAnimator?.Show();
-
-        using var reg = ct.Register(() =>
+        finally
         {
-            _choiceTcs?.TrySetCanceled();
-            if (choicesAnimator) choicesAnimator.HideImmediate();
-            ClearChoiceButtons();
-        });
-
-        int result = await _choiceTcs.Task;
-        choicesAnimator?.Hide();
-        ClearChoiceButtons();
-        return result;
+            if (bubble) Destroy(bubble.gameObject);
+        }
     }
 
     public void Clear()
@@ -161,35 +129,11 @@ public class ChatUI : MonoBehaviour, IChatPresenter
             foreach (Transform child in contentParent)
                 Destroy(child.gameObject);
 
-        ClearChoiceButtons();
-        ClearImageChoiceButtons();
-        choicesAnimator?.HideImmediate();
-        imageChoicesAnimator?.HideImmediate();
     }
 
     // -----------------------------------------------------------------------
     // Internos
     // -----------------------------------------------------------------------
-
-    private void SelectChoice(int idx)
-    {
-        _choiceTcs?.TrySetResult(idx);
-        _choiceTcs = null;
-    }
-
-    private void ClearChoiceButtons()
-    {
-        if (!choicesParent) return;
-        foreach (Transform child in choicesParent)
-            Destroy(child.gameObject);
-    }
-
-    private void ClearImageChoiceButtons()
-    {
-        if (!imageChoicesParent) return;
-        foreach (Transform child in imageChoicesParent)
-            Destroy(child.gameObject);
-    }
 
     private void ScrollToBottom()
     {

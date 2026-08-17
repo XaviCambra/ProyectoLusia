@@ -20,9 +20,9 @@ public sealed class EmoteModuleExecutor : ModuleExecutorBase
         _controller = portraitControllerRef as IPortraitController;
     }
 
-    public override Task ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
+    public override Task<string> ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
     {
-        if (_controller == null) return Task.CompletedTask;
+        if (_controller == null) return Task.FromResult<string>(null);
         var m = (EmoteModule)module;
 
         if (m.clip != null)
@@ -30,6 +30,6 @@ public sealed class EmoteModuleExecutor : ModuleExecutorBase
         else
             _controller.StopSpecialAnimation(m.profileRef);
 
-        return Task.CompletedTask;
+        return Task.FromResult<string>(null);
     }
 }

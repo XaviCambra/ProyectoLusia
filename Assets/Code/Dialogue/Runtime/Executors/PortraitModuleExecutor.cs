@@ -28,13 +28,14 @@ public sealed class PortraitModuleExecutor : ModuleExecutorBase
         _controller?.Init(graph);
     }
 
-    public override async Task ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
+    public override async Task<string> ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
     {
-        if (_controller == null) return;
+        if (_controller == null) return null;
         var m = (PortraitModule)module;
         _activeModule = m;
         try   { await _controller.ApplyAsync(m); }
         finally { _activeModule = null; }
+        return null;
     }
 
     public override bool TryFastForward()

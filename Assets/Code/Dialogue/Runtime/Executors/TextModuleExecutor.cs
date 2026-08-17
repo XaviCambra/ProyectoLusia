@@ -41,7 +41,7 @@ public sealed class TextModuleExecutor : ModuleExecutorBase
         _typewriter?.Cancel();
     }
 
-    public override async Task ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
+    public override async Task<string> ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
     {
         var m = (TextModule)module;
 
@@ -59,6 +59,8 @@ public sealed class TextModuleExecutor : ModuleExecutorBase
         {
             if (bodyText) bodyText.text = text;
         }
+
+        return null;
     }
 
     public override void Cancel() => _typewriter?.Cancel();

@@ -13,11 +13,8 @@ public sealed class TypingBubble : MonoBehaviour
 
     public void Set(CharacterDefinition profile)
     {
-        if (avatarImage)
-        {
-            avatarImage.sprite  = profile?.avatarSprite;
-            avatarImage.enabled = profile?.avatarSprite != null;
-        }
+        if (avatarImage && profile?.avatarSprite != null)
+            avatarImage.sprite = profile.avatarSprite;
 
         if (nameLabel)
             nameLabel.text = profile?.displayName ?? string.Empty;

@@ -74,8 +74,16 @@ public sealed class GraphNavigator : MonoBehaviour, IGraphNavigator
             return toNode;
 
         // Fallback: cualquier arista saliente desde node
-        var fallback = _edges.FirstOrDefault(kv => kv.Key.fromGuid == node.GUID).Value;
-        return (!string.IsNullOrEmpty(fallback) && _byGuid.TryGetValue(fallback, out var to2)) ? to2 : null;
+        var fallbackEntry = _edges.FirstOrDefault(kv => kv.Key.fromGuid == node.GUID);
+        if (!string.IsNullOrEmpty(fallbackEntry.Value) && _byGuid.TryGetValue(fallbackEntry.Value, out var to2))
+        {
+            Debug.LogError($"[GraphNavigator] Grafo '{_graph.name}': nodo '{node.GUID}' no tiene arista para el puerto " +
+                            $"'{port}'. Usando fallback al puerto '{fallbackEntry.Key.fromPort}'. Revisa el grafo: " +
+                            $"probablemente un puerto mal nombrado o una conexión rota.");
+            return to2;
+        }
+
+        return null; // sin aristas de salida = fin de diálogo legítimo, no se avisa
     }
 
     #endregion

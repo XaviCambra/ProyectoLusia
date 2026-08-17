@@ -23,11 +23,8 @@ public class ChatBubble : MonoBehaviour
     {
         if (speakerLabel) speakerLabel.text = entry.speakerName;
 
-        if (avatarImage)
-        {
-            avatarImage.sprite  = entry.avatarSprite;
-            avatarImage.enabled = entry.avatarSprite != null;
-        }
+        if (avatarImage && entry.avatarSprite != null)
+            avatarImage.sprite = entry.avatarSprite;
 
         if (entry.contentType == ChatContentType.Text)
         {

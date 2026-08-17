@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8ed4ab4fc7e0c4449996b86780f8ac2, type: 3}
+  m_Name: AcherosDefinition
+  m_EditorClassIdentifier: 
+  characterId: e73428fb7b9b440ba5a49484c767803b
+  displayName: Acheros
+  icon: {fileID: -8801421864487500016, guid: 2a45c73618918754e99526016925e309, type: 3}
+  sex: 0
+  race: 8
+  age: 0
+  avatarSprite: {fileID: 0}
+  portraits: []

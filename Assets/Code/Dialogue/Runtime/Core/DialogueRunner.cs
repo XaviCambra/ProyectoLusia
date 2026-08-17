@@ -10,7 +10,9 @@ using UnityEngine;
 /// que se ejecutan secuencialmente a través de sus executors registrados.
 /// El runner no conoce el contenido de los módulos: solo itera y despacha.
 /// El input se delega en <see cref="DialogueInputController"/> (SRP).
-/// La navegación por choices usa <see cref="IChoiceExecutor"/> (DIP).
+/// Un módulo Blocking puede decidir su propia navegación devolviendo un puerto
+/// desde <see cref="IModuleExecutor.ExecuteAsync"/> (ej. <see cref="ChoiceModule"/>);
+/// si no, el runner avanza por el puerto "Next" cuando recibe input del jugador.
 /// </summary>
 [DisallowMultipleComponent]
 public sealed class DialogueRunner : MonoBehaviour
@@ -24,13 +26,14 @@ public sealed class DialogueRunner : MonoBehaviour
     [Header("Controles")]
     [SerializeField] private DialogueInputController inputController;
 
+    [Header("Pacing")]
+    [Tooltip("Si esta activo, el runner espera input del jugador para avanzar tras un nodo sin decision de navegacion (Retratos). Si esta desactivado, avanza solo al puerto \"Next\" (Chat).")]
+    [SerializeField] private bool waitForInputToAdvance = true;
+
     // Servicios internos
     private IGraphNavigator _navigator;
     private readonly Dictionary<Type, IModuleExecutor> _executors    = new();
     private readonly List<IModuleExecutor>             _executorList = new();
-
-    // Executor de choices: referenciado por interfaz, no por clase concreta (DIP)
-    private IChoiceExecutor _choiceExecutor;
 
     // Estado del runner
     private DialogueNodeData        _current;
@@ -42,26 +45,22 @@ public sealed class DialogueRunner : MonoBehaviour
     {
         _navigator = navigatorBehaviour as IGraphNavigator;
 
-        if (graph == null)      { enabled = false; return; }
         if (_navigator == null) { enabled = false; return; }
 
         // Descubrir y registrar todos los executors presentes en la jerarquía
         foreach (var executor in GetComponentsInChildren<IModuleExecutor>())
             RegisterExecutor(executor);
 
-        // Obtener el executor de choices por interfaz
-        if (_executors.TryGetValue(typeof(ChoiceModule), out var ce))
+        // Si hay grafo asignado desde el inspector, inicializar ya (mismo timing de siempre:
+        // antes de que corra ningun Start() de la escena). Si no lo hay (arranque bajo demanda,
+        // ej. StartChat llamado mas tarde por una app de telefono), se inicializa entonces.
+        if (graph != null)
         {
-            _choiceExecutor = ce as IChoiceExecutor;
-            if (_choiceExecutor != null)
-                _choiceExecutor.OnChoiceSelected += OnChoiceSelected;
+            foreach (var executor in _executorList)
+                executor.Initialize(graph);
+
+            _navigator.Init(graph);
         }
-
-        // Inicializar executors que lo necesiten
-        foreach (var executor in _executorList)
-            executor.Initialize(graph);
-
-        _navigator.Init(graph);
 
         // Suscribirse al input controller
         if (inputController != null)
@@ -73,8 +72,43 @@ public sealed class DialogueRunner : MonoBehaviour
 
     private void Start()
     {
+        if (graph != null)
+            StartChat(graph);
+    }
+
+    // -----------------------------------------------------------------------
+    // API pública: arrancar/parar un diálogo en cualquier momento
+    // -----------------------------------------------------------------------
+
+    /// <summary>
+    /// Arranca (o reinicia) el diálogo con el grafo indicado, cancelando cualquier
+    /// diálogo en curso primero. Además del arranque automático de <see cref="graph"/>
+    /// en <see cref="Start"/>, permite arrancar bajo demanda (ej. al abrir una app de chat).
+    /// </summary>
+    public void StartChat(DialogueGraph newGraph)
+    {
+        if (newGraph == null || _navigator == null) return;
+
+        Stop();
+
+        graph = newGraph;
+
+        foreach (var executor in _executorList)
+            executor.Initialize(graph);
+
+        _navigator.Init(graph);
         _current = _navigator.StartNode();
         _ = ShowNodeAsync(_current);
+    }
+
+    /// <summary>Detiene el diálogo en curso y limpia el estado de todos los executors.</summary>
+    public void Stop()
+    {
+        _cts?.Cancel();
+        _cts?.Dispose();
+        _cts = null;
+
+        EndDialogue();
     }
 
     private void OnDestroy()
@@ -82,9 +116,6 @@ public sealed class DialogueRunner : MonoBehaviour
         _cts?.Cancel();
         _cts?.Dispose();
         _cts = null;
-
-        if (_choiceExecutor != null)
-            _choiceExecutor.OnChoiceSelected -= OnChoiceSelected;
 
         if (inputController != null)
         {
@@ -106,14 +137,14 @@ public sealed class DialogueRunner : MonoBehaviour
             if (executor.TryFastForward()) anyForwarded = true;
 
         if (!anyForwarded && _nodeReadyToAdvance)
-            AdvanceToNext();
+            Advance(null);
     }
 
     private void HandleGameplayAdvance()
     {
         if (_current == null) return;
         if (_nodeReadyToAdvance)
-            AdvanceToNext();
+            Advance(null);
     }
 
     // -----------------------------------------------------------------------
@@ -138,6 +169,7 @@ public sealed class DialogueRunner : MonoBehaviour
 
         // Ejecutar módulos en orden
         var pendingParallel = new List<Task>();
+        string decidedPort = null;
 
         foreach (var module in node.modules)
         {
@@ -168,41 +200,47 @@ public sealed class DialogueRunner : MonoBehaviour
                     if (localCts.IsCancellationRequested) goto done;
 
                     _activeBlockingExecutor = executor;
-                    try { await executor.ExecuteAsync(module, ctx); }
+                    string port = null;
+                    try { port = await executor.ExecuteAsync(module, ctx); }
                     catch (OperationCanceledException) { goto done; }
                     finally { _activeBlockingExecutor = null; }
+
+                    if (port != null)
+                    {
+                        decidedPort = port;
+                        goto done;
+                    }
                     break;
             }
         }
 
         done:
-        if (!node.IsChoiceNode && !localCts.IsCancellationRequested)
-            _nodeReadyToAdvance = true;
+        if (localCts.IsCancellationRequested) return;
+
+        if (decidedPort != null)
+        {
+            Advance(decidedPort);
+        }
+        else if (!node.IsChoiceNode)
+        {
+            if (waitForInputToAdvance)
+                _nodeReadyToAdvance = true;
+            else
+                Advance(null);
+        }
     }
 
-    private void OnChoiceSelected(string portName)
+    /// <summary>
+    /// Navega al siguiente nodo por el puerto indicado (null = puerto "Next" por defecto).
+    /// Único punto de avance: lo usan tanto el input del jugador como un módulo
+    /// Blocking que decide su propia navegación (ej. ChoiceModule).
+    /// </summary>
+    private void Advance(string portName)
     {
         _nodeReadyToAdvance = false;
         _cts?.Cancel();
 
-        var next = _navigator.NextFrom(_current, portName);
-        if (next != null)
-        {
-            _current = next;
-            _ = ShowNodeAsync(_current);
-        }
-        else
-        {
-            EndDialogue();
-        }
-    }
-
-    private void AdvanceToNext()
-    {
-        _nodeReadyToAdvance = false;
-        _cts?.Cancel();
-
-        var next = _navigator.NextFrom(_current);
+        var next = _navigator.NextFrom(_current, portName ?? "Next");
         if (next != null)
         {
             _current = next;

@@ -1,0 +1,333 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ab21e18d53040c43b9c61e72ca1d3af, type: 3}
+  m_Name: ChatScriptTest
+  m_EditorClassIdentifier: 
+  nodes:
+  - GUID: 652eb3c9-0bbb-441f-9073-b00974f96c84
+    nodeRect:
+      serializedVersion: 2
+      x: 910
+      y: 874
+      width: 400
+      height: 406
+    bgColorIndex: 9
+    bgColor: {r: 0.18, g: 0.28, b: 0.23, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 3209439550359994449
+    - rid: 3209439564650512465
+  - GUID: 65869383-b644-42a0-a0dc-aa86047de735
+    nodeRect:
+      serializedVersion: 2
+      x: 1987
+      y: 386
+      width: 400
+      height: 402
+    bgColorIndex: 4
+    bgColor: {r: 0.25, g: 0.43, b: 0.45, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 3209439551900352605
+    - rid: 3209439550359994457
+  - GUID: a7e2cae9-4964-4f15-b803-ef25ac348edb
+    nodeRect:
+      serializedVersion: 2
+      x: 910
+      y: -100
+      width: 400
+      height: 406
+    bgColorIndex: 9
+    bgColor: {r: 0.18, g: 0.28, b: 0.23, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 3209439550359994444
+    - rid: 3209439564650512463
+  - GUID: f92d166e-9e7a-4116-90b0-511078561cc7
+    nodeRect:
+      serializedVersion: 2
+      x: 910
+      y: 386
+      width: 400
+      height: 406
+    bgColorIndex: 9
+    bgColor: {r: 0.18, g: 0.28, b: 0.23, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 3209439550359994447
+    - rid: 3209439564650512464
+  - GUID: 7079bab7-f4ab-492d-b365-1e7f85db6e3c
+    nodeRect:
+      serializedVersion: 2
+      x: 1465
+      y: 386
+      width: 400
+      height: 597
+    bgColorIndex: 9
+    bgColor: {r: 0.18, g: 0.28, b: 0.23, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 3209439550359994451
+    - rid: 3209439550359994475
+    - rid: 3209439550359994454
+    - rid: 3209439550359994452
+    - rid: 3209439550359994464
+  - GUID: a6ded993-cc98-4f2b-bf30-e43878e5422f
+    nodeRect:
+      serializedVersion: 2
+      x: -228
+      y: 201
+      width: 400
+      height: 492
+    bgColorIndex: 4
+    bgColor: {r: 0.25, g: 0.43, b: 0.45, a: 1}
+    isStart: 1
+    startId: 
+    modules:
+    - rid: 3209439550359994370
+    - rid: 3209439550359994453
+    - rid: 3209439550359994368
+  - GUID: f9ce8336-7ffe-4e51-8ef7-19d807d90933
+    nodeRect:
+      serializedVersion: 2
+      x: -228
+      y: 788
+      width: 400
+      height: 754
+    bgColorIndex: 4
+    bgColor: {r: 0.25, g: 0.43, b: 0.45, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 3209439551900352598
+    - rid: 3209439551900352601
+  - GUID: 42c44f58-b27e-429d-a891-437a9a940c4f
+    nodeRect:
+      serializedVersion: 2
+      x: 354
+      y: 340
+      width: 400
+      height: 769
+    bgColorIndex: 4
+    bgColor: {r: 0.25, g: 0.43, b: 0.45, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 3209439564650512455
+    - rid: 3209439564650512457
+  edges:
+  - fromNodeGUID: 7079bab7-f4ab-492d-b365-1e7f85db6e3c
+    fromPortName: Next
+    toNodeGUID: 65869383-b644-42a0-a0dc-aa86047de735
+  - fromNodeGUID: a6ded993-cc98-4f2b-bf30-e43878e5422f
+    fromPortName: Next
+    toNodeGUID: 42c44f58-b27e-429d-a891-437a9a940c4f
+  - fromNodeGUID: 42c44f58-b27e-429d-a891-437a9a940c4f
+    fromPortName: 97d549c5
+    toNodeGUID: a7e2cae9-4964-4f15-b803-ef25ac348edb
+  - fromNodeGUID: 42c44f58-b27e-429d-a891-437a9a940c4f
+    fromPortName: 912126bb
+    toNodeGUID: f92d166e-9e7a-4116-90b0-511078561cc7
+  - fromNodeGUID: 42c44f58-b27e-429d-a891-437a9a940c4f
+    fromPortName: 2fb0b3e3
+    toNodeGUID: 652eb3c9-0bbb-441f-9073-b00974f96c84
+  - fromNodeGUID: a7e2cae9-4964-4f15-b803-ef25ac348edb
+    fromPortName: Next
+    toNodeGUID: 7079bab7-f4ab-492d-b365-1e7f85db6e3c
+  - fromNodeGUID: f92d166e-9e7a-4116-90b0-511078561cc7
+    fromPortName: Next
+    toNodeGUID: 7079bab7-f4ab-492d-b365-1e7f85db6e3c
+  - fromNodeGUID: 652eb3c9-0bbb-441f-9073-b00974f96c84
+    fromPortName: Next
+    toNodeGUID: 7079bab7-f4ab-492d-b365-1e7f85db6e3c
+  frames: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 3209439550359994368
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Carlos
+        useLocalization: 0
+        text: Primer texto
+        locKey: 
+        isOwn: 0
+        useTypewriter: 0
+        profileOverride: {fileID: 0}
+    - rid: 3209439550359994370
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: 43f523793dfa29c499ab0e270525c52a, type: 2}
+    - rid: 3209439550359994444
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+    - rid: 3209439550359994447
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+    - rid: 3209439550359994449
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+    - rid: 3209439550359994451
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: 43f523793dfa29c499ab0e270525c52a, type: 2}
+    - rid: 3209439550359994452
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Carlos
+        useLocalization: 0
+        text: Segundo texto
+        locKey: 
+        isOwn: 0
+        useTypewriter: 0
+        profileOverride: {fileID: 0}
+    - rid: 3209439550359994453
+      type: {class: ChatTypingModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 3
+    - rid: 3209439550359994454
+      type: {class: ChatTypingModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 3
+    - rid: 3209439550359994457
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Aran
+        useLocalization: 0
+        text: Tercer texto
+        locKey: 
+        isOwn: 1
+        useTypewriter: 0
+        profileOverride: {fileID: 0}
+    - rid: 3209439550359994464
+      type: {class: ChatPauseModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 3
+    - rid: 3209439550359994475
+      type: {class: ChatPauseModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 3
+    - rid: 3209439551900352598
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+    - rid: 3209439551900352601
+      type: {class: ChoiceModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        showBlockedChoices: 0
+        choices:
+        - choiceText: Primera respuesta
+          portName: 426881c1
+          choiceUseLocalization: 0
+          choiceLocKey: 
+          requiresAffinity: 0
+          affinityFrom: {fileID: 0}
+          affinityTo: {fileID: 0}
+          requiredAffinityRelationship: 
+          invertRequirement: 0
+          requiresProgress: 0
+          progressMethod: 
+          progressArgType: 0
+          progressArgInt: 0
+          progressArgFloat: 0
+          progressArgString: 
+        - choiceText: Segunda respuesta
+          portName: 15bdc345
+          choiceUseLocalization: 0
+          choiceLocKey: 
+          requiresAffinity: 0
+          affinityFrom: {fileID: 0}
+          affinityTo: {fileID: 0}
+          requiredAffinityRelationship: 
+          invertRequirement: 0
+          requiresProgress: 0
+          progressMethod: 
+          progressArgType: 0
+          progressArgInt: 0
+          progressArgFloat: 0
+          progressArgString: 
+        - choiceText: Tercera respuesta
+          portName: 6ce2b38b
+          choiceUseLocalization: 0
+          choiceLocKey: 
+          requiresAffinity: 0
+          affinityFrom: {fileID: 0}
+          affinityTo: {fileID: 0}
+          requiredAffinityRelationship: 
+          invertRequirement: 0
+          requiresProgress: 0
+          progressMethod: 
+          progressArgType: 0
+          progressArgInt: 0
+          progressArgFloat: 0
+          progressArgString: 
+    - rid: 3209439551900352605
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+    - rid: 3209439564650512455
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+    - rid: 3209439564650512457
+      type: {class: ImageChoiceModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        choices:
+        - sprite: {fileID: 21300000, guid: 1a766584218913148ae5af7f26ac2783, type: 3}
+          portName: 97d549c5
+        - sprite: {fileID: 21300000, guid: fbd0105db36d8364e95006b24e365932, type: 3}
+          portName: 912126bb
+        - sprite: {fileID: 21300000, guid: 29b290cbd6f2c0a48a9744781e206386, type: 3}
+          portName: 2fb0b3e3
+    - rid: 3209439564650512463
+      type: {class: EmojiModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        emoji: {fileID: 21300000, guid: 1a766584218913148ae5af7f26ac2783, type: 3}
+        isOwn: 1
+    - rid: 3209439564650512464
+      type: {class: EmojiModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        emoji: {fileID: 21300000, guid: fbd0105db36d8364e95006b24e365932, type: 3}
+        isOwn: 1
+    - rid: 3209439564650512465
+      type: {class: EmojiModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        emoji: {fileID: 21300000, guid: 29b290cbd6f2c0a48a9744781e206386, type: 3}
+        isOwn: 1

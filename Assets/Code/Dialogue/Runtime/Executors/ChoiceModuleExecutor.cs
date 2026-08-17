@@ -5,21 +5,18 @@ using UnityEngine;
 /// <summary>
 /// Executor para <see cref="ChoiceModule"/>.
 /// Muestra las opciones de elección y espera a que el jugador seleccione una.
-/// Implementa <see cref="IChoiceExecutor"/> para que el runner dependa
-/// de la interfaz, no de esta clase concreta (DIP).
+/// Devuelve el puerto elegido como resultado de <see cref="ExecuteAsync"/> (el
+/// runner lo usa para navegar); no depende de ningún evento aparte.
 /// Las hotkeys numéricas (1-4) se gestionan en el propio Update,
-/// eliminando la dependencia del runner en este tipo concreto.
+/// completando el mismo <see cref="TaskCompletionSource{T}"/> que el click.
 /// </summary>
 [DisallowMultipleComponent]
-public sealed class ChoiceModuleExecutor : ModuleExecutorBase, IChoiceExecutor
+public sealed class ChoiceModuleExecutor : ModuleExecutorBase
 {
     [SerializeField] private MonoBehaviour choiceUIRef; // IChoiceUIController
 
     private IChoiceUIController _choiceUI;
-    private TaskCompletionSource<bool> _waitTcs;
-
-    /// <inheritdoc/>
-    public event Action<string> OnChoiceSelected;
+    private TaskCompletionSource<string> _waitTcs;
 
     public override Type ModuleType => typeof(ChoiceModule);
 
@@ -37,33 +34,31 @@ public sealed class ChoiceModuleExecutor : ModuleExecutorBase, IChoiceExecutor
         if (!_choiceUI.TryConsumeHotkey(out var chosenPort)) return;
 
         _choiceUI.Hide();
-        _waitTcs?.TrySetResult(true);
-        OnChoiceSelected?.Invoke(chosenPort);
+        _waitTcs?.TrySetResult(chosenPort);
     }
 
     public override void OnNodeBegin() => _choiceUI?.BeginNode();
 
-    public override async Task ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
+    public override async Task<string> ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
     {
-        if (_choiceUI == null) return;
+        if (_choiceUI == null) return null;
 
         var m = (ChoiceModule)module;
-        _waitTcs = new TaskCompletionSource<bool>();
+        _waitTcs = new TaskCompletionSource<string>();
 
         bool shown = _choiceUI.Show(m, ctx.NodeGuid, port =>
         {
             _choiceUI.Hide();
-            OnChoiceSelected?.Invoke(port);
-            _waitTcs.TrySetResult(true);
+            _waitTcs.TrySetResult(port);
         });
 
         if (!shown)
         {
-            _waitTcs.TrySetResult(true);
-            return;
+            return null;
         }
 
         await Task.WhenAny(_waitTcs.Task, ctx.Token.AsTask());
+        return _waitTcs.Task.Status == TaskStatus.RanToCompletion ? _waitTcs.Task.Result : null;
     }
 
     public override void Cancel()
