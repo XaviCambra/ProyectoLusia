@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterId: 82fd5d61848e42be926a356f12e84562
   displayName: Jose
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: fbd0105db36d8364e95006b24e365932, type: 3}
   sex: 1
   race: 8
   age: 29
-  avatarSprite: {fileID: 0}
+  avatarSprite: {fileID: 21300000, guid: fbd0105db36d8364e95006b24e365932, type: 3}
   portraits: []

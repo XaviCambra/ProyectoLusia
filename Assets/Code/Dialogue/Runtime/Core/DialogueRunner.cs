@@ -40,6 +40,7 @@ public sealed class DialogueRunner : MonoBehaviour
     private bool                    _nodeReadyToAdvance;
     private IModuleExecutor         _activeBlockingExecutor;
     private CancellationTokenSource _cts;
+    private CharacterDefinition     _currentProfile;
 
     private void Awake()
     {
@@ -72,8 +73,12 @@ public sealed class DialogueRunner : MonoBehaviour
 
     private void Start()
     {
-        if (graph != null)
-            StartChat(graph);
+        if (graph == null) return;
+
+        // El grafo ya se inicializo en Awake() si estaba asignado desde el inspector;
+        // aqui solo arrancamos la reproduccion, sin repetir Initialize()/navigator.Init().
+        _current = _navigator.StartNode();
+        _ = ShowNodeAsync(_current);
     }
 
     // -----------------------------------------------------------------------
@@ -92,6 +97,7 @@ public sealed class DialogueRunner : MonoBehaviour
         Stop();
 
         graph = newGraph;
+        _currentProfile = null;
 
         foreach (var executor in _executorList)
             executor.Initialize(graph);
@@ -161,7 +167,7 @@ public sealed class DialogueRunner : MonoBehaviour
         _cts?.Dispose();
         _cts = new CancellationTokenSource();
         var localCts = _cts; // captura local: protege contra reemplazos por nueva llamada
-        var ctx = new ModuleExecutionContext(node.GUID, localCts.Token);
+        var ctx = new ModuleExecutionContext(node.GUID, localCts.Token) { CurrentProfile = _currentProfile };
 
         // Notificar inicio de nodo a todos los executors
         foreach (var executor in _executorList)
@@ -216,6 +222,10 @@ public sealed class DialogueRunner : MonoBehaviour
 
         done:
         if (localCts.IsCancellationRequested) return;
+
+        // Persiste el perfil actual (fijado por ProfileModule) para el siguiente nodo,
+        // igual que hacia ChatRunner._currentProfile entre llamadas a ProcessNodeAsync.
+        _currentProfile = ctx.CurrentProfile;
 
         if (decidedPort != null)
         {

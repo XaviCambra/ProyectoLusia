@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: EsquemaDeAfinidad
   m_EditorClassIdentifier: 
   globalMin: -100
-  globalMax: 150
+  globalMax: 101
   tracks:
   - id: social
     displayName: Social

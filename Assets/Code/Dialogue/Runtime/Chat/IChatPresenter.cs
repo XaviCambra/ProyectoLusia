@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 /// <summary>
 /// Contrato que debe implementar cualquier UI de chat.
-/// El <see cref="ChatRunner"/> delega toda la presentación aquí,
-/// manteniendo el runner libre de dependencias de UI.
+/// Los executors de chat (<c>ChatTextModuleExecutor</c>, <c>ChatChoiceModuleExecutor</c>, etc.)
+/// delegan toda la presentación aquí, manteniendo el runner libre de dependencias de UI.
 /// </summary>
 public interface IChatPresenter
 {

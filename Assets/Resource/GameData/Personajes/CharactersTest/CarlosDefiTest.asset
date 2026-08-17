@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterId: b7c4ace2ef08481aaa87c85e438fbc2c
   displayName: Carlos
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 6db4ea85eacf71b4f98bbd790cadc740, type: 3}
   sex: 1
   race: 8
   age: 21
-  avatarSprite: {fileID: 0}
+  avatarSprite: {fileID: 21300000, guid: 6db4ea85eacf71b4f98bbd790cadc740, type: 3}
   portraits: []

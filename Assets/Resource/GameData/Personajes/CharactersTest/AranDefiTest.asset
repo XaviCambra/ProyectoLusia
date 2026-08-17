@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterId: cd94abe2f3d1468ca55d7fa27f717c8b
   displayName: Aran
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 29b290cbd6f2c0a48a9744781e206386, type: 3}
   sex: 1
   race: 8
   age: 24
-  avatarSprite: {fileID: 0}
+  avatarSprite: {fileID: 21300000, guid: 29b290cbd6f2c0a48a9744781e206386, type: 3}
   portraits: []

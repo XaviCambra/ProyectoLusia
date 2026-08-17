@@ -1,11 +1,10 @@
 using System;
 using UnityEngine;
 
-// USO: Solo sistema de Chat Bubble. Ignorado por DialogueRunner.
+// USO: Solo escenas de Chat (requiere ChatPauseModuleExecutor). Sin efecto si no hay executor para este modulo en la escena.
 /// <summary>
-/// Pausa silenciosa: detiene la ejecución del ChatRunner durante
+/// Pausa silenciosa: detiene la ejecución del nodo durante
 /// <see cref="duration"/> segundos antes de continuar al siguiente módulo.
-/// Ignorado por DialogueRunner (sin executor registrado).
 /// </summary>
 [Serializable]
 public class ChatPauseModule : DialogueModuleBase

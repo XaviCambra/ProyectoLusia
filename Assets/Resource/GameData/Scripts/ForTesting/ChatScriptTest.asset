@@ -27,20 +27,6 @@ MonoBehaviour:
     modules:
     - rid: 3209439550359994449
     - rid: 3209439564650512465
-  - GUID: 65869383-b644-42a0-a0dc-aa86047de735
-    nodeRect:
-      serializedVersion: 2
-      x: 1987
-      y: 386
-      width: 400
-      height: 402
-    bgColorIndex: 4
-    bgColor: {r: 0.25, g: 0.43, b: 0.45, a: 1}
-    isStart: 0
-    startId: 
-    modules:
-    - rid: 3209439551900352605
-    - rid: 3209439550359994457
   - GUID: a7e2cae9-4964-4f15-b803-ef25ac348edb
     nodeRect:
       serializedVersion: 2
@@ -69,30 +55,13 @@ MonoBehaviour:
     modules:
     - rid: 3209439550359994447
     - rid: 3209439564650512464
-  - GUID: 7079bab7-f4ab-492d-b365-1e7f85db6e3c
-    nodeRect:
-      serializedVersion: 2
-      x: 1465
-      y: 386
-      width: 400
-      height: 597
-    bgColorIndex: 9
-    bgColor: {r: 0.18, g: 0.28, b: 0.23, a: 1}
-    isStart: 0
-    startId: 
-    modules:
-    - rid: 3209439550359994451
-    - rid: 3209439550359994475
-    - rid: 3209439550359994454
-    - rid: 3209439550359994452
-    - rid: 3209439550359994464
   - GUID: a6ded993-cc98-4f2b-bf30-e43878e5422f
     nodeRect:
       serializedVersion: 2
       x: -228
       y: 201
       width: 400
-      height: 492
+      height: 605
     bgColorIndex: 4
     bgColor: {r: 0.25, g: 0.43, b: 0.45, a: 1}
     isStart: 1
@@ -101,11 +70,12 @@ MonoBehaviour:
     - rid: 3209439550359994370
     - rid: 3209439550359994453
     - rid: 3209439550359994368
+    - rid: 6111299330555773014
   - GUID: f9ce8336-7ffe-4e51-8ef7-19d807d90933
     nodeRect:
       serializedVersion: 2
       x: -228
-      y: 788
+      y: 888
       width: 400
       height: 754
     bgColorIndex: 4
@@ -115,24 +85,120 @@ MonoBehaviour:
     modules:
     - rid: 3209439551900352598
     - rid: 3209439551900352601
+  - GUID: 91a10a39-6997-4461-b339-9fc0d8882f1e
+    nodeRect:
+      serializedVersion: 2
+      x: 2572
+      y: 170
+      width: 400
+      height: 402
+    bgColorIndex: 9
+    bgColor: {r: 0.18, g: 0.28, b: 0.23, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 6111299330555773025
+    - rid: 6111299330555773024
+  - GUID: 6d3654ef-81f7-46ee-956a-b6f484c8db73
+    nodeRect:
+      serializedVersion: 2
+      x: 2709
+      y: 605
+      width: 400
+      height: 402
+    bgColorIndex: 9
+    bgColor: {r: 0.18, g: 0.28, b: 0.23, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 6111299330555773026
+    - rid: 6111299330555773027
+  - GUID: 2eb72048-4675-4c84-9a21-e0809c28b6a1
+    nodeRect:
+      serializedVersion: 2
+      x: 2632
+      y: 1490
+      width: 400
+      height: 402
+    bgColorIndex: 9
+    bgColor: {r: 0.18, g: 0.28, b: 0.23, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 6111299330555773030
+    - rid: 6111299330555773031
+  - GUID: 131006b4-7cbe-4aad-9ede-c2d9c7c2693f
+    nodeRect:
+      serializedVersion: 2
+      x: 2676
+      y: 1049
+      width: 400
+      height: 402
+    bgColorIndex: 9
+    bgColor: {r: 0.18, g: 0.28, b: 0.23, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 6111299330555773028
+    - rid: 6111299330555773029
+  - GUID: 65869383-b644-42a0-a0dc-aa86047de735
+    nodeRect:
+      serializedVersion: 2
+      x: 2029
+      y: 386
+      width: 400
+      height: 1090
+    bgColorIndex: 4
+    bgColor: {r: 0.25, g: 0.43, b: 0.45, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 3209439551900352605
+    - rid: 6111299330555773023
   - GUID: 42c44f58-b27e-429d-a891-437a9a940c4f
     nodeRect:
       serializedVersion: 2
       x: 354
       y: 340
       width: 400
-      height: 769
+      height: 889
     bgColorIndex: 4
     bgColor: {r: 0.25, g: 0.43, b: 0.45, a: 1}
     isStart: 0
     startId: 
     modules:
     - rid: 3209439564650512455
+    - rid: 6111299330555773067
     - rid: 3209439564650512457
+  - GUID: 7079bab7-f4ab-492d-b365-1e7f85db6e3c
+    nodeRect:
+      serializedVersion: 2
+      x: 1465
+      y: 386
+      width: 400
+      height: 776
+    bgColorIndex: 9
+    bgColor: {r: 0.18, g: 0.28, b: 0.23, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 6111299330555773075
+    - rid: 3209439550359994451
+    - rid: 3209439550359994475
+    - rid: 3209439550359994454
+    - rid: 3209439550359994452
+    - rid: 6111299330555773015
+    - rid: 3209439550359994464
   edges:
-  - fromNodeGUID: 7079bab7-f4ab-492d-b365-1e7f85db6e3c
+  - fromNodeGUID: a7e2cae9-4964-4f15-b803-ef25ac348edb
     fromPortName: Next
-    toNodeGUID: 65869383-b644-42a0-a0dc-aa86047de735
+    toNodeGUID: 7079bab7-f4ab-492d-b365-1e7f85db6e3c
+  - fromNodeGUID: f92d166e-9e7a-4116-90b0-511078561cc7
+    fromPortName: Next
+    toNodeGUID: 7079bab7-f4ab-492d-b365-1e7f85db6e3c
+  - fromNodeGUID: 652eb3c9-0bbb-441f-9073-b00974f96c84
+    fromPortName: Next
+    toNodeGUID: 7079bab7-f4ab-492d-b365-1e7f85db6e3c
   - fromNodeGUID: a6ded993-cc98-4f2b-bf30-e43878e5422f
     fromPortName: Next
     toNodeGUID: 42c44f58-b27e-429d-a891-437a9a940c4f
@@ -145,15 +211,21 @@ MonoBehaviour:
   - fromNodeGUID: 42c44f58-b27e-429d-a891-437a9a940c4f
     fromPortName: 2fb0b3e3
     toNodeGUID: 652eb3c9-0bbb-441f-9073-b00974f96c84
-  - fromNodeGUID: a7e2cae9-4964-4f15-b803-ef25ac348edb
+  - fromNodeGUID: 7079bab7-f4ab-492d-b365-1e7f85db6e3c
     fromPortName: Next
-    toNodeGUID: 7079bab7-f4ab-492d-b365-1e7f85db6e3c
-  - fromNodeGUID: f92d166e-9e7a-4116-90b0-511078561cc7
-    fromPortName: Next
-    toNodeGUID: 7079bab7-f4ab-492d-b365-1e7f85db6e3c
-  - fromNodeGUID: 652eb3c9-0bbb-441f-9073-b00974f96c84
-    fromPortName: Next
-    toNodeGUID: 7079bab7-f4ab-492d-b365-1e7f85db6e3c
+    toNodeGUID: 65869383-b644-42a0-a0dc-aa86047de735
+  - fromNodeGUID: 65869383-b644-42a0-a0dc-aa86047de735
+    fromPortName: b3b1321a
+    toNodeGUID: 91a10a39-6997-4461-b339-9fc0d8882f1e
+  - fromNodeGUID: 65869383-b644-42a0-a0dc-aa86047de735
+    fromPortName: 992bba3a
+    toNodeGUID: 6d3654ef-81f7-46ee-956a-b6f484c8db73
+  - fromNodeGUID: 65869383-b644-42a0-a0dc-aa86047de735
+    fromPortName: f9427a7b
+    toNodeGUID: 131006b4-7cbe-4aad-9ede-c2d9c7c2693f
+  - fromNodeGUID: 65869383-b644-42a0-a0dc-aa86047de735
+    fromPortName: 8173b9fa
+    toNodeGUID: 2eb72048-4675-4c84-9a21-e0809c28b6a1
   frames: []
   references:
     version: 2
@@ -215,17 +287,6 @@ MonoBehaviour:
       data:
         runMode: 2
         duration: 3
-    - rid: 3209439550359994457
-      type: {class: TextModule, ns: , asm: Assembly-CSharp}
-      data:
-        runMode: 2
-        speakerName: Aran
-        useLocalization: 0
-        text: Tercer texto
-        locKey: 
-        isOwn: 1
-        useTypewriter: 0
-        profileOverride: {fileID: 0}
     - rid: 3209439550359994464
       type: {class: ChatPauseModule, ns: , asm: Assembly-CSharp}
       data:
@@ -235,7 +296,7 @@ MonoBehaviour:
       type: {class: ChatPauseModule, ns: , asm: Assembly-CSharp}
       data:
         runMode: 2
-        duration: 3
+        duration: 0.5
     - rid: 3209439551900352598
       type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
       data:
@@ -331,3 +392,162 @@ MonoBehaviour:
         runMode: 2
         emoji: {fileID: 21300000, guid: 29b290cbd6f2c0a48a9744781e206386, type: 3}
         isOwn: 1
+    - rid: 6111299330555773014
+      type: {class: AudioModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 0
+        clip: {fileID: 8300000, guid: 6203dd274f793ba4e9a5749d22977115, type: 3}
+        volume: 1
+        waitForCompletion: 1
+    - rid: 6111299330555773015
+      type: {class: AudioModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 0
+        clip: {fileID: 8300000, guid: 6203dd274f793ba4e9a5749d22977115, type: 3}
+        volume: 1
+        waitForCompletion: 0
+    - rid: 6111299330555773023
+      type: {class: ChoiceModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        showBlockedChoices: 1
+        choices:
+        - choiceText: Option 1 Option 1
+          portName: b3b1321a
+          choiceUseLocalization: 0
+          choiceLocKey: 
+          requiresAffinity: 1
+          affinityFrom: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+          affinityTo: {fileID: 11400000, guid: 43f523793dfa29c499ab0e270525c52a, type: 2}
+          requiredAffinityRelationship: Familiar
+          invertRequirement: 0
+          requiresProgress: 0
+          progressMethod: 
+          progressArgType: 0
+          progressArgInt: 0
+          progressArgFloat: 0
+          progressArgString: 
+        - choiceText: Option 2 Option 2
+          portName: 992bba3a
+          choiceUseLocalization: 0
+          choiceLocKey: 
+          requiresAffinity: 0
+          affinityFrom: {fileID: 0}
+          affinityTo: {fileID: 0}
+          requiredAffinityRelationship: 
+          invertRequirement: 0
+          requiresProgress: 0
+          progressMethod: 
+          progressArgType: 0
+          progressArgInt: 0
+          progressArgFloat: 0
+          progressArgString: 
+        - choiceText: Option 3 Option 3
+          portName: f9427a7b
+          choiceUseLocalization: 0
+          choiceLocKey: 
+          requiresAffinity: 0
+          affinityFrom: {fileID: 0}
+          affinityTo: {fileID: 0}
+          requiredAffinityRelationship: 
+          invertRequirement: 0
+          requiresProgress: 0
+          progressMethod: 
+          progressArgType: 0
+          progressArgInt: 0
+          progressArgFloat: 0
+          progressArgString: 
+        - choiceText: Option 4 Option 4
+          portName: 8173b9fa
+          choiceUseLocalization: 0
+          choiceLocKey: 
+          requiresAffinity: 0
+          affinityFrom: {fileID: 0}
+          affinityTo: {fileID: 0}
+          requiredAffinityRelationship: 
+          invertRequirement: 0
+          requiresProgress: 0
+          progressMethod: 
+          progressArgType: 0
+          progressArgInt: 0
+          progressArgFloat: 0
+          progressArgString: 
+    - rid: 6111299330555773024
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Aran
+        useLocalization: 0
+        text: Option 1
+        locKey: 
+        isOwn: 1
+        useTypewriter: 0
+        profileOverride: {fileID: 0}
+    - rid: 6111299330555773025
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+    - rid: 6111299330555773026
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+    - rid: 6111299330555773027
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Aran
+        useLocalization: 0
+        text: Option 2
+        locKey: 
+        isOwn: 1
+        useTypewriter: 0
+        profileOverride: {fileID: 0}
+    - rid: 6111299330555773028
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+    - rid: 6111299330555773029
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Aran
+        useLocalization: 0
+        text: Option 3
+        locKey: 
+        isOwn: 1
+        useTypewriter: 0
+        profileOverride: {fileID: 0}
+    - rid: 6111299330555773030
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+    - rid: 6111299330555773031
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Aran
+        useLocalization: 0
+        text: Option 4
+        locKey: 
+        isOwn: 1
+        useTypewriter: 0
+        profileOverride: {fileID: 0}
+    - rid: 6111299330555773067
+      type: {class: EventDispatcherModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 0
+        eventKey: DiadaTest
+        payloadType: 1
+        intValue: 13
+        floatValue: 0
+        stringValue: 
+        boolValue: 0
+    - rid: 6111299330555773075
+      type: {class: WaitForSignalModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        signal: {fileID: 11400000, guid: 24f887eb00223e54fb23677c2383c4a6, type: 2}
