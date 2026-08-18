@@ -48,6 +48,14 @@ public class ChatConversation : ScriptableObject
             _state = ConversationState.Finished;
     }
 
+    /// <summary>Fuerza el paso a Active ignorando las condiciones. Para desbloqueos directos/scripted.</summary>
+    public void Unlock()
+    {
+        if (_state != ConversationState.Hidden) return;
+        _state = ConversationState.Active;
+        OnUnlocked?.Invoke(this);
+    }
+
     private void TryUnlock()
     {
         if (_state != ConversationState.Hidden) return;

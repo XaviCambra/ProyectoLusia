@@ -56,12 +56,7 @@ public sealed class DialogueRunner : MonoBehaviour
         // antes de que corra ningun Start() de la escena). Si no lo hay (arranque bajo demanda,
         // ej. StartChat llamado mas tarde por una app de telefono), se inicializa entonces.
         if (graph != null)
-        {
-            foreach (var executor in _executorList)
-                executor.Initialize(graph);
-
-            _navigator.Init(graph);
-        }
+            InitializeGraph(graph);
 
         // Suscribirse al input controller
         if (inputController != null)
@@ -99,12 +94,17 @@ public sealed class DialogueRunner : MonoBehaviour
         graph = newGraph;
         _currentProfile = null;
 
-        foreach (var executor in _executorList)
-            executor.Initialize(graph);
-
-        _navigator.Init(graph);
+        InitializeGraph(graph);
         _current = _navigator.StartNode();
         _ = ShowNodeAsync(_current);
+    }
+
+    private void InitializeGraph(DialogueGraph g)
+    {
+        foreach (var executor in _executorList)
+            executor.Initialize(g);
+
+        _navigator.Init(g);
     }
 
     /// <summary>Detiene el diálogo en curso y limpia el estado de todos los executors.</summary>
