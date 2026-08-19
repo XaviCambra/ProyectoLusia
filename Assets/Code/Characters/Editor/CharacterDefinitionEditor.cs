@@ -159,8 +159,9 @@ public sealed class CharacterDefinitionEditor : Editor
         var trackIdProp = entry.FindPropertyRelative("trackId");
         int    points   = pointsProp.intValue;
         string trackId  = trackIdProp.stringValue;
-        int    gMin     = _map.schema.globalMin;
-        int    gMax     = _map.schema.globalMax;
+        var    track    = _map.schema.GetTrack(trackId);
+        int    tMin     = track?.MinPoints ?? 0;
+        int    tMax     = track?.MaxPoints ?? 0;
         var    level    = _map.schema.GetRelationshipForPoints(points, trackId);
 
         bool multiTrack  = _map.schema.Tracks.Count > 1;
@@ -195,7 +196,6 @@ public sealed class CharacterDefinitionEditor : Editor
 
                     if (multiTrack)
                     {
-                        var track = _map.schema.GetTrack(trackId);
                         if (track != null)
                         {
                             var prev = GUI.contentColor;
@@ -211,12 +211,12 @@ public sealed class CharacterDefinitionEditor : Editor
                 }
 
                 EditorGUILayout.Space(4);
-                DrawBar(points, gMin, gMax, trackId);
+                DrawBar(points, tMin, tMax, trackId);
                 EditorGUILayout.Space(5);
 
                 EditorGUI.BeginChangeCheck();
                 Rect sliderRect = GUILayoutUtility.GetRect(0, EditorGUIUtility.singleLineHeight, GUILayout.ExpandWidth(true));
-                int newVal = EditorGUI.IntSlider(sliderRect, points, gMin, gMax);
+                int newVal = EditorGUI.IntSlider(sliderRect, points, tMin, tMax);
                 if (EditorGUI.EndChangeCheck())
                     pointsProp.intValue = newVal;
 
@@ -255,8 +255,9 @@ public sealed class CharacterDefinitionEditor : Editor
             addTarget = (CharacterDefinition)EditorGUILayout.ObjectField(
                 pickLabel, addTarget, typeof(CharacterDefinition), false);
 
+            var addTrackObj = _map.schema.GetTrack(addTrack);
             addPts = EditorGUILayout.IntSlider("Puntos iniciales", addPts,
-                _map.schema.globalMin, _map.schema.globalMax);
+                addTrackObj?.MinPoints ?? 0, addTrackObj?.MaxPoints ?? 0);
 
             var level = _map.schema.GetRelationshipForPoints(addPts, addTrack);
             if (level != null)
@@ -362,11 +363,11 @@ public sealed class CharacterDefinitionEditor : Editor
             trackIdProp.stringValue = trackIds[newIdx];
     }
 
-    private void DrawBar(int points, int gMin, int gMax, string trackId)
+    private void DrawBar(int points, int min, int max, string trackId)
     {
-        float range = gMax - gMin;
+        float range = max - min;
         if (range <= 0) return;
-        float t     = Mathf.InverseLerp(gMin, gMax, points);
+        float t     = Mathf.InverseLerp(min, max, points);
         Color color = _map.schema.GetColorForPoints(points, trackId);
         Rect  bg    = GUILayoutUtility.GetRect(0, BarHeight, GUILayout.ExpandWidth(true));
         EditorGUI.DrawRect(bg, new Color(0.15f, 0.15f, 0.15f));

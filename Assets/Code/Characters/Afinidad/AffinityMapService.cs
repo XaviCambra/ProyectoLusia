@@ -70,7 +70,8 @@ public sealed class AffinityMapService : IAffinityService
 
         int          oldPoints = GetPoints(from, to);
         AffinityRelationship oldLevel  = GetRelationship(from, to);
-        int          clamped   = Clamp(points);
+        string       trackId   = GetTrack(from, to);
+        int          clamped   = Clamp(points, trackId);
 
         Write(from, to, clamped);
         FireEvents(from, to, oldPoints, clamped, oldLevel);
@@ -82,7 +83,8 @@ public sealed class AffinityMapService : IAffinityService
 
         int          oldPoints = GetPoints(from, to);
         AffinityRelationship oldLevel  = GetRelationship(from, to);
-        int          clamped   = Clamp(oldPoints + delta);
+        string       trackId   = GetTrack(from, to);
+        int          clamped   = Clamp(oldPoints + delta, trackId);
 
         Write(from, to, clamped);
         FireEvents(from, to, oldPoints, clamped, oldLevel);
@@ -95,7 +97,9 @@ public sealed class AffinityMapService : IAffinityService
         string resolved = string.IsNullOrEmpty(trackId) ? DefaultTrackId : trackId;
         var    key      = Key(from, to);
         int    points   = _data.TryGetValue(key, out var s) ? s.points : 0;
-        _data[key] = (points, resolved);
+        // El nuevo track puede tener un rango distinto: reclampeamos para no dejar
+        // puntos fuera de rango (y por tanto sin nivel/color) tras el cambio de track.
+        _data[key] = (Clamp(points, resolved), resolved);
     }
 
     // -----------------------------------------------------------------------
@@ -113,7 +117,10 @@ public sealed class AffinityMapService : IAffinityService
 
         _data.Clear();
         foreach (var kvp in saved)
-            _data[kvp.Key] = (Clamp(kvp.Value.points), kvp.Value.trackId ?? DefaultTrackId);
+        {
+            string trackId = kvp.Value.trackId ?? DefaultTrackId;
+            _data[kvp.Key] = (Clamp(kvp.Value.points, trackId), trackId);
+        }
     }
 
     public void ResetAll() => _data.Clear();
@@ -127,10 +134,11 @@ public sealed class AffinityMapService : IAffinityService
     private static (string, string) Key(CharacterDefinition from, CharacterDefinition to)
         => (from.CharacterId, to.CharacterId);
 
-    private int Clamp(int points)
+    private int Clamp(int points, string trackId)
     {
-        if (_schema == null) return points;
-        return Math.Clamp(points, _schema.globalMin, _schema.globalMax);
+        var track = _schema?.GetTrack(trackId);
+        if (track == null) return points;
+        return Math.Clamp(points, track.MinPoints, track.MaxPoints);
     }
 
     // Write preserva el trackId existente; solo actualiza los puntos.
@@ -158,8 +166,8 @@ public sealed class AffinityMapService : IAffinityService
         foreach (var entry in map.InitialEntries)
         {
             if (!entry.from || !entry.to) continue;
-            int    clamped = Clamp(entry.points);
             string track   = string.IsNullOrEmpty(entry.trackId) ? DefaultTrackId : entry.trackId;
+            int    clamped = Clamp(entry.points, track);
             _data[Key(entry.from, entry.to)] = (clamped, track);
         }
     }

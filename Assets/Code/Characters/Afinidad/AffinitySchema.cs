@@ -50,6 +50,38 @@ public sealed class AffinityTrack
     public IReadOnlyList<AffinityRelationship> Relationships => SortedRelationships;
     public void InvalidateCache() => _sortedCache = null;
 
+    /// <summary>Minimo de puntos usable en este track: el minInclusive mas bajo de sus niveles.</summary>
+    public int MinPoints
+    {
+        get
+        {
+            var sorted = SortedRelationships;
+            return sorted.Count == 0 ? 0 : sorted.Min(r => r.minInclusive);
+        }
+    }
+
+    /// <summary>
+    /// Maximo de puntos usable en este track: el maxExclusive mas alto de sus niveles.
+    /// Si el nivel superior no tiene tope (maxExclusive == int.MaxValue), se usa su propio
+    /// minInclusive como techo real, ya que un rango sin fin no se puede mostrar en una barra/slider.
+    /// </summary>
+    public int MaxPoints
+    {
+        get
+        {
+            var sorted = SortedRelationships;
+            if (sorted.Count == 0) return 0;
+
+            int max = int.MinValue;
+            foreach (var r in sorted)
+            {
+                int effective = r.maxExclusive == int.MaxValue ? r.minInclusive : r.maxExclusive;
+                if (effective > max) max = effective;
+            }
+            return max;
+        }
+    }
+
     public AffinityRelationship GetRelationshipForPoints(int points)
     {
         var sorted = SortedRelationships;
@@ -101,10 +133,6 @@ public sealed class AffinityTrack
 [CreateAssetMenu(menuName = "Characters/Affinity/Affinity Schema", fileName = "AffinitySchema")]
 public sealed class AffinitySchema : ScriptableObject
 {
-    [Header("Límites globales de puntos")]
-    public int globalMin    = -100;
-    public int globalMax    =  100;
-
     [SerializeField] private List<AffinityTrack> tracks = new();
 
     public IReadOnlyList<AffinityTrack> Tracks => tracks;

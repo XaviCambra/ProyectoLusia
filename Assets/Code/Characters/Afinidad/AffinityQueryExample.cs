@@ -46,7 +46,7 @@ public sealed class AffinityQueryExample : MonoBehaviour
             Debug.Log("Están en banda Aliado — desbloquea diálogos especiales.");
 
         // ── Modificar afinidad ───────────────────────────────────────────────
-        // AddPoints → suma (o resta si es negativo) al valor actual. Respeta globalMin/globalMax.
+        // AddPoints → suma (o resta si es negativo) al valor actual. Respeta el rango de puntos del track actual.
         // SetPoints → fija el valor exacto independientemente del valor anterior.
         // La relación debe existir en el mapa para que tenga efecto; si no existe no crea una nueva.
 

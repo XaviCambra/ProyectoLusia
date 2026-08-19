@@ -1,48 +1,23 @@
-#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(AffinitySchema))]
 public sealed class AffinitySchemaEditor : Editor
 {
-    private SerializedProperty _globalMin;
-    private SerializedProperty _globalMax;
     private SerializedProperty _tracks;
 
     private void OnEnable()
     {
-        _globalMin = serializedObject.FindProperty("globalMin");
-        _globalMax = serializedObject.FindProperty("globalMax");
-        _tracks    = serializedObject.FindProperty("tracks");
+        _tracks = serializedObject.FindProperty("tracks");
     }
 
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
 
-        DrawGlobalSettings();
-        EditorGUILayout.Space(10);
         DrawTracks();
 
         serializedObject.ApplyModifiedProperties();
-    }
-
-    // -----------------------------------------------------------------------
-    // Configuración global
-    // -----------------------------------------------------------------------
-
-    private void DrawGlobalSettings()
-    {
-        EditorGUILayout.LabelField("Configuración global", EditorStyles.boldLabel);
-
-        using (new EditorGUILayout.HorizontalScope())
-        {
-            EditorGUILayout.LabelField("Rango de puntos", GUILayout.Width(120));
-            _globalMin.intValue = EditorGUILayout.IntField(_globalMin.intValue, GUILayout.Width(60));
-            EditorGUILayout.LabelField("→", GUILayout.Width(16));
-            _globalMax.intValue = EditorGUILayout.IntField(_globalMax.intValue, GUILayout.Width(60));
-        }
-
     }
 
     // -----------------------------------------------------------------------
@@ -91,30 +66,47 @@ public sealed class AffinitySchemaEditor : Editor
 
         using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
         {
+            EditorGUILayout.Space(4);
+
             // Header
             using (new EditorGUILayout.HorizontalScope())
             {
+                GUILayout.Space(8);
                 EditorGUILayout.LabelField($"Track: {displayNameProp.stringValue}", EditorStyles.boldLabel);
                 GUILayout.FlexibleSpace();
-                if (GUILayout.Button("✕ Eliminar", EditorStyles.miniButton, GUILayout.Width(70)))
+                if (GUILayout.Button("✕", EditorStyles.miniButton))
                     wantsDelete = true;
+                GUILayout.Space(8);
+            }
+
+            EditorGUILayout.Space(6);
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.Space(8);
+                using (new EditorGUILayout.VerticalScope())
+                {
+                    EditorGUILayout.PropertyField(idProp, new GUIContent("ID"));
+                    EditorGUILayout.PropertyField(displayNameProp, new GUIContent("Nombre"));
+                }
+                GUILayout.Space(8);
+            }
+
+            EditorGUILayout.Space(6);
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.Space(8);
+                EditorGUILayout.LabelField("Niveles", EditorStyles.miniBoldLabel);
+                GUILayout.Space(8);
             }
 
             EditorGUI.indentLevel++;
 
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                EditorGUILayout.PropertyField(idProp,          new GUIContent("ID"));
-                EditorGUILayout.PropertyField(displayNameProp, new GUIContent("Nombre"));
-            }
-
-            EditorGUILayout.Space(4);
-            EditorGUILayout.LabelField("Niveles", EditorStyles.miniBoldLabel);
-
             int relationshipDeleteAt = -1;
             for (int i = 0; i < relationshipsProp.arraySize; i++)
             {
-                EditorGUILayout.Space(2);
+                EditorGUILayout.Space(6);
                 if (DrawRelationship(relationshipsProp.GetArrayElementAtIndex(i), i))
                     relationshipDeleteAt = i;
             }
@@ -127,16 +119,22 @@ public sealed class AffinitySchemaEditor : Editor
             }
 
             EditorGUILayout.Space(4);
-            if (GUILayout.Button("+ Añadir nivel", GUILayout.Height(22)))
+            using (new EditorGUILayout.HorizontalScope())
             {
-                relationshipsProp.InsertArrayElementAtIndex(relationshipsProp.arraySize);
-                var b = relationshipsProp.GetArrayElementAtIndex(relationshipsProp.arraySize - 1);
-                b.FindPropertyRelative("name").stringValue      = "Nuevo nivel";
-                b.FindPropertyRelative("ordinal").intValue      = relationshipsProp.arraySize - 1;
-                b.FindPropertyRelative("color").colorValue      = Color.gray;
-                b.FindPropertyRelative("minInclusive").intValue = 0;
-                b.FindPropertyRelative("maxExclusive").intValue = 10;
+                GUILayout.Space(8);
+                if (GUILayout.Button("+ Añadir nivel", GUILayout.Height(22)))
+                {
+                    relationshipsProp.InsertArrayElementAtIndex(relationshipsProp.arraySize);
+                    var b = relationshipsProp.GetArrayElementAtIndex(relationshipsProp.arraySize - 1);
+                    b.FindPropertyRelative("name").stringValue      = "Nuevo nivel";
+                    b.FindPropertyRelative("ordinal").intValue      = relationshipsProp.arraySize - 1;
+                    b.FindPropertyRelative("color").colorValue      = Color.gray;
+                    b.FindPropertyRelative("minInclusive").intValue = 0;
+                    b.FindPropertyRelative("maxExclusive").intValue = 10;
+                }
+                GUILayout.Space(8);
             }
+            EditorGUILayout.Space(8);
 
             EditorGUI.indentLevel--;
         }
@@ -158,44 +156,76 @@ public sealed class AffinitySchemaEditor : Editor
         var maxProp     = band.FindPropertyRelative("maxExclusive");
         var keyProp     = band.FindPropertyRelative("localizationKey");
 
-        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+        bool wantsDelete = false;
 
         using (new EditorGUILayout.HorizontalScope())
         {
-            var colorRect = GUILayoutUtility.GetRect(12, 20, GUILayout.Width(12));
-            EditorGUI.DrawRect(colorRect, colorProp.colorValue);
-            EditorGUILayout.LabelField($"#{ordinalProp.intValue}  {nameProp.stringValue}", EditorStyles.boldLabel);
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button("✕", GUILayout.Width(24), GUILayout.Height(20)))
+            GUILayout.Space(8); // margen lateral izquierdo de la caja del nivel
+
+            using (new EditorGUILayout.HorizontalScope(EditorStyles.helpBox))
             {
-                EditorGUILayout.EndVertical();
-                return true;
+                // Franja de color a la izquierda: se reserva con ExpandHeight y se dibuja
+                // en Repaint, cuando el rect ya tiene la altura real del contenido de al lado.
+                var colorRect = GUILayoutUtility.GetRect(20, 20, GUILayout.Width(20), GUILayout.ExpandHeight(true));
+                if (Event.current.type == EventType.Repaint)
+                    EditorGUI.DrawRect(colorRect, colorProp.colorValue);
+
+                using (new EditorGUILayout.VerticalScope())
+                {
+                    EditorGUILayout.Space(4); // margen superior del contenido
+
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        EditorGUILayout.LabelField($"#{ordinalProp.intValue}  {nameProp.stringValue}", EditorStyles.boldLabel);
+                        GUILayout.FlexibleSpace();
+                        if (GUILayout.Button("✕", GUILayout.Width(24), GUILayout.Height(20)))
+                            wantsDelete = true;
+                    }
+
+                    EditorGUI.indentLevel++;
+
+                    // Ancho de label fijo y comun a todo el bloque para que los campos
+                    // (Nombre, Clave, Ordinal, Rango) queden alineados en el mismo borde,
+                    // y suficientemente ancho para que "Clave localización" no se corte.
+                    float previousLabelWidth = EditorGUIUtility.labelWidth;
+                    EditorGUIUtility.labelWidth = 145;
+
+                    {
+                        // Rects calculados a mano: el layout automatico de GUILayout dejaba
+                        // un hueco grande entre el campo Nombre y su swatch de color.
+                        const float colorSwatchWidth = 48f;
+                        const float colorSwatchGap   = 4f;
+
+                        Rect nameRow  = EditorGUILayout.GetControlRect();
+                        Rect fieldRect = new Rect(nameRow.x, nameRow.y,
+                            nameRow.width - colorSwatchWidth - colorSwatchGap, nameRow.height);
+                        Rect swatchRect = new Rect(fieldRect.xMax + colorSwatchGap, nameRow.y,
+                            colorSwatchWidth, nameRow.height);
+
+                        nameProp.stringValue = EditorGUI.TextField(fieldRect, "Nombre", nameProp.stringValue);
+                        colorProp.colorValue = EditorGUI.ColorField(swatchRect, GUIContent.none, colorProp.colorValue,
+                            false, false, false);
+                    }
+
+                    EditorGUILayout.PropertyField(keyProp, new GUIContent("Clave localización"));
+
+                    ordinalProp.intValue = EditorGUILayout.IntField("Ordinal", ordinalProp.intValue);
+                    minProp.intValue     = EditorGUILayout.IntField("Rango minimo", minProp.intValue);
+                    maxProp.intValue     = EditorGUILayout.IntField("Rango maximo", maxProp.intValue);
+
+                    EditorGUIUtility.labelWidth = previousLabelWidth;
+
+                    EditorGUI.indentLevel--;
+
+                    EditorGUILayout.Space(4); // margen inferior del contenido
+                }
+
+                GUILayout.Space(2); // margen lateral derecho del contenido, dentro de la caja
             }
+
+            GUILayout.Space(8); // margen lateral derecho de la caja del nivel
         }
 
-        EditorGUI.indentLevel++;
-
-        using (new EditorGUILayout.HorizontalScope())
-        {
-            nameProp.stringValue = EditorGUILayout.TextField("Nombre", nameProp.stringValue);
-            colorProp.colorValue = EditorGUILayout.ColorField(GUIContent.none, colorProp.colorValue,
-                false, false, false, GUILayout.Width(48));
-        }
-
-        EditorGUILayout.PropertyField(keyProp,     new GUIContent("Clave localización"));
-        EditorGUILayout.PropertyField(ordinalProp, new GUIContent("Ordinal"));
-
-        using (new EditorGUILayout.HorizontalScope())
-        {
-            EditorGUILayout.LabelField("Rango de puntos", GUILayout.Width(120));
-            minProp.intValue = EditorGUILayout.IntField(minProp.intValue, GUILayout.Width(60));
-            EditorGUILayout.LabelField("→", GUILayout.Width(16));
-            maxProp.intValue = EditorGUILayout.IntField(maxProp.intValue, GUILayout.Width(60));
-        }
-
-        EditorGUI.indentLevel--;
-        EditorGUILayout.EndVertical();
-        return false;
+        return wantsDelete;
     }
 }
-#endif

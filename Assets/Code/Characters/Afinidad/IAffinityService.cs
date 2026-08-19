@@ -23,7 +23,7 @@ public interface IAffinityService
 
     // --- Modificación ---
 
-    /// <summary>Establece los puntos exactos (clampeado a globalMin/globalMax). Preserva el track actual.</summary>
+    /// <summary>Establece los puntos exactos (clampeado al rango del track actual). Preserva el track actual.</summary>
     void SetPoints(CharacterDefinition from, CharacterDefinition to, int points);
 
     /// <summary>Añade delta a los puntos actuales (clampeado). Devuelve el nuevo valor.</summary>
