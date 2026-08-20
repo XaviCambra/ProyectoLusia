@@ -12,13 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e570c4375381f7d4a946e27d2ff6a4fe, type: 3}
   m_Name: Character 2
   m_EditorClassIdentifier: 
-  sprite: {fileID: -6037533700497626156, guid: 71da5e0f7139bd1488b86d15a9c9772f, type: 3}
+  sprite: {fileID: -275240135, guid: 2171190ed9f5a7e42ae963a4e6ad1f63, type: 3}
   m_CharacterStats:
     m_Vitalidad: 10
     m_Fuerza: 10
     m_Resistencia: 1
     m_Velocidad: 1
     m_Suerte: 0
-  m_Habilidades:
-  - m_AbilityName: Ataque 1
-    m_Target: 1
+  m_AbilityList: []

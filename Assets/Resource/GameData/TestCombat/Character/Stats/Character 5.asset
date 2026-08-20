@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e570c4375381f7d4a946e27d2ff6a4fe, type: 3}
   m_Name: Character 5
   m_EditorClassIdentifier: 
-  sprite: {fileID: 7279494265541373513, guid: 59423d3ff44dcd64c867b3a3d6ef51c6, type: 3}
+  sprite: {fileID: 580929171, guid: 2171190ed9f5a7e42ae963a4e6ad1f63, type: 3}
   m_CharacterStats:
     m_Vitalidad: 9
     m_Fuerza: 1

@@ -5,12 +5,16 @@ using UnityEngine;
 public class CombatCharacterManager : MonoBehaviour
 {
     [SerializeField] List<CombatCharacterTeam> m_CombatCharacterTeamList = new List<CombatCharacterTeam>();
-    [SerializeField] List<CombatCharacter> m_CombatCharacterList = new List<CombatCharacter>();
-    public void AddCharacterToTeam(CombatCharacter _CombatCharacter, int _Team = 0)
+    [SerializeField] List<CombatCharacter> m_TeamCharacterList = new List<CombatCharacter>();
+    [SerializeField] List<CombatCharacter> m_EnemyCharacterList = new List<CombatCharacter>();
+    public void AddCharacterToTeam(Character _CombatCharacter, int _Team = 0)
     {
         if (_CombatCharacter == null)
             return;
-        m_CombatCharacterTeamList.Add(new CombatCharacterTeam(_CombatCharacter, _Team));
+
+
+
+        //m_CombatCharacterTeamList.Add(new CombatCharacterTeam(_CombatCharacter, _Team));
     }
 
 }

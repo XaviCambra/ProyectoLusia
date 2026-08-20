@@ -19,11 +19,32 @@ public class CombatManager : MonoBehaviour
 
     public void StartCombat(List<Character> _Characters)
     {
+        /*
+         * ESTO ESTA BAJO TESTEO Y ES PROVISIONAL
+         * 
+         * Estan hardcodeadas las siguientes cosas
+         *   1. El Trigger que inicia el combate.
+         *      Script Name = TestCombatHardcode.cs
+         *      Debería ser el sistema de exploración quien lance este trigger
+         *   2. El sistema de equipos
+         *      Script Name = Test_BaseTeam.cs
+         *      He supuesto que sera un singleton que tendra info de quien esta en el equipo actualmente
+         *      Nos puede facilitar el trabajo de cara a que todos los sitemas funcionen con ese singleton
+         *      
+         */
+        Test_BaseTeam Team1 = FindFirstObjectByType<Test_BaseTeam>().gameObject.GetComponent<Test_BaseTeam>();
+        foreach (var c in Team1.characterList)
+        {
+            l_CombatCharacterManager.AddCharacterToTeam(c, 1);
+            //l_OrderManager.AddCharacter(l_CombatCharacter);
+        }
+
         foreach (var c in _Characters)
         {
-            CombatCharacter l_CombatCharacter = new CombatCharacter();
-            l_CombatCharacter.SetCharacter(c);
-            l_OrderManager.AddCharacter(l_CombatCharacter);
+            //CombatCharacter l_CombatCharacter = new CombatCharacter();
+            //l_CombatCharacter.SetCharacter(c);
+            //l_CombatCharacterManager.AddCharacterToTeam(l_CombatCharacter, 2);
+            //l_OrderManager.AddCharacter(l_CombatCharacter);
         }
 
         l_OrderManager.SortByTurnID();
