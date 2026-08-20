@@ -25,8 +25,6 @@ public sealed class CharacterDefinitionEditor : Editor
         margin = new RectOffset(4, 0, 2, 2)
     };
 
-    private float _rowContentHeight = IconSize;
-
     // Estado UI para añadir relaciones
     private CharacterDefinition _addOutTarget;
     private int                 _addOutPoints;
@@ -152,6 +150,14 @@ public sealed class CharacterDefinitionEditor : Editor
     // Fila editable
     // -----------------------------------------------------------------------
 
+    /// <summary>
+    /// Toda la fila se calcula con un unico Rect repartido a mano, sin scopes
+    /// anidados de GUILayout. Se comprobo con Debug.Log que un VerticalScope
+    /// con ExpandWidth, anidado dentro de un HorizontalScope que ya tiene un
+    /// hijo de ancho fijo (el icono), calcula mal su ancho maximo y el
+    /// contenido se sale de la fila. Un solo GetRect de nivel superior no
+    /// tiene ese problema (medido: coincide siempre con el ancho visible).
+    /// </summary>
     /// <returns>True si el usuario pulsó Eliminar.</returns>
     private bool DrawEditableRow(SerializedProperty entry, CharacterDefinition other)
     {
@@ -167,65 +173,76 @@ public sealed class CharacterDefinitionEditor : Editor
         bool multiTrack  = _map.schema.Tracks.Count > 1;
         bool wantsDelete = false;
 
-        using (new EditorGUILayout.HorizontalScope(RowStyle))
+        const float gap     = 6f;
+        const float lineGap = 4f;
+        const float barGap  = 5f;
+        float lineH = EditorGUIUtility.singleLineHeight;
+
+        float stackHeight = lineH + lineGap + BarHeight + barGap + lineH;
+        if (multiTrack) stackHeight += barGap + lineH;
+
+        float rowHeight = Mathf.Max(IconSize, stackHeight) + RowStyle.padding.vertical;
+
+        Rect outer = GUILayoutUtility.GetRect(0, rowHeight, GUILayout.ExpandWidth(true));
+        if (Event.current.type == EventType.Repaint)
+            RowStyle.Draw(outer, false, false, false, false);
+
+        Rect content = RowStyle.padding.Remove(outer);
+
+        Rect iconRect = new Rect(content.x, content.y, IconSize, IconSize);
+        if (other.icon != null)
+            GUI.DrawTexture(iconRect, other.icon.texture, ScaleMode.ScaleToFit);
+        else
+            EditorGUI.DrawRect(iconRect, new Color(0.22f, 0.22f, 0.22f));
+
+        float x = iconRect.xMax + gap;
+        float w = content.xMax - x;
+        float y = content.y;
+
+        // Cabecera: nombre, nivel actual, valor exacto (editable) y borrar.
+        // El botón y el campo se anclan al borde derecho del hueco disponible.
+        Rect deleteRect = new Rect(x + w - 22, y, 22, lineH);
+        if (GUI.Button(deleteRect, "✕", DeleteButtonStyle))
+            wantsDelete = true;
+
+        Rect fieldRect = new Rect(deleteRect.x - 4 - 40, y, 40, lineH);
+        EditorGUI.BeginChangeCheck();
+        int fromField = EditorGUI.IntField(fieldRect, points);
+        if (EditorGUI.EndChangeCheck())
+            pointsProp.intValue = Mathf.Clamp(fromField, tMin, tMax);
+
+        float nameWidth = EditorStyles.boldLabel.CalcSize(new GUIContent(other.displayName)).x;
+        Rect nameRect = new Rect(x, y, Mathf.Min(nameWidth, w), lineH);
+        EditorGUI.LabelField(nameRect, other.displayName, EditorStyles.boldLabel);
+
+        if (level != null)
         {
-            // Icono — ancho = alto cacheado del frame anterior → siempre cuadrado
-            var iconRect = GUILayoutUtility.GetRect(
-                _rowContentHeight, _rowContentHeight,
-                GUILayout.Width(_rowContentHeight), GUILayout.ExpandHeight(true));
+            float levelWidth = EditorStyles.boldLabel.CalcSize(new GUIContent(level.name)).x;
+            Rect levelRect = new Rect(nameRect.xMax + 8, y, levelWidth, lineH);
+            if (levelRect.xMax < fieldRect.x)
+                EditorGUI.LabelField(levelRect, level.name, EditorStyles.boldLabel);
+        }
 
-            if (Event.current.type == EventType.Repaint)
-                _rowContentHeight = iconRect.height;
+        y += lineH + lineGap;
 
-            if (other.icon != null)
-                GUI.DrawTexture(iconRect, other.icon.texture, ScaleMode.ScaleToFit);
-            else
-                EditorGUI.DrawRect(iconRect, new Color(0.22f, 0.22f, 0.22f));
+        Rect barRect = new Rect(x, y, w, BarHeight);
+        DrawBar(barRect, points, tMin, tMax, trackId);
+        y += BarHeight + barGap;
 
-            GUILayout.Space(6);
+        // Barra de arrastre pura, sin campo numerico incrustado (el numero
+        // ya se muestra y edita arriba, en la cabecera).
+        Rect sliderRect = new Rect(x, y, w, lineH);
+        EditorGUI.BeginChangeCheck();
+        int fromSlider = Mathf.RoundToInt(GUI.HorizontalSlider(sliderRect, points, tMin, tMax));
+        if (EditorGUI.EndChangeCheck())
+            pointsProp.intValue = Mathf.Clamp(fromSlider, tMin, tMax);
+        y += lineH;
 
-            using (new EditorGUILayout.VerticalScope())
-            {
-                using (new EditorGUILayout.HorizontalScope())
-                {
-                    GUILayout.Space(-1);
-                    EditorGUILayout.LabelField(other.displayName, EditorStyles.boldLabel);
-
-                    if (level != null)
-                        EditorGUILayout.LabelField(level.name, EditorStyles.boldLabel, GUILayout.Width(110));
-
-                    if (multiTrack)
-                    {
-                        if (track != null)
-                        {
-                            var prev = GUI.contentColor;
-                            GUI.contentColor = new Color(0.55f, 0.55f, 0.55f);
-                            EditorGUILayout.LabelField($"[{track.displayName}]", EditorStyles.miniLabel, GUILayout.Width(80));
-                            GUI.contentColor = prev;
-                        }
-                    }
-
-                    GUILayout.FlexibleSpace();
-                    if (GUILayout.Button("✕", DeleteButtonStyle, GUILayout.Width(22)))
-                        wantsDelete = true;
-                }
-
-                EditorGUILayout.Space(4);
-                DrawBar(points, tMin, tMax, trackId);
-                EditorGUILayout.Space(5);
-
-                EditorGUI.BeginChangeCheck();
-                Rect sliderRect = GUILayoutUtility.GetRect(0, EditorGUIUtility.singleLineHeight, GUILayout.ExpandWidth(true));
-                int newVal = EditorGUI.IntSlider(sliderRect, points, tMin, tMax);
-                if (EditorGUI.EndChangeCheck())
-                    pointsProp.intValue = newVal;
-
-                if (multiTrack)
-                {
-                    EditorGUILayout.Space(5);
-                    DrawTrackPopup(trackIdProp, trackId);
-                }
-            }
+        if (multiTrack)
+        {
+            y += barGap;
+            Rect trackRect = new Rect(x, y, w, lineH);
+            DrawTrackPopup(trackRect, trackIdProp, trackId);
         }
 
         return wantsDelete;
@@ -249,15 +266,32 @@ public sealed class CharacterDefinitionEditor : Editor
             return;
         }
 
-        using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+        using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox, GUILayout.ExpandWidth(true)))
         {
             string pickLabel = outgoing ? "Personaje destino" : "Personaje origen";
             addTarget = (CharacterDefinition)EditorGUILayout.ObjectField(
                 pickLabel, addTarget, typeof(CharacterDefinition), false);
 
             var addTrackObj = _map.schema.GetTrack(addTrack);
-            addPts = EditorGUILayout.IntSlider("Puntos iniciales", addPts,
-                addTrackObj?.MinPoints ?? 0, addTrackObj?.MaxPoints ?? 0);
+            int addMin = addTrackObj?.MinPoints ?? 0;
+            int addMax = addTrackObj?.MaxPoints ?? 0;
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                EditorGUILayout.LabelField("Puntos iniciales", GUILayout.Width(110));
+
+                EditorGUI.BeginChangeCheck();
+                int fromSlider = Mathf.RoundToInt(GUILayout.HorizontalSlider(addPts, addMin, addMax, GUILayout.ExpandWidth(true)));
+                if (EditorGUI.EndChangeCheck())
+                    addPts = Mathf.Clamp(fromSlider, addMin, addMax);
+
+                GUILayout.Space(4);
+
+                EditorGUI.BeginChangeCheck();
+                int fromField = EditorGUILayout.IntField(addPts, GUILayout.Width(40));
+                if (EditorGUI.EndChangeCheck())
+                    addPts = Mathf.Clamp(fromField, addMin, addMax);
+            }
 
             var level = _map.schema.GetRelationshipForPoints(addPts, addTrack);
             if (level != null)
@@ -349,29 +383,26 @@ public sealed class CharacterDefinitionEditor : Editor
         }
     }
 
-    private void DrawTrackPopup(SerializedProperty trackIdProp, string currentTrackId)
+    private void DrawTrackPopup(Rect rect, SerializedProperty trackIdProp, string currentTrackId)
     {
         BuildTrackArrays(out var trackIds, out var trackNames);
         int currIdx = System.Array.IndexOf(trackIds, currentTrackId);
         if (currIdx < 0) currIdx = 0;
+
         EditorGUI.BeginChangeCheck();
-        Rect popupRect = GUILayoutUtility.GetRect(0, EditorGUIUtility.singleLineHeight, GUILayout.ExpandWidth(true));
-        popupRect.x     -= 1;
-        popupRect.width += 1;
-        int newIdx = EditorGUI.Popup(popupRect, "Track", currIdx, trackNames);
+        int newIdx = EditorGUI.Popup(rect, "Track", currIdx, trackNames);
         if (EditorGUI.EndChangeCheck())
             trackIdProp.stringValue = trackIds[newIdx];
     }
 
-    private void DrawBar(int points, int min, int max, string trackId)
+    private void DrawBar(Rect rect, int points, int min, int max, string trackId)
     {
         float range = max - min;
         if (range <= 0) return;
         float t     = Mathf.InverseLerp(min, max, points);
         Color color = _map.schema.GetColorForPoints(points, trackId);
-        Rect  bg    = GUILayoutUtility.GetRect(0, BarHeight, GUILayout.ExpandWidth(true));
-        EditorGUI.DrawRect(bg, new Color(0.15f, 0.15f, 0.15f));
-        EditorGUI.DrawRect(new Rect(bg.x, bg.y, bg.width * t, bg.height), color);
+        EditorGUI.DrawRect(rect, new Color(0.15f, 0.15f, 0.15f));
+        EditorGUI.DrawRect(new Rect(rect.x, rect.y, rect.width * t, rect.height), color);
     }
 }
 #endif

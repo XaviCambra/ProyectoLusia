@@ -87,8 +87,12 @@ public sealed class AffinityTrack
         var sorted = SortedRelationships;
         for (int i = 0; i < sorted.Count; i++)
             if (sorted[i].Contains(points)) return sorted[i];
-        return null;
 
+        // Ningun nivel "contiene" points: puede pasar en el borde superior exacto,
+        // ya que maxExclusive es EXCLUSIVO (ej. el maximo del track == maxExclusive
+        // del nivel mas alto). Se cae al nivel mas cercano, igual que GetColorForPoints.
+        if (sorted.Count == 0) return null;
+        return sorted[points < sorted[0].minInclusive ? 0 : sorted.Count - 1];
     }
 
     /// <summary>
