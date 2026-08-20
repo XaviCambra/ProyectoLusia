@@ -6,7 +6,6 @@ using UnityEngine;
 [CustomEditor(typeof(CharacterDefinition))]
 public sealed class CharacterDefinitionEditor : Editor
 {
-    private const float IconSize  = 48f;
     private const float BarHeight = 8f;
 
     private CharacterAffinityMap _map;
@@ -16,7 +15,7 @@ public sealed class CharacterDefinitionEditor : Editor
     private GUIStyle _rowStyle;
     private GUIStyle RowStyle => _rowStyle ??= new GUIStyle(EditorStyles.helpBox)
     {
-        padding = new RectOffset(10, 10, 10, 10)
+        padding = new RectOffset(9, 9, 10, 10)
     };
 
     private GUIStyle _deleteButtonStyle;
@@ -158,9 +157,10 @@ public sealed class CharacterDefinitionEditor : Editor
     /// contenido se sale de la fila. Un solo GetRect de nivel superior no
     /// tiene ese problema (medido: coincide siempre con el ancho visible).
     /// </summary>
-    /// <returns>True si el usuario pulsó Eliminar.</returns>
+    /// <returns>True si el usuario pulso Eliminar.</returns>
     private bool DrawEditableRow(SerializedProperty entry, CharacterDefinition other)
     {
+        // --- Datos de la relacion: puntos, track asignado y nivel actual ---
         var pointsProp  = entry.FindPropertyRelative("points");
         var trackIdProp = entry.FindPropertyRelative("trackId");
         int    points   = pointsProp.intValue;
@@ -172,35 +172,52 @@ public sealed class CharacterDefinitionEditor : Editor
 
         bool multiTrack  = _map.schema.Tracks.Count > 1;
         bool wantsDelete = false;
+        Sprite icon = other.icon;
 
-        const float gap     = 6f;
-        const float lineGap = 4f;
-        const float barGap  = 5f;
+        // --- Medidas base de la fila ---
+        const float gap        = 6f; // hueco entre el icono y el contenido
+        const float lineGap    = 4f; // hueco vertical cabecera -> barra
+        const float barGap     = 5f; // hueco vertical entre barra/slider/track
+        const float namePadding = 3f; // espacio entre nombre y nivel actual
         float lineH = EditorGUIUtility.singleLineHeight;
 
+        // Alto del bloque de contenido (cabecera + barra + slider + track si aplica).
+        // Este valor manda: el icono ocupa exactamente este alto (ver mas abajo),
+        // no al reves. La fila crece o encoge segun cuanto contenido tenga.
         float stackHeight = lineH + lineGap + BarHeight + barGap + lineH;
         if (multiTrack) stackHeight += barGap + lineH;
 
-        float rowHeight = Mathf.Max(IconSize, stackHeight) + RowStyle.padding.vertical;
+        float rowHeight = stackHeight + RowStyle.padding.vertical;
 
+        // --- Caja de fondo de la fila ---
+        // Toda la fila usa UN SOLO GetRect de nivel superior (fiable, comprobado
+        // con Debug.Log) y reparte el resto a mano con Rects. No se usan scopes
+        // anidados de GUILayout: un VerticalScope(ExpandWidth) anidado dentro de
+        // un HorizontalScope con un hijo de ancho fijo (el icono) calculaba mal
+        // su ancho maximo y el contenido se salia de la fila.
         Rect outer = GUILayoutUtility.GetRect(0, rowHeight, GUILayout.ExpandWidth(true));
         if (Event.current.type == EventType.Repaint)
             RowStyle.Draw(outer, false, false, false, false);
 
-        Rect content = RowStyle.padding.Remove(outer);
+        Rect content = RowStyle.padding.Remove(outer); // area interior, ya sin el padding de la caja
 
-        Rect iconRect = new Rect(content.x, content.y, IconSize, IconSize);
-        if (other.icon != null)
-            GUI.DrawTexture(iconRect, other.icon.texture, ScaleMode.ScaleToFit);
+        // --- Icono del personaje: cuadrado, lado = alto del contenido (stackHeight) ---
+        // asi ocupa siempre el maximo alto disponible y el ancho se ajusta igual (1:1).
+        Rect iconRect = new Rect(content.x, content.y, stackHeight, stackHeight);
+        if (icon != null)
+            DrawSpriteContained(iconRect, icon);
         else
             EditorGUI.DrawRect(iconRect, new Color(0.22f, 0.22f, 0.22f));
 
+        // x/w = columna de contenido a la derecha del icono; y = cursor vertical,
+        // se va desplazando hacia abajo segun se van dibujando las filas internas.
         float x = iconRect.xMax + gap;
         float w = content.xMax - x;
         float y = content.y;
 
-        // Cabecera: nombre, nivel actual, valor exacto (editable) y borrar.
-        // El botón y el campo se anclan al borde derecho del hueco disponible.
+        // --- Cabecera: nombre, nivel actual, valor exacto (editable) y borrar ---
+        // El boton de borrar y el campo numerico se anclan al borde derecho del
+        // hueco disponible; nombre y nivel se dibujan pegados a la izquierda.
         Rect deleteRect = new Rect(x + w - 22, y, 22, lineH);
         if (GUI.Button(deleteRect, "✕", DeleteButtonStyle))
             wantsDelete = true;
@@ -211,26 +228,36 @@ public sealed class CharacterDefinitionEditor : Editor
         if (EditorGUI.EndChangeCheck())
             pointsProp.intValue = Mathf.Clamp(fromField, tMin, tMax);
 
+        // Nombre del personaje con el que hay relacion.
         float nameWidth = EditorStyles.boldLabel.CalcSize(new GUIContent(other.displayName)).x;
         Rect nameRect = new Rect(x, y, Mathf.Min(nameWidth, w), lineH);
         EditorGUI.LabelField(nameRect, other.displayName, EditorStyles.boldLabel);
 
+        // Nombre del nivel de afinidad actual (ej. "Amistad"), centrado sobre la
+        // barra de progreso de abajo. Si no cabe centrado (nombre largo o nivel
+        // ancho), se desplaza lo justo para no solaparse con nombre ni campo.
         if (level != null)
         {
             float levelWidth = EditorStyles.boldLabel.CalcSize(new GUIContent(level.name)).x;
-            Rect levelRect = new Rect(nameRect.xMax + 8, y, levelWidth, lineH);
-            if (levelRect.xMax < fieldRect.x)
+            float centeredX  = x + (w - levelWidth) / 2f;
+            centeredX = Mathf.Max(centeredX, nameRect.xMax + namePadding);
+            centeredX = Mathf.Min(centeredX, fieldRect.x - namePadding - levelWidth);
+
+            Rect levelRect = new Rect(centeredX, y, levelWidth, lineH);
+            if (levelRect.xMax < fieldRect.x && levelRect.x >= nameRect.xMax)
                 EditorGUI.LabelField(levelRect, level.name, EditorStyles.boldLabel);
         }
 
         y += lineH + lineGap;
 
+        // --- Barra de progreso: color e indicador visual del nivel actual ---
         Rect barRect = new Rect(x, y, w, BarHeight);
         DrawBar(barRect, points, tMin, tMax, trackId);
         y += BarHeight + barGap;
 
-        // Barra de arrastre pura, sin campo numerico incrustado (el numero
-        // ya se muestra y edita arriba, en la cabecera).
+        // --- Slider de arrastre para cambiar los puntos ---
+        // Barra pura, sin campo numerico incrustado: el numero ya se muestra y
+        // edita arriba, en la cabecera (fieldRect).
         Rect sliderRect = new Rect(x, y, w, lineH);
         EditorGUI.BeginChangeCheck();
         int fromSlider = Mathf.RoundToInt(GUI.HorizontalSlider(sliderRect, points, tMin, tMax));
@@ -238,6 +265,7 @@ public sealed class CharacterDefinitionEditor : Editor
             pointsProp.intValue = Mathf.Clamp(fromSlider, tMin, tMax);
         y += lineH;
 
+        // --- Selector de track (solo si hay mas de un track definido) ---
         if (multiTrack)
         {
             y += barGap;
@@ -276,6 +304,8 @@ public sealed class CharacterDefinitionEditor : Editor
             int addMin = addTrackObj?.MinPoints ?? 0;
             int addMax = addTrackObj?.MaxPoints ?? 0;
 
+            // Barra de arrastre + campo numerico por separado (igual que en la fila
+            // de arriba): asi el numero siempre tiene su ancho fijo garantizado.
             using (new EditorGUILayout.HorizontalScope())
             {
                 EditorGUILayout.LabelField("Puntos iniciales", GUILayout.Width(110));
@@ -302,7 +332,7 @@ public sealed class CharacterDefinitionEditor : Editor
                 BuildTrackArrays(out var trackIds, out var trackNames);
                 int currIdx = System.Array.IndexOf(trackIds, addTrack);
                 if (currIdx < 0) currIdx = 0;
-                int newIdx = EditorGUILayout.Popup("Track", currIdx, trackNames);
+                int newIdx = EditorGUILayout.Popup("Track:", currIdx, trackNames);
                 addTrack = trackIds[newIdx];
             }
 
@@ -383,6 +413,7 @@ public sealed class CharacterDefinitionEditor : Editor
         }
     }
 
+    /// <summary>Desplegable para elegir a que track (linea de afinidad) sigue una relacion.</summary>
     private void DrawTrackPopup(Rect rect, SerializedProperty trackIdProp, string currentTrackId)
     {
         BuildTrackArrays(out var trackIds, out var trackNames);
@@ -390,19 +421,51 @@ public sealed class CharacterDefinitionEditor : Editor
         if (currIdx < 0) currIdx = 0;
 
         EditorGUI.BeginChangeCheck();
-        int newIdx = EditorGUI.Popup(rect, "Track", currIdx, trackNames);
+        int newIdx = EditorGUI.Popup(rect, "Track:", currIdx, trackNames);
         if (EditorGUI.EndChangeCheck())
             trackIdProp.stringValue = trackIds[newIdx];
     }
 
+    /// <summary>
+    /// Dibuja solo el recorte del sprite dentro de su textura (coordenadas UV
+    /// normalizadas, no la textura completa, que puede ser un atlas con relleno).
+    /// Se ajusta al recuadro sin recortar ni distorsionar (mismo aspecto que el
+    /// sprite original) y se centra dentro de el.
+    /// </summary>
+    private void DrawSpriteContained(Rect box, Sprite sprite)
+    {
+        Rect uv = new Rect(
+            sprite.rect.x      / sprite.texture.width,
+            sprite.rect.y      / sprite.texture.height,
+            sprite.rect.width  / sprite.texture.width,
+            sprite.rect.height / sprite.texture.height);
+
+        float fitScale = Mathf.Min(box.width / sprite.rect.width, box.height / sprite.rect.height);
+        float drawW = sprite.rect.width  * fitScale;
+        float drawH = sprite.rect.height * fitScale;
+        Rect drawRect = new Rect(
+            box.x + (box.width  - drawW) / 2f,
+            box.y + (box.height - drawH) / 2f,
+            drawW, drawH);
+
+        GUI.DrawTextureWithTexCoords(drawRect, sprite.texture, uv);
+    }
+
+    /// <summary>
+    /// Barra de progreso: fondo oscuro + relleno coloreado segun el porcentaje
+    /// que representan los puntos actuales dentro del rango [min, max) del track.
+    /// El color viene del nivel de afinidad correspondiente (ver AffinitySchema).
+    /// </summary>
     private void DrawBar(Rect rect, int points, int min, int max, string trackId)
     {
         float range = max - min;
-        if (range <= 0) return;
+        if (range <= 0) return; // rango invalido (track sin niveles definidos)
+
         float t     = Mathf.InverseLerp(min, max, points);
         Color color = _map.schema.GetColorForPoints(points, trackId);
-        EditorGUI.DrawRect(rect, new Color(0.15f, 0.15f, 0.15f));
-        EditorGUI.DrawRect(new Rect(rect.x, rect.y, rect.width * t, rect.height), color);
+
+        EditorGUI.DrawRect(rect, new Color(0.15f, 0.15f, 0.15f)); // fondo
+        EditorGUI.DrawRect(new Rect(rect.x, rect.y, rect.width * t, rect.height), color); // relleno
     }
 }
 #endif
