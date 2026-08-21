@@ -42,6 +42,10 @@ public sealed class DialogueRunner : MonoBehaviour
     private CancellationTokenSource _cts;
     private CharacterDefinition     _currentProfile;
 
+    /// <summary>GUID del nodo actual, o null si no hay dialogo en curso. Sirve para
+    /// guardar por donde iba una conversacion y retomarla luego con StartChat.</summary>
+    public string CurrentNodeGuid => _current?.GUID;
+
     private void Awake()
     {
         _navigator = navigatorBehaviour as IGraphNavigator;
@@ -84,8 +88,10 @@ public sealed class DialogueRunner : MonoBehaviour
     /// Arranca (o reinicia) el diálogo con el grafo indicado, cancelando cualquier
     /// diálogo en curso primero. Además del arranque automático de <see cref="graph"/>
     /// en <see cref="Start"/>, permite arrancar bajo demanda (ej. al abrir una app de chat).
+    /// Si se indica <paramref name="resumeNodeGuid"/> y existe en el grafo, arranca ahi
+    /// en vez del nodo de inicio (retomar una conversacion por donde se dejo).
     /// </summary>
-    public void StartChat(DialogueGraph newGraph)
+    public void StartChat(DialogueGraph newGraph, string resumeNodeGuid = null)
     {
         if (newGraph == null || _navigator == null) return;
 
@@ -95,7 +101,9 @@ public sealed class DialogueRunner : MonoBehaviour
         _currentProfile = null;
 
         InitializeGraph(graph);
-        _current = _navigator.StartNode();
+
+        var resumeNode = string.IsNullOrEmpty(resumeNodeGuid) ? null : graph.FindNode(resumeNodeGuid);
+        _current = resumeNode ?? _navigator.StartNode();
         _ = ShowNodeAsync(_current);
     }
 

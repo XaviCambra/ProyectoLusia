@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -20,7 +21,14 @@ public class ChatPhoneApp : PhoneAppBase
     [SerializeField] private ChatContactListView      contactListView;
     [SerializeField] private ChatConversationListView conversationListView;
 
-    private ChatContact _selectedContact;
+    private ChatContact      _selectedContact;
+    private ChatConversation _activeConversation;
+
+    // Por que nodo (GUID) va cada conversacion, en memoria mientras dura la
+    // sesion de juego. Cuando exista un sistema de guardado de partida, este
+    // diccionario es lo que habria que cargar/guardar en disco; el resto de
+    // esta clase no tendria que cambiar.
+    private readonly Dictionary<ChatConversation, string> _resumeNodes = new();
 
     private void Awake()
     {
@@ -44,6 +52,7 @@ public class ChatPhoneApp : PhoneAppBase
 
     public override void OnClose()
     {
+        SaveActiveConversationProgress();
         if (chatRunner) chatRunner.Stop();
     }
 
@@ -75,8 +84,23 @@ public class ChatPhoneApp : PhoneAppBase
     private void StartConversation(ChatConversation conversation)
     {
         if (chatRunner == null || conversation == null || conversation.graph == null) return;
+
+        SaveActiveConversationProgress();
+        _activeConversation = conversation;
         SetScreen(chatScreen);
-        chatRunner.StartChat(conversation.graph);
+
+        _resumeNodes.TryGetValue(conversation, out var resumeNode);
+        chatRunner.StartChat(conversation.graph, resumeNode);
+    }
+
+    /// <summary>Guarda por que nodo va la conversacion activa antes de dejarla (cambiar de chat o cerrar la app).</summary>
+    private void SaveActiveConversationProgress()
+    {
+        if (_activeConversation == null || chatRunner == null) return;
+
+        string node = chatRunner.CurrentNodeGuid;
+        if (!string.IsNullOrEmpty(node))
+            _resumeNodes[_activeConversation] = node;
     }
 
     private void SetScreen(GameObject screen)
