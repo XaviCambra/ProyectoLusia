@@ -19,6 +19,11 @@ public sealed class ConversationChatPresenter : IChatPresenter
     private readonly ChatConversation _conversation;
     private IChatPresenter _live; // null = en segundo plano, sin UI conectada
 
+    // Se renueva en cada Attach: cancela cualquier llamada en vivo (p.ej. una burbuja
+    // de Choice ya instanciada) que dependiera de la UI anterior, para que se
+    // destruya limpiamente en vez de quedar huerfana cuando se desconecta.
+    private CancellationTokenSource _liveCts;
+
     private event Action OnLiveAttached;
 
     public ConversationChatPresenter(ChatConversation conversation)
@@ -29,6 +34,10 @@ public sealed class ConversationChatPresenter : IChatPresenter
     /// <summary>Conecta (o desconecta, con null) la UI real que muestra esta conversacion ahora mismo.</summary>
     public void Attach(IChatPresenter live)
     {
+        _liveCts?.Cancel();
+        _liveCts?.Dispose();
+        _liveCts = live != null ? new CancellationTokenSource() : null;
+
         _live = live;
         if (live != null)
             OnLiveAttached?.Invoke();
@@ -47,16 +56,36 @@ public sealed class ConversationChatPresenter : IChatPresenter
     public Task ShowTypingAsync(CharacterDefinition speaker, float seconds, CancellationToken ct)
         => _live != null ? _live.ShowTypingAsync(speaker, seconds, ct) : Task.CompletedTask;
 
-    public async Task<int> ShowChoicesAsync(IReadOnlyList<ChoiceModule.ChoiceData> choices, CharacterDefinition speaker, CancellationToken ct)
-    {
-        var live = await WaitForLiveAsync(ct);
-        return await live.ShowChoicesAsync(choices, speaker, ct);
-    }
+    public Task<int> ShowChoicesAsync(IReadOnlyList<ChoiceModule.ChoiceData> choices, CharacterDefinition speaker, CancellationToken ct)
+        => RunWhileLiveAsync((live, liveCt) => live.ShowChoicesAsync(choices, speaker, liveCt), ct);
 
-    public async Task<int> ShowImageChoicesAsync(IReadOnlyList<ImageChoiceModule.ImageChoiceData> choices, CharacterDefinition speaker, CancellationToken ct)
+    public Task<int> ShowImageChoicesAsync(IReadOnlyList<ImageChoiceModule.ImageChoiceData> choices, CharacterDefinition speaker, CancellationToken ct)
+        => RunWhileLiveAsync((live, liveCt) => live.ShowImageChoicesAsync(choices, speaker, liveCt), ct);
+
+    /// <summary>
+    /// Pide una eleccion a la UI en vivo actual y espera su resultado. Si el jugador
+    /// sale de la pantalla antes de elegir, la burbuja en curso se cancela (se
+    /// destruye limpio) y se vuelve a pedir desde cero en cuanto haya UI conectada
+    /// de nuevo, en vez de quedarse esperando para siempre una burbuja ya destruida.
+    /// </summary>
+    private async Task<int> RunWhileLiveAsync(Func<IChatPresenter, CancellationToken, Task<int>> request, CancellationToken ct)
     {
-        var live = await WaitForLiveAsync(ct);
-        return await live.ShowImageChoicesAsync(choices, speaker, ct);
+        while (true)
+        {
+            var live    = await WaitForLiveAsync(ct);
+            var liveCts = _liveCts;
+            if (liveCts == null) continue; // se desconecto de nuevo antes de que llegaramos aqui
+
+            using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, liveCts.Token);
+            try
+            {
+                return await request(live, linked.Token);
+            }
+            catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+            {
+                // Se desconecto la UI antes de que el jugador eligiera: reintentar con la siguiente.
+            }
+        }
     }
 
     public void Clear() => _live?.Clear();

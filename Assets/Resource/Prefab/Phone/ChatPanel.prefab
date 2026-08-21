@@ -1284,9 +1284,10 @@ MonoBehaviour:
   appName: App
   appIcon: {fileID: -8862081451628272188, guid: b50636cbab492e9478ba3d568d20548e, type: 3}
   panel: {fileID: 2729867822982859479}
-  runnerPrefab: {fileID: 0}
+  runnerPrefab: {fileID: 6063212897858561426, guid: 175ce7a8296ba2a4ca31b25601e70791, type: 3}
   runnerContainer: {fileID: 0}
-  chatPresenterRef: {fileID: 0}
+  registry: {fileID: 11400000, guid: a831eb4f37efaa9458993dcc49f57b97, type: 2}
+  chatPresenterRef: {fileID: 5834247352152801132}
   contactsScreen: {fileID: 4182358976105539277}
   conversationsScreen: {fileID: 8322691238535809270}
   chatScreen: {fileID: 3290983895196354459}
@@ -1745,6 +1746,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4cc9ada49fdee8247a80fb62521a101a, type: 3}
+--- !u!114 &5834247352152801132 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1589220744283472479, guid: 4cc9ada49fdee8247a80fb62521a101a, type: 3}
+  m_PrefabInstance: {fileID: 5114227527151680819}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f1403e61fca82548a73fa7ff89a3791, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &8308472004145014873 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3869996785224193386, guid: 4cc9ada49fdee8247a80fb62521a101a, type: 3}

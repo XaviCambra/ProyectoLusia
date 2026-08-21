@@ -111,20 +111,6 @@ MonoBehaviour:
     modules:
     - rid: 6111299330555773028
     - rid: 6111299330555773029
-  - GUID: 65869383-b644-42a0-a0dc-aa86047de735
-    nodeRect:
-      serializedVersion: 2
-      x: 2029
-      y: 386
-      width: 400
-      height: 902
-    bgColorIndex: 4
-    bgColor: {r: 0.25, g: 0.43, b: 0.45, a: 1}
-    isStart: 0
-    startId: 
-    modules:
-    - rid: 3209439551900352605
-    - rid: 6111299330555773023
   - GUID: 42c44f58-b27e-429d-a891-437a9a940c4f
     nodeRect:
       serializedVersion: 2
@@ -162,19 +148,34 @@ MonoBehaviour:
   - GUID: a6ded993-cc98-4f2b-bf30-e43878e5422f
     nodeRect:
       serializedVersion: 2
-      x: -215
-      y: 201
+      x: -162
+      y: 340
       width: 400
-      height: 605
+      height: 670
     bgColorIndex: 4
     bgColor: {r: 0.25, g: 0.43, b: 0.45, a: 1}
     isStart: 1
     startId: 
     modules:
     - rid: 3209439550359994370
+    - rid: 6111299420373123240
     - rid: 3209439550359994453
     - rid: 3209439550359994368
     - rid: 6111299330555773014
+  - GUID: 65869383-b644-42a0-a0dc-aa86047de735
+    nodeRect:
+      serializedVersion: 2
+      x: 2029
+      y: 386
+      width: 400
+      height: 1024
+    bgColorIndex: 4
+    bgColor: {r: 0.25, g: 0.43, b: 0.45, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 3209439551900352605
+    - rid: 6111299330555773023
   edges:
   - fromNodeGUID: a7e2cae9-4964-4f15-b803-ef25ac348edb
     fromPortName: Next
@@ -185,9 +186,6 @@ MonoBehaviour:
   - fromNodeGUID: 652eb3c9-0bbb-441f-9073-b00974f96c84
     fromPortName: Next
     toNodeGUID: 7079bab7-f4ab-492d-b365-1e7f85db6e3c
-  - fromNodeGUID: a6ded993-cc98-4f2b-bf30-e43878e5422f
-    fromPortName: Next
-    toNodeGUID: 42c44f58-b27e-429d-a891-437a9a940c4f
   - fromNodeGUID: 42c44f58-b27e-429d-a891-437a9a940c4f
     fromPortName: 97d549c5
     toNodeGUID: a7e2cae9-4964-4f15-b803-ef25ac348edb
@@ -200,6 +198,9 @@ MonoBehaviour:
   - fromNodeGUID: 7079bab7-f4ab-492d-b365-1e7f85db6e3c
     fromPortName: Next
     toNodeGUID: 65869383-b644-42a0-a0dc-aa86047de735
+  - fromNodeGUID: a6ded993-cc98-4f2b-bf30-e43878e5422f
+    fromPortName: Next
+    toNodeGUID: 42c44f58-b27e-429d-a891-437a9a940c4f
   - fromNodeGUID: 65869383-b644-42a0-a0dc-aa86047de735
     fromPortName: b3b1321a
     toNodeGUID: 91a10a39-6997-4461-b339-9fc0d8882f1e
@@ -267,7 +268,7 @@ MonoBehaviour:
       type: {class: ChatTypingModule, ns: , asm: Assembly-CSharp}
       data:
         runMode: 2
-        duration: 3
+        duration: 5
     - rid: 3209439550359994454
       type: {class: ChatTypingModule, ns: , asm: Assembly-CSharp}
       data:
@@ -349,8 +350,8 @@ MonoBehaviour:
           requiresAffinity: 1
           affinityFrom: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
           affinityTo: {fileID: 11400000, guid: 43f523793dfa29c499ab0e270525c52a, type: 2}
-          requiredAffinityRelationship: Odio
-          invertRequirement: 0
+          requiredAffinityRelationship: Neutro
+          invertRequirement: 1
           requiresProgress: 0
           progressMethod: 
           progressArgType: 0
@@ -481,3 +482,8 @@ MonoBehaviour:
       data:
         runMode: 2
         signal: {fileID: 11400000, guid: 24f887eb00223e54fb23677c2383c4a6, type: 2}
+    - rid: 6111299420373123240
+      type: {class: ChatPauseModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 2

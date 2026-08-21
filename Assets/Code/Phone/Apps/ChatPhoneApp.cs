@@ -97,6 +97,67 @@ public class ChatPhoneApp : PhoneAppBase
         StartThread(conversation, live: null);
     }
 
+    // -----------------------------------------------------------------------
+    // Alta en runtime (personajes/conversaciones nuevas a mitad de partida).
+    // Pensado para que lo llame un trigger externo, ver ChatRuntimeUnlockTrigger.
+    // -----------------------------------------------------------------------
+
+    /// <summary>
+    /// Da de alta un contacto nuevo (con todas sus conversaciones) que no estaba
+    /// en el registry al arrancar. Sus conversaciones activas arrancan solas en
+    /// segundo plano igual que las que ya existian desde el principio.
+    /// </summary>
+    public void RegisterContact(ChatContact contact)
+    {
+        if (contact == null || registry == null || registry.contacts.Contains(contact)) return;
+
+        registry.contacts.Add(contact);
+        foreach (var conversation in contact.conversations)
+            if (conversation != null)
+                HookConversation(conversation);
+
+        RefreshVisibleLists();
+    }
+
+    /// <summary>
+    /// Anade una conversacion nueva a un contacto que ya esta en el registry (por
+    /// ejemplo, para desbloquear un tema nuevo con un personaje ya conocido). Si el
+    /// contacto tampoco estaba dado de alta, lo registra primero.
+    /// </summary>
+    public void RegisterConversation(ChatContact contact, ChatConversation conversation)
+    {
+        if (contact == null || conversation == null) return;
+
+        if (!registry.contacts.Contains(contact))
+        {
+            RegisterContact(contact);
+            return;
+        }
+
+        if (!contact.conversations.Contains(conversation))
+            contact.conversations.Add(conversation);
+
+        HookConversation(conversation);
+        RefreshVisibleLists();
+    }
+
+    /// <summary>Engancha una conversacion nueva al mismo ciclo de vida que las del registry inicial (auto-start ahora y al desbloquearse).</summary>
+    private void HookConversation(ChatConversation conversation)
+    {
+        conversation.OnUnlocked += TryAutoStart;
+        TryAutoStart(conversation);
+    }
+
+    /// <summary>Refresca las listas de contactos/conversaciones si estan en pantalla en este momento, para que la alta en runtime se vea sin salir y volver a entrar.</summary>
+    private void RefreshVisibleLists()
+    {
+        if (contactsScreen != null && contactsScreen.activeSelf)
+            contactListView?.Refresh();
+
+        if (conversationsScreen != null && conversationsScreen.activeSelf && _selectedContact != null)
+            conversationListView?.Show(_selectedContact);
+    }
+
     public override void OnOpen() => ShowContacts();
 
     /// <summary>

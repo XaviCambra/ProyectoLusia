@@ -630,6 +630,59 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &647920040
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 647920042}
+  - component: {fileID: 647920041}
+  m_Layer: 0
+  m_Name: ChatRuntimeUnlockTrigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &647920041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 647920040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1672549866a6c04499b8f25f85bca9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chatApp: {fileID: 1362392684}
+  contactsToAdd: []
+  conversationsToAdd:
+  - contact: {fileID: 11400000, guid: 76be7d04027ae4f47be37bd823cc0024, type: 2}
+    conversation: {fileID: 11400000, guid: 4cc81f9f3001eda43b21b9ecd5f3579e, type: 2}
+  key: 108
+  signal: {fileID: 0}
+  eventKey: 
+  triggerOnce: 1
+--- !u!4 &647920042
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 647920040}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 977.8398, y: 348.1101, z: 1.0363494}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &690991494
 GameObject:
   m_ObjectHideFlags: 0
@@ -819,7 +872,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 418589832737116132, guid: b633669c5850aa145afecf364144724f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -266.66663
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 418589832737116132, guid: b633669c5850aa145afecf364144724f, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -953,18 +1006,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 4376451411563145067, guid: b633669c5850aa145afecf364144724f, type: 3}
-      propertyPath: registry
-      value: 
-      objectReference: {fileID: 11400000, guid: a831eb4f37efaa9458993dcc49f57b97, type: 2}
-    - target: {fileID: 4376451411563145067, guid: b633669c5850aa145afecf364144724f, type: 3}
-      propertyPath: runnerPrefab
-      value: 
-      objectReference: {fileID: 6063212897858561426, guid: 175ce7a8296ba2a4ca31b25601e70791, type: 3}
-    - target: {fileID: 4376451411563145067, guid: b633669c5850aa145afecf364144724f, type: 3}
-      propertyPath: chatPresenterRef
-      value: 
-      objectReference: {fileID: 1185221839}
     - target: {fileID: 4965766238838914750, guid: b633669c5850aa145afecf364144724f, type: 3}
       propertyPath: audioSource
       value: 
@@ -995,7 +1036,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5491337500754497871, guid: b633669c5850aa145afecf364144724f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 266.6667
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5491337500754497871, guid: b633669c5850aa145afecf364144724f, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -1019,17 +1060,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2403361893230196368, guid: b633669c5850aa145afecf364144724f, type: 3}
   m_PrefabInstance: {fileID: 1185221823}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1185221839 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5834247352152801132, guid: b633669c5850aa145afecf364144724f, type: 3}
-  m_PrefabInstance: {fileID: 1185221823}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f1403e61fca82548a73fa7ff89a3791, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1190390063
 GameObject:
   m_ObjectHideFlags: 0
@@ -1269,6 +1299,17 @@ MonoBehaviour:
   rules:
   - eventKey: DiadaTest
     contact: {fileID: 11400000, guid: 76be7d04027ae4f47be37bd823cc0024, type: 2}
+--- !u!114 &1362392684 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4376451411563145067, guid: b633669c5850aa145afecf364144724f, type: 3}
+  m_PrefabInstance: {fileID: 1185221823}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a6e05f5a018c63449a6d9245fd2f885, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1461657354
 GameObject:
   m_ObjectHideFlags: 0
@@ -1580,3 +1621,4 @@ SceneRoots:
   - {fileID: 562330869}
   - {fileID: 871067706}
   - {fileID: 690991496}
+  - {fileID: 647920042}

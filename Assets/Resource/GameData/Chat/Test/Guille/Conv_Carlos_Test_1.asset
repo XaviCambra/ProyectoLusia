@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9937d9a4fdffe9841b2e3bee49f40ce5, type: 3}
+  m_Name: Conv_Carlos_Test_1
+  m_EditorClassIdentifier: 
+  displayName: Chat Conver Test 1
+  graph: {fileID: 11400000, guid: 840b7649253f1da438d0b7f40d995897, type: 2}
+  conditions:
+  - name: Locked
+    value: 1

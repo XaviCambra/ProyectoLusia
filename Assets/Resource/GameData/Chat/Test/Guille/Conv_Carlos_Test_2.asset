@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9937d9a4fdffe9841b2e3bee49f40ce5, type: 3}
-  m_Name: Conv_Carlos_Test
+  m_Name: Conv_Carlos_Test_2
   m_EditorClassIdentifier: 
-  displayName: Chat Conver Test 1
-  graph: {fileID: 11400000, guid: 840b7649253f1da438d0b7f40d995897, type: 2}
+  displayName: Chat Conver Test 2
+  graph: {fileID: 11400000, guid: 2dbbd9fcf06d69e4084221ae7615b9eb, type: 2}
   conditions:
-  - name: Locked
+  - name: Praga
     value: 1
