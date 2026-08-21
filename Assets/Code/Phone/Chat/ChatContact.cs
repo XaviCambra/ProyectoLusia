@@ -24,5 +24,10 @@ public class ChatContact : ScriptableObject
     public Sprite DisplayImage => isGroup ? groupImage         : character?.avatarSprite;
     public bool   IsVisible    => conversations.Exists(c => c.State != ConversationState.Hidden);
     public bool   HasNew       => conversations.Exists(c => c.State == ConversationState.Active);
-    public bool   HasUnread    => conversations.Exists(c => c.HasUnread);
+
+    /// <summary>Icono a mostrar para el contacto: el peor caso (AwaitingResponse gana) entre todas sus conversaciones.</summary>
+    public ChatNotification Notification =>
+        conversations.Exists(c => c != null && c.Notification == ChatNotification.AwaitingResponse) ? ChatNotification.AwaitingResponse :
+        conversations.Exists(c => c != null && c.Notification == ChatNotification.Unread)           ? ChatNotification.Unread :
+        ChatNotification.None;
 }

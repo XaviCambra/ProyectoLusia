@@ -4,6 +4,13 @@ using UnityEngine;
 
 public enum ConversationState { Hidden, Active, Finished }
 
+/// <summary>
+/// Estado de notificacion de una conversacion (o de un contacto, agregando las suyas).
+/// Son mutuamente excluyentes por diseno: AwaitingResponse siempre gana sobre Unread,
+/// asi que solo se pinta un icono a la vez (ver ChatConversation.Notification).
+/// </summary>
+public enum ChatNotification { None, Unread, AwaitingResponse }
+
 [Serializable]
 public class NamedBool
 {
@@ -26,17 +33,25 @@ public class ChatConversation : ScriptableObject
     [NonSerialized] private ConversationState _state;
     public ConversationState State => _state;
 
-    // Historial completo y marca de "no leido" de la sesion actual. Igual que
-    // _state, es estado de sesion no serializado: se reconstruye mientras la
-    // conversacion corre (en pantalla o en segundo plano), no persiste entre partidas.
+    // Historial completo y notificacion de la sesion actual. Igual que _state, es
+    // estado de sesion no serializado: se reconstruye mientras la conversacion
+    // corre (en pantalla o en segundo plano), no persiste entre partidas.
     [NonSerialized] private List<ChatEntry> _history = new();
     [NonSerialized] private bool _hasUnread;
+    [NonSerialized] private bool _awaitingResponse;
 
     public IReadOnlyList<ChatEntry> History => _history;
     public bool HasUnread => _hasUnread;
+    public bool AwaitingResponse => _awaitingResponse;
+
+    /// <summary>Que icono le corresponde a esta conversacion ahora mismo. AwaitingResponse tiene prioridad sobre Unread.</summary>
+    public ChatNotification Notification =>
+        _awaitingResponse ? ChatNotification.AwaitingResponse :
+        _hasUnread        ? ChatNotification.Unread :
+        ChatNotification.None;
 
     public event Action<ChatConversation> OnUnlocked;
-    public event Action<ChatConversation> OnUnreadChanged;
+    public event Action<ChatConversation> OnNotificationChanged;
 
     private void OnEnable()
     {
@@ -51,14 +66,30 @@ public class ChatConversation : ScriptableObject
     {
         if (_hasUnread) return;
         _hasUnread = true;
-        OnUnreadChanged?.Invoke(this);
+        OnNotificationChanged?.Invoke(this);
     }
 
     public void MarkRead()
     {
         if (!_hasUnread) return;
         _hasUnread = false;
-        OnUnreadChanged?.Invoke(this);
+        OnNotificationChanged?.Invoke(this);
+    }
+
+    /// <summary>El jugador tiene un Choice/ImageChoice pendiente de responder en esta conversacion.</summary>
+    public void MarkAwaitingResponse()
+    {
+        if (_awaitingResponse) return;
+        _awaitingResponse = true;
+        OnNotificationChanged?.Invoke(this);
+    }
+
+    /// <summary>El Choice/ImageChoice pendiente ya se respondio (o se cancelo del todo).</summary>
+    public void MarkResponded()
+    {
+        if (!_awaitingResponse) return;
+        _awaitingResponse = false;
+        OnNotificationChanged?.Invoke(this);
     }
 
     public void SetCondition(string conditionName, bool value)

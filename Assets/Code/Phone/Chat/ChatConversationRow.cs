@@ -10,8 +10,10 @@ public class ChatConversationRow : MonoBehaviour
 {
     [SerializeField] private TMP_Text nameLabel;
     [SerializeField] private Button   button;
-    [Tooltip("Opcional: indicador de mensaje sin leer (punto, badge...). Se activa/desactiva solo.")]
+    [Tooltip("Verde: hay mensajes nuevos sin leer en esta conversacion.")]
     [SerializeField] private GameObject unreadBadge;
+    [Tooltip("Amarillo: el jugador tiene que responder algo pendiente (Choice/ImageChoice). Nunca se muestra a la vez que unreadBadge.")]
+    [SerializeField] private GameObject pendingResponseBadge;
 
     private ChatConversation _conversation;
 
@@ -21,20 +23,22 @@ public class ChatConversationRow : MonoBehaviour
         if (nameLabel) nameLabel.text = conversation.displayName;
         button.onClick.AddListener(onClick);
 
-        conversation.OnUnreadChanged += HandleUnreadChanged;
-        RefreshBadge();
+        conversation.OnNotificationChanged += HandleNotificationChanged;
+        RefreshBadges();
     }
 
     private void OnDestroy()
     {
         if (_conversation != null)
-            _conversation.OnUnreadChanged -= HandleUnreadChanged;
+            _conversation.OnNotificationChanged -= HandleNotificationChanged;
     }
 
-    private void HandleUnreadChanged(ChatConversation _) => RefreshBadge();
+    private void HandleNotificationChanged(ChatConversation _) => RefreshBadges();
 
-    private void RefreshBadge()
+    private void RefreshBadges()
     {
-        if (unreadBadge) unreadBadge.SetActive(_conversation != null && _conversation.HasUnread);
+        var notification = _conversation != null ? _conversation.Notification : ChatNotification.None;
+        if (unreadBadge)          unreadBadge.SetActive(notification == ChatNotification.Unread);
+        if (pendingResponseBadge) pendingResponseBadge.SetActive(notification == ChatNotification.AwaitingResponse);
     }
 }

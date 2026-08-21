@@ -67,24 +67,34 @@ public sealed class ConversationChatPresenter : IChatPresenter
     /// sale de la pantalla antes de elegir, la burbuja en curso se cancela (se
     /// destruye limpio) y se vuelve a pedir desde cero en cuanto haya UI conectada
     /// de nuevo, en vez de quedarse esperando para siempre una burbuja ya destruida.
+    /// Mientras tanto, la conversacion queda marcada como "esperando respuesta" (ver
+    /// ChatConversation.MarkAwaitingResponse) para el icono de notificacion en las listas.
     /// </summary>
     private async Task<int> RunWhileLiveAsync(Func<IChatPresenter, CancellationToken, Task<int>> request, CancellationToken ct)
     {
-        while (true)
+        _conversation.MarkAwaitingResponse();
+        try
         {
-            var live    = await WaitForLiveAsync(ct);
-            var liveCts = _liveCts;
-            if (liveCts == null) continue; // se desconecto de nuevo antes de que llegaramos aqui
+            while (true)
+            {
+                var live    = await WaitForLiveAsync(ct);
+                var liveCts = _liveCts;
+                if (liveCts == null) continue; // se desconecto de nuevo antes de que llegaramos aqui
 
-            using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, liveCts.Token);
-            try
-            {
-                return await request(live, linked.Token);
+                using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, liveCts.Token);
+                try
+                {
+                    return await request(live, linked.Token);
+                }
+                catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+                {
+                    // Se desconecto la UI antes de que el jugador eligiera: reintentar con la siguiente.
+                }
             }
-            catch (OperationCanceledException) when (!ct.IsCancellationRequested)
-            {
-                // Se desconecto la UI antes de que el jugador eligiera: reintentar con la siguiente.
-            }
+        }
+        finally
+        {
+            _conversation.MarkResponded();
         }
     }
 
