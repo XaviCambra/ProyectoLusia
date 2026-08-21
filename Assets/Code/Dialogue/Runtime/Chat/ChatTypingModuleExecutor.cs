@@ -8,7 +8,7 @@ using UnityEngine;
 /// Muestra el indicador "está escribiendo..." durante la duración indicada.
 /// </summary>
 [DisallowMultipleComponent]
-public sealed class ChatTypingModuleExecutor : ModuleExecutorBase
+public sealed class ChatTypingModuleExecutor : ModuleExecutorBase, IPresenterHost
 {
     [SerializeField] private MonoBehaviour presenterRef; // IChatPresenter
 
@@ -20,6 +20,8 @@ public sealed class ChatTypingModuleExecutor : ModuleExecutorBase
     {
         _presenter = presenterRef as IChatPresenter;
     }
+
+    public void SetPresenter(IChatPresenter presenter) => _presenter = presenter;
 
     public override async Task<string> ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
     {

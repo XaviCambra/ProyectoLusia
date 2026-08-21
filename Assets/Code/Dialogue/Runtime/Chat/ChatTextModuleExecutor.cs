@@ -10,7 +10,7 @@ using UnityEngine;
 /// el chat muestra el mensaje completo de una vez, como una burbuja.
 /// </summary>
 [DisallowMultipleComponent]
-public sealed class ChatTextModuleExecutor : ModuleExecutorBase
+public sealed class ChatTextModuleExecutor : ModuleExecutorBase, IPresenterHost
 {
     [SerializeField] private MonoBehaviour presenterRef; // IChatPresenter
 
@@ -22,6 +22,8 @@ public sealed class ChatTextModuleExecutor : ModuleExecutorBase
     {
         _presenter = presenterRef as IChatPresenter;
     }
+
+    public void SetPresenter(IChatPresenter presenter) => _presenter = presenter;
 
     public override Task<string> ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
     {

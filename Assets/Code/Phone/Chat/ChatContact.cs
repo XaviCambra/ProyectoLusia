@@ -24,4 +24,5 @@ public class ChatContact : ScriptableObject
     public Sprite DisplayImage => isGroup ? groupImage         : character?.avatarSprite;
     public bool   IsVisible    => conversations.Exists(c => c.State != ConversationState.Hidden);
     public bool   HasNew       => conversations.Exists(c => c.State == ConversationState.Active);
+    public bool   HasUnread    => conversations.Exists(c => c.HasUnread);
 }

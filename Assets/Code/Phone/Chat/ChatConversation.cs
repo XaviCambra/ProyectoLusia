@@ -26,12 +26,39 @@ public class ChatConversation : ScriptableObject
     [NonSerialized] private ConversationState _state;
     public ConversationState State => _state;
 
+    // Historial completo y marca de "no leido" de la sesion actual. Igual que
+    // _state, es estado de sesion no serializado: se reconstruye mientras la
+    // conversacion corre (en pantalla o en segundo plano), no persiste entre partidas.
+    [NonSerialized] private List<ChatEntry> _history = new();
+    [NonSerialized] private bool _hasUnread;
+
+    public IReadOnlyList<ChatEntry> History => _history;
+    public bool HasUnread => _hasUnread;
+
     public event Action<ChatConversation> OnUnlocked;
+    public event Action<ChatConversation> OnUnreadChanged;
 
     private void OnEnable()
     {
         bool allMet = conditions.Count == 0 || conditions.TrueForAll(c => c.value);
         _state = allMet ? ConversationState.Active : ConversationState.Hidden;
+    }
+
+    /// <summary>Añade un mensaje al historial visible de esta conversacion (ver ConversationChatPresenter).</summary>
+    public void AppendHistory(ChatEntry entry) => _history.Add(entry);
+
+    public void MarkUnread()
+    {
+        if (_hasUnread) return;
+        _hasUnread = true;
+        OnUnreadChanged?.Invoke(this);
+    }
+
+    public void MarkRead()
+    {
+        if (!_hasUnread) return;
+        _hasUnread = false;
+        OnUnreadChanged?.Invoke(this);
     }
 
     public void SetCondition(string conditionName, bool value)

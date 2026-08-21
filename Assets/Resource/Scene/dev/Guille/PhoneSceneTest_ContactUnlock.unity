@@ -819,7 +819,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 418589832737116132, guid: b633669c5850aa145afecf364144724f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -266.66663
       objectReference: {fileID: 0}
     - target: {fileID: 418589832737116132, guid: b633669c5850aa145afecf364144724f, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -953,6 +953,18 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4376451411563145067, guid: b633669c5850aa145afecf364144724f, type: 3}
+      propertyPath: registry
+      value: 
+      objectReference: {fileID: 11400000, guid: a831eb4f37efaa9458993dcc49f57b97, type: 2}
+    - target: {fileID: 4376451411563145067, guid: b633669c5850aa145afecf364144724f, type: 3}
+      propertyPath: runnerPrefab
+      value: 
+      objectReference: {fileID: 6063212897858561426, guid: 175ce7a8296ba2a4ca31b25601e70791, type: 3}
+    - target: {fileID: 4376451411563145067, guid: b633669c5850aa145afecf364144724f, type: 3}
+      propertyPath: chatPresenterRef
+      value: 
+      objectReference: {fileID: 1185221839}
     - target: {fileID: 4965766238838914750, guid: b633669c5850aa145afecf364144724f, type: 3}
       propertyPath: audioSource
       value: 
@@ -983,7 +995,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5491337500754497871, guid: b633669c5850aa145afecf364144724f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 266.6667
       objectReference: {fileID: 0}
     - target: {fileID: 5491337500754497871, guid: b633669c5850aa145afecf364144724f, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -1007,6 +1019,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2403361893230196368, guid: b633669c5850aa145afecf364144724f, type: 3}
   m_PrefabInstance: {fileID: 1185221823}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1185221839 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5834247352152801132, guid: b633669c5850aa145afecf364144724f, type: 3}
+  m_PrefabInstance: {fileID: 1185221823}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f1403e61fca82548a73fa7ff89a3791, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1190390063
 GameObject:
   m_ObjectHideFlags: 0

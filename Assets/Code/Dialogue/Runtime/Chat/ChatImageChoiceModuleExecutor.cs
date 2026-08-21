@@ -9,7 +9,7 @@ using UnityEngine;
 /// Devuelve el puerto elegido como resultado de <see cref="ExecuteAsync"/>.
 /// </summary>
 [DisallowMultipleComponent]
-public sealed class ChatImageChoiceModuleExecutor : ModuleExecutorBase
+public sealed class ChatImageChoiceModuleExecutor : ModuleExecutorBase, IPresenterHost
 {
     [SerializeField] private MonoBehaviour presenterRef; // IChatPresenter
 
@@ -21,6 +21,8 @@ public sealed class ChatImageChoiceModuleExecutor : ModuleExecutorBase
     {
         _presenter = presenterRef as IChatPresenter;
     }
+
+    public void SetPresenter(IChatPresenter presenter) => _presenter = presenter;
 
     public override async Task<string> ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
     {

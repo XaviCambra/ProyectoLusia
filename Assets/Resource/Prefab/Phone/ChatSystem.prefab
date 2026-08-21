@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1785509019984272064
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3869996785224193386}
+  - component: {fileID: 1589220744283472479}
+  m_Layer: 0
+  m_Name: ChatSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3869996785224193386
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1785509019984272064}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -960, y: -540, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1589220744283472479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1785509019984272064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f1403e61fca82548a73fa7ff89a3791, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollRect: {fileID: 0}
+  contentParent: {fileID: 0}
+  contentSizeListener: {fileID: 0}
+  bubblePrefabs:
+  - contentType: 0
+    prefab: {fileID: 6311583140945930074, guid: c0a38f80a996aa3448e6ec1c9a02ea90, type: 3}
+    ownPrefab: {fileID: 2302436575613865588, guid: ce649c0b4abb5db4a89914d783aa673e, type: 3}
+  - contentType: 1
+    prefab: {fileID: 305630316785977270, guid: 1930cdf0ab210f3458fc5d053dae1cbb, type: 3}
+    ownPrefab: {fileID: 2301267267577530808, guid: d16d5f04d356e1c4a865accf455f9721, type: 3}
+  - contentType: 2
+    prefab: {fileID: 431026492366712519, guid: c6bbde7f83ea71b4ea85bc61cec3b6c8, type: 3}
+    ownPrefab: {fileID: 6837521088408333809, guid: 868f5ba8baeddb447ab40d8e030a5aff, type: 3}
+  typingBubblePrefab: {fileID: 4924558295411871618, guid: 880e0330a8056254aadba974cbba3338, type: 3}
+  choicesBubblePrefab: {fileID: 3482952202960943740, guid: 101c243107a663c45ab5f188417c96ea, type: 3}
+  imageChoicesBubblePrefab: {fileID: 6790140272612495388, guid: f44ec3edd98b5814c9ee7b08408fd121, type: 3}

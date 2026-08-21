@@ -1,0 +1,398 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ab21e18d53040c43b9c61e72ca1d3af, type: 3}
+  m_Name: ChatScriptTestA
+  m_EditorClassIdentifier: 
+  nodes:
+  - GUID: 8dfd4857-c3d6-44f1-bfd5-4f5493eb1da9
+    nodeRect:
+      serializedVersion: 2
+      x: 97
+      y: 300
+      width: 400
+      height: 557
+    bgColorIndex: 0
+    bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
+    isStart: 1
+    startId: 
+    modules:
+    - rid: 6111299420373123153
+    - rid: 6111299420373123155
+    - rid: 6111299420373123156
+    - rid: 6111299420373123154
+  - GUID: 36e2256d-354b-4680-87a3-435b3a529502
+    nodeRect:
+      serializedVersion: 2
+      x: 1165
+      y: 325
+      width: 400
+      height: 532
+    bgColorIndex: 0
+    bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 6111299420373123161
+    - rid: 6111299420373123162
+    - rid: 6111299420373123163
+    - rid: 6111299420373123164
+  - GUID: 9988f282-fd96-4bc5-b5f9-4f84e87b77dd
+    nodeRect:
+      serializedVersion: 2
+      x: 1703
+      y: 325
+      width: 400
+      height: 467
+    bgColorIndex: 7
+    bgColor: {r: 0.32, g: 0.24, b: 0.4, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 6111299420373123165
+    - rid: 6111299420373123166
+    - rid: 6111299420373123168
+  - GUID: 7e11f9b7-88cf-42b4-97d9-c227cbe8007d
+    nodeRect:
+      serializedVersion: 2
+      x: 2202
+      y: 325
+      width: 400
+      height: 532
+    bgColorIndex: 0
+    bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 6111299420373123169
+    - rid: 6111299420373123170
+    - rid: 6111299420373123171
+    - rid: 6111299420373123172
+  - GUID: e027371b-6877-4eef-a095-3f7908cd0175
+    nodeRect:
+      serializedVersion: 2
+      x: 2695
+      y: 325
+      width: 400
+      height: 467
+    bgColorIndex: 7
+    bgColor: {r: 0.32, g: 0.24, b: 0.4, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 6111299420373123177
+    - rid: 6111299420373123178
+    - rid: 6111299420373123180
+  - GUID: 1dd50eb9-feaf-437c-bcab-d2ac354db2cf
+    nodeRect:
+      serializedVersion: 2
+      x: 3704
+      y: 325
+      width: 400
+      height: 467
+    bgColorIndex: 7
+    bgColor: {r: 0.32, g: 0.24, b: 0.4, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 6111299420373123185
+    - rid: 6111299420373123186
+    - rid: 6111299420373123188
+  - GUID: 8df2ee54-2bfd-4299-b905-5276c01e2dcc
+    nodeRect:
+      serializedVersion: 2
+      x: 3212
+      y: 325
+      width: 400
+      height: 532
+    bgColorIndex: 0
+    bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 6111299420373123181
+    - rid: 6111299420373123182
+    - rid: 6111299420373123183
+    - rid: 6111299420373123184
+  - GUID: 1daf060f-3f35-4e23-aa85-0df9d29e0c58
+    nodeRect:
+      serializedVersion: 2
+      x: 4215
+      y: 325
+      width: 400
+      height: 532
+    bgColorIndex: 0
+    bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 6111299420373123189
+    - rid: 6111299420373123190
+    - rid: 6111299420373123191
+    - rid: 6111299420373123192
+  - GUID: 8c58882f-6877-4c0f-b145-79ec0c7a9b33
+    nodeRect:
+      serializedVersion: 2
+      x: 645
+      y: 325
+      width: 400
+      height: 467
+    bgColorIndex: 7
+    bgColor: {r: 0.32, g: 0.24, b: 0.4, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 6111299420373123157
+    - rid: 6111299420373123160
+    - rid: 6111299420373123158
+  edges:
+  - fromNodeGUID: 8dfd4857-c3d6-44f1-bfd5-4f5493eb1da9
+    fromPortName: Next
+    toNodeGUID: 8c58882f-6877-4c0f-b145-79ec0c7a9b33
+  - fromNodeGUID: 36e2256d-354b-4680-87a3-435b3a529502
+    fromPortName: Next
+    toNodeGUID: 9988f282-fd96-4bc5-b5f9-4f84e87b77dd
+  - fromNodeGUID: 7e11f9b7-88cf-42b4-97d9-c227cbe8007d
+    fromPortName: Next
+    toNodeGUID: e027371b-6877-4eef-a095-3f7908cd0175
+  - fromNodeGUID: 8df2ee54-2bfd-4299-b905-5276c01e2dcc
+    fromPortName: Next
+    toNodeGUID: 1dd50eb9-feaf-437c-bcab-d2ac354db2cf
+  - fromNodeGUID: 8c58882f-6877-4c0f-b145-79ec0c7a9b33
+    fromPortName: Next
+    toNodeGUID: 36e2256d-354b-4680-87a3-435b3a529502
+  - fromNodeGUID: 9988f282-fd96-4bc5-b5f9-4f84e87b77dd
+    fromPortName: Next
+    toNodeGUID: 7e11f9b7-88cf-42b4-97d9-c227cbe8007d
+  - fromNodeGUID: e027371b-6877-4eef-a095-3f7908cd0175
+    fromPortName: Next
+    toNodeGUID: 8df2ee54-2bfd-4299-b905-5276c01e2dcc
+  - fromNodeGUID: 1dd50eb9-feaf-437c-bcab-d2ac354db2cf
+    fromPortName: Next
+    toNodeGUID: 1daf060f-3f35-4e23-aa85-0df9d29e0c58
+  frames: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 6111299420373123153
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: f4aa8da4c00b83a4b8fabc61cf5b0464, type: 2}
+    - rid: 6111299420373123154
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Jose
+        useLocalization: 0
+        text: Texto 1
+        locKey: 
+        isOwn: 0
+        useTypewriter: 0
+        profileOverride: {fileID: 0}
+    - rid: 6111299420373123155
+      type: {class: ChatPauseModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 1
+    - rid: 6111299420373123156
+      type: {class: ChatTypingModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 2
+    - rid: 6111299420373123157
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+    - rid: 6111299420373123158
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Aran
+        useLocalization: 0
+        text: Texto 2
+        locKey: 
+        isOwn: 1
+        useTypewriter: 0
+        profileOverride: {fileID: 0}
+    - rid: 6111299420373123160
+      type: {class: ChatPauseModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 2
+    - rid: 6111299420373123161
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: f4aa8da4c00b83a4b8fabc61cf5b0464, type: 2}
+    - rid: 6111299420373123162
+      type: {class: ChatPauseModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 1
+    - rid: 6111299420373123163
+      type: {class: ChatTypingModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 2
+    - rid: 6111299420373123164
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Jose
+        useLocalization: 0
+        text: Texto 3
+        locKey: 
+        isOwn: 0
+        useTypewriter: 0
+        profileOverride: {fileID: 0}
+    - rid: 6111299420373123165
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+    - rid: 6111299420373123166
+      type: {class: ChatPauseModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 2
+    - rid: 6111299420373123168
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Aran
+        useLocalization: 0
+        text: Texto 4
+        locKey: 
+        isOwn: 1
+        useTypewriter: 0
+        profileOverride: {fileID: 0}
+    - rid: 6111299420373123169
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: f4aa8da4c00b83a4b8fabc61cf5b0464, type: 2}
+    - rid: 6111299420373123170
+      type: {class: ChatPauseModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 1
+    - rid: 6111299420373123171
+      type: {class: ChatTypingModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 2
+    - rid: 6111299420373123172
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Jose
+        useLocalization: 0
+        text: Texto 5
+        locKey: 
+        isOwn: 0
+        useTypewriter: 0
+        profileOverride: {fileID: 0}
+    - rid: 6111299420373123177
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+    - rid: 6111299420373123178
+      type: {class: ChatPauseModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 2
+    - rid: 6111299420373123180
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Aran
+        useLocalization: 0
+        text: Texto 6
+        locKey: 
+        isOwn: 1
+        useTypewriter: 0
+        profileOverride: {fileID: 0}
+    - rid: 6111299420373123181
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: f4aa8da4c00b83a4b8fabc61cf5b0464, type: 2}
+    - rid: 6111299420373123182
+      type: {class: ChatPauseModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 1
+    - rid: 6111299420373123183
+      type: {class: ChatTypingModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 2
+    - rid: 6111299420373123184
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Jose
+        useLocalization: 0
+        text: Texto 7
+        locKey: 
+        isOwn: 0
+        useTypewriter: 0
+        profileOverride: {fileID: 0}
+    - rid: 6111299420373123185
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+    - rid: 6111299420373123186
+      type: {class: ChatPauseModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 2
+    - rid: 6111299420373123188
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Aran
+        useLocalization: 0
+        text: Texto 8
+        locKey: 
+        isOwn: 1
+        useTypewriter: 0
+        profileOverride: {fileID: 0}
+    - rid: 6111299420373123189
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: f4aa8da4c00b83a4b8fabc61cf5b0464, type: 2}
+    - rid: 6111299420373123190
+      type: {class: ChatPauseModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 1
+    - rid: 6111299420373123191
+      type: {class: ChatTypingModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        duration: 2
+    - rid: 6111299420373123192
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Jose
+        useLocalization: 0
+        text: Texto 9
+        locKey: 
+        isOwn: 0
+        useTypewriter: 0
+        profileOverride: {fileID: 0}

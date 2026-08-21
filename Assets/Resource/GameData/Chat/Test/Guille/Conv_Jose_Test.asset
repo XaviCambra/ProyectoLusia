@@ -9,9 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61acdfb37d456ed40ac14c58782b8863, type: 3}
-  m_Name: ChatRegistry
+  m_Script: {fileID: 11500000, guid: 9937d9a4fdffe9841b2e3bee49f40ce5, type: 3}
+  m_Name: Conv_Jose_Test
   m_EditorClassIdentifier: 
-  contacts:
-  - {fileID: 11400000, guid: 76be7d04027ae4f47be37bd823cc0024, type: 2}
-  - {fileID: 11400000, guid: d0877bc5aa63e534695f069727e8d2f3, type: 2}
+  displayName: Cosas raras
+  graph: {fileID: 11400000, guid: 47d8a69d18cae7e4fbf15ad6af79b717, type: 2}
+  conditions:
+  - name: Primeras
+    value: 1

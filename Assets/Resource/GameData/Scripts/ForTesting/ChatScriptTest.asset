@@ -55,36 +55,6 @@ MonoBehaviour:
     modules:
     - rid: 3209439550359994447
     - rid: 3209439564650512464
-  - GUID: a6ded993-cc98-4f2b-bf30-e43878e5422f
-    nodeRect:
-      serializedVersion: 2
-      x: -228
-      y: 201
-      width: 400
-      height: 605
-    bgColorIndex: 4
-    bgColor: {r: 0.25, g: 0.43, b: 0.45, a: 1}
-    isStart: 1
-    startId: 
-    modules:
-    - rid: 3209439550359994370
-    - rid: 3209439550359994453
-    - rid: 3209439550359994368
-    - rid: 6111299330555773014
-  - GUID: f9ce8336-7ffe-4e51-8ef7-19d807d90933
-    nodeRect:
-      serializedVersion: 2
-      x: -228
-      y: 888
-      width: 400
-      height: 754
-    bgColorIndex: 4
-    bgColor: {r: 0.25, g: 0.43, b: 0.45, a: 1}
-    isStart: 0
-    startId: 
-    modules:
-    - rid: 3209439551900352598
-    - rid: 3209439551900352601
   - GUID: 91a10a39-6997-4461-b339-9fc0d8882f1e
     nodeRect:
       serializedVersion: 2
@@ -147,7 +117,7 @@ MonoBehaviour:
       x: 2029
       y: 386
       width: 400
-      height: 1090
+      height: 902
     bgColorIndex: 4
     bgColor: {r: 0.25, g: 0.43, b: 0.45, a: 1}
     isStart: 0
@@ -189,6 +159,22 @@ MonoBehaviour:
     - rid: 3209439550359994452
     - rid: 6111299330555773015
     - rid: 3209439550359994464
+  - GUID: a6ded993-cc98-4f2b-bf30-e43878e5422f
+    nodeRect:
+      serializedVersion: 2
+      x: -215
+      y: 201
+      width: 400
+      height: 605
+    bgColorIndex: 4
+    bgColor: {r: 0.25, g: 0.43, b: 0.45, a: 1}
+    isStart: 1
+    startId: 
+    modules:
+    - rid: 3209439550359994370
+    - rid: 3209439550359994453
+    - rid: 3209439550359994368
+    - rid: 6111299330555773014
   edges:
   - fromNodeGUID: a7e2cae9-4964-4f15-b803-ef25ac348edb
     fromPortName: Next
@@ -297,62 +283,6 @@ MonoBehaviour:
       data:
         runMode: 2
         duration: 0.5
-    - rid: 3209439551900352598
-      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
-      data:
-        runMode: 2
-        profile: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
-    - rid: 3209439551900352601
-      type: {class: ChoiceModule, ns: , asm: Assembly-CSharp}
-      data:
-        runMode: 2
-        showBlockedChoices: 0
-        choices:
-        - choiceText: Primera respuesta
-          portName: 426881c1
-          choiceUseLocalization: 0
-          choiceLocKey: 
-          requiresAffinity: 0
-          affinityFrom: {fileID: 0}
-          affinityTo: {fileID: 0}
-          requiredAffinityRelationship: 
-          invertRequirement: 0
-          requiresProgress: 0
-          progressMethod: 
-          progressArgType: 0
-          progressArgInt: 0
-          progressArgFloat: 0
-          progressArgString: 
-        - choiceText: Segunda respuesta
-          portName: 15bdc345
-          choiceUseLocalization: 0
-          choiceLocKey: 
-          requiresAffinity: 0
-          affinityFrom: {fileID: 0}
-          affinityTo: {fileID: 0}
-          requiredAffinityRelationship: 
-          invertRequirement: 0
-          requiresProgress: 0
-          progressMethod: 
-          progressArgType: 0
-          progressArgInt: 0
-          progressArgFloat: 0
-          progressArgString: 
-        - choiceText: Tercera respuesta
-          portName: 6ce2b38b
-          choiceUseLocalization: 0
-          choiceLocKey: 
-          requiresAffinity: 0
-          affinityFrom: {fileID: 0}
-          affinityTo: {fileID: 0}
-          requiredAffinityRelationship: 
-          invertRequirement: 0
-          requiresProgress: 0
-          progressMethod: 
-          progressArgType: 0
-          progressArgInt: 0
-          progressArgFloat: 0
-          progressArgString: 
     - rid: 3209439551900352605
       type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
       data:
@@ -419,7 +349,7 @@ MonoBehaviour:
           requiresAffinity: 1
           affinityFrom: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
           affinityTo: {fileID: 11400000, guid: 43f523793dfa29c499ab0e270525c52a, type: 2}
-          requiredAffinityRelationship: Familiar
+          requiredAffinityRelationship: Odio
           invertRequirement: 0
           requiresProgress: 0
           progressMethod: 

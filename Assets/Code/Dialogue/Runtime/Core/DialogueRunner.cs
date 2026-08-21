@@ -41,10 +41,15 @@ public sealed class DialogueRunner : MonoBehaviour
     private IModuleExecutor         _activeBlockingExecutor;
     private CancellationTokenSource _cts;
     private CharacterDefinition     _currentProfile;
+    private bool                    _startedExternally; // true si StartChat() ya arranco el dialogo (ver Start())
 
     /// <summary>GUID del nodo actual, o null si no hay dialogo en curso. Sirve para
     /// guardar por donde iba una conversacion y retomarla luego con StartChat.</summary>
     public string CurrentNodeGuid => _current?.GUID;
+
+    /// <summary>Se dispara cuando el dialogo llega a su fin de forma natural (sin
+    /// salida desde el ultimo nodo), no cuando se interrumpe con Stop().</summary>
+    public event Action OnDialogueEnded;
 
     private void Awake()
     {
@@ -72,7 +77,10 @@ public sealed class DialogueRunner : MonoBehaviour
 
     private void Start()
     {
-        if (graph == null) return;
+        // Si StartChat() ya arranco el dialogo este mismo frame (runner instanciado
+        // dinamicamente y arrancado al momento, ej. ChatPhoneApp), no volver a
+        // arrancarlo aqui: Start() llega despues de Instantiate()+StartChat(), no antes.
+        if (graph == null || _startedExternally) return;
 
         // El grafo ya se inicializo en Awake() si estaba asignado desde el inspector;
         // aqui solo arrancamos la reproduccion, sin repetir Initialize()/navigator.Init().
@@ -95,6 +103,7 @@ public sealed class DialogueRunner : MonoBehaviour
     {
         if (newGraph == null || _navigator == null) return;
 
+        _startedExternally = true;
         Stop();
 
         graph = newGraph;
@@ -115,6 +124,18 @@ public sealed class DialogueRunner : MonoBehaviour
         _navigator.Init(g);
     }
 
+    /// <summary>
+    /// Reasigna el presenter de chat en todos los executors que lo soporten
+    /// (<see cref="IPresenterHost"/>). Se usa al instanciar un runner dinamicamente
+    /// para una conversacion, antes de arrancarlo con <see cref="StartChat"/>.
+    /// </summary>
+    public void SetPresenter(IChatPresenter presenter)
+    {
+        foreach (var executor in _executorList)
+            if (executor is IPresenterHost host)
+                host.SetPresenter(presenter);
+    }
+
     /// <summary>Detiene el diálogo en curso y limpia el estado de todos los executors.</summary>
     public void Stop()
     {
@@ -122,7 +143,7 @@ public sealed class DialogueRunner : MonoBehaviour
         _cts?.Dispose();
         _cts = null;
 
-        EndDialogue();
+        EndDialogue(completed: false);
     }
 
     private void OnDestroy()
@@ -170,7 +191,7 @@ public sealed class DialogueRunner : MonoBehaviour
         _nodeReadyToAdvance     = false;
         _activeBlockingExecutor = null;
 
-        if (node == null) { EndDialogue(); return; }
+        if (node == null) { EndDialogue(completed: false); return; }
 
         _cts?.Dispose();
         _cts = new CancellationTokenSource();
@@ -266,11 +287,14 @@ public sealed class DialogueRunner : MonoBehaviour
         }
         else
         {
-            EndDialogue();
+            EndDialogue(completed: true);
         }
     }
 
-    private void EndDialogue()
+    /// <param name="completed">True si se llega aqui porque el grafo se acabo de
+    /// forma natural (sin salida desde el ultimo nodo); false si es una
+    /// interrupcion externa (Stop()). Solo el caso natural dispara OnDialogueEnded.</param>
+    private void EndDialogue(bool completed)
     {
         _nodeReadyToAdvance     = false;
         _activeBlockingExecutor = null;
@@ -278,6 +302,9 @@ public sealed class DialogueRunner : MonoBehaviour
 
         foreach (var executor in _executorList)
             executor.ResetAll();
+
+        if (completed)
+            OnDialogueEnded?.Invoke();
     }
 
     private void RegisterExecutor(IModuleExecutor executor)

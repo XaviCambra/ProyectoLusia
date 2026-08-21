@@ -8,7 +8,7 @@ using UnityEngine;
 /// Añade una burbuja de emoji vía <see cref="IChatPresenter"/>.
 /// </summary>
 [DisallowMultipleComponent]
-public sealed class EmojiModuleExecutor : ModuleExecutorBase
+public sealed class EmojiModuleExecutor : ModuleExecutorBase, IPresenterHost
 {
     [SerializeField] private MonoBehaviour presenterRef; // IChatPresenter
 
@@ -20,6 +20,8 @@ public sealed class EmojiModuleExecutor : ModuleExecutorBase
     {
         _presenter = presenterRef as IChatPresenter;
     }
+
+    public void SetPresenter(IChatPresenter presenter) => _presenter = presenter;
 
     public override Task<string> ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
     {
