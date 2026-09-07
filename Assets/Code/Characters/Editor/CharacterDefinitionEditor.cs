@@ -8,9 +8,15 @@ public sealed class CharacterDefinitionEditor : Editor
 {
     private const float BarHeight = 8f;
 
+    // Recuerda que CharacterAffinityMap eligio el usuario la ultima vez, para no
+    // depender de "el primero que encuentre AssetDatabase" (orden no fiable,
+    // puede cambiar entre sesiones). Ver DrawMapHeader.
+    private const string SelectedMapPrefKey = "ProyectoLusia.CharacterDefinitionEditor.SelectedAffinityMapGuid";
+
+    private string[]             _allMapGuids;
+    private string               _selectedMapGuid;
     private CharacterAffinityMap _map;
     private SerializedObject     _mapSO;
-    private bool                 _multipleMapWarning;
 
     private GUIStyle _rowStyle;
     private GUIStyle RowStyle => _rowStyle ??= new GUIStyle(EditorStyles.helpBox)
@@ -37,10 +43,22 @@ public sealed class CharacterDefinitionEditor : Editor
 
     private void OnEnable()
     {
-        var guids = AssetDatabase.FindAssets("t:CharacterAffinityMap");
-        _multipleMapWarning = guids.Length > 1;
-        if (guids.Length == 0) return;
-        _map   = AssetDatabase.LoadAssetAtPath<CharacterAffinityMap>(AssetDatabase.GUIDToAssetPath(guids[0]));
+        _allMapGuids = AssetDatabase.FindAssets("t:CharacterAffinityMap");
+
+        // Recupera la eleccion anterior si sigue existiendo; si no, cae al
+        // primero encontrado (unico caso donde "el primero" es aceptable: no
+        // hay eleccion previa que respetar todavia).
+        _selectedMapGuid = EditorPrefs.GetString(SelectedMapPrefKey, "");
+        if (string.IsNullOrEmpty(_selectedMapGuid) || System.Array.IndexOf(_allMapGuids, _selectedMapGuid) < 0)
+            _selectedMapGuid = _allMapGuids.Length > 0 ? _allMapGuids[0] : null;
+
+        LoadSelectedMap();
+    }
+
+    private void LoadSelectedMap()
+    {
+        if (string.IsNullOrEmpty(_selectedMapGuid)) { _map = null; _mapSO = null; return; }
+        _map   = AssetDatabase.LoadAssetAtPath<CharacterAffinityMap>(AssetDatabase.GUIDToAssetPath(_selectedMapGuid));
         _mapSO = new SerializedObject(_map);
     }
 
@@ -94,10 +112,33 @@ public sealed class CharacterDefinitionEditor : Editor
             if (GUILayout.Button("Abrir", EditorStyles.miniButton, GUILayout.Width(50)))
                 Selection.activeObject = _map;
         }
-        if (_multipleMapWarning)
-            EditorGUILayout.HelpBox(
-                "Hay más de un CharacterAffinityMap en el proyecto. Editando el primero encontrado.",
-                MessageType.Warning);
+
+        if (_allMapGuids.Length <= 1) return;
+
+        // El sistema en runtime solo lee UN CharacterAffinityMap (el que tenga
+        // asignado AffinityServiceBootstrapper en la escena) — si hay varios en
+        // el proyecto, dejamos elegir cual editar en vez de adivinar "el
+        // primero que encuentre AssetDatabase" (orden no fiable). La eleccion
+        // se recuerda entre sesiones (EditorPrefs), no es un dato del proyecto.
+        EditorGUILayout.HelpBox(
+            $"Hay {_allMapGuids.Length} CharacterAffinityMap en el proyecto, pero solo se usa uno en runtime " +
+            "(el asignado en AffinityServiceBootstrapper). Elige cual editar para no perder cambios en el que no cuenta.",
+            MessageType.Warning);
+
+        var names = _allMapGuids
+            .Select(guid => System.IO.Path.GetFileNameWithoutExtension(AssetDatabase.GUIDToAssetPath(guid)))
+            .ToArray();
+        int currentIndex = System.Array.IndexOf(_allMapGuids, _selectedMapGuid);
+
+        EditorGUI.BeginChangeCheck();
+        int newIndex = EditorGUILayout.Popup("Editando:", currentIndex, names);
+        if (EditorGUI.EndChangeCheck() && newIndex != currentIndex)
+        {
+            _selectedMapGuid = _allMapGuids[newIndex];
+            EditorPrefs.SetString(SelectedMapPrefKey, _selectedMapGuid);
+            LoadSelectedMap();
+            GUIUtility.ExitGUI(); // el layout de este frame ya no coincide con el mapa nuevo
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -160,9 +201,10 @@ public sealed class CharacterDefinitionEditor : Editor
     /// <returns>True si el usuario pulso Eliminar.</returns>
     private bool DrawEditableRow(SerializedProperty entry, CharacterDefinition other)
     {
-        // --- Datos de la relacion: puntos, track asignado y nivel actual ---
+        // --- Datos de la relacion: puntos, track asignado, nivel actual y si ya se conoce ---
         var pointsProp  = entry.FindPropertyRelative("points");
         var trackIdProp = entry.FindPropertyRelative("trackId");
+        var knownProp   = entry.FindPropertyRelative("known");
         int    points   = pointsProp.intValue;
         string trackId  = trackIdProp.stringValue;
         var    track    = _map.schema.GetTrack(trackId);
@@ -186,6 +228,7 @@ public sealed class CharacterDefinitionEditor : Editor
         // no al reves. La fila crece o encoge segun cuanto contenido tenga.
         float stackHeight = lineH + lineGap + BarHeight + barGap + lineH;
         if (multiTrack) stackHeight += barGap + lineH;
+        stackHeight += barGap + lineH; // fila del toggle "Conocida"
 
         float rowHeight = stackHeight + RowStyle.padding.vertical;
 
@@ -271,7 +314,21 @@ public sealed class CharacterDefinitionEditor : Editor
             y += barGap;
             Rect trackRect = new Rect(x, y, w, lineH);
             DrawTrackPopup(trackRect, trackIdProp, trackId);
+            y += lineH;
         }
+
+        // --- Toggle "Conocida": el dato de afinidad puede existir precableado desde
+        // el principio sin que eso signifique que el personaje origen ya se topo con
+        // el otro. Por defecto false; se activa por historia via IAffinityService.SetKnown,
+        // pero tambien se puede marcar/desmarcar a mano aqui para pruebas.
+        y += barGap;
+        Rect knownRect = new Rect(x, y, w, lineH);
+        var fromName = (entry.FindPropertyRelative("from").objectReferenceValue as CharacterDefinition)?.displayName ?? "?";
+        var knownContent = new GUIContent("Conocida", $"Si esta marcado, {fromName} ya conoce/detecta esta relacion (IAffinityService.IsKnown). Desmarcado por defecto aunque el dato ya tenga puntos.");
+        EditorGUI.BeginChangeCheck();
+        bool newKnown = EditorGUI.ToggleLeft(knownRect, knownContent, knownProp.boolValue);
+        if (EditorGUI.EndChangeCheck())
+            knownProp.boolValue = newKnown;
 
         return wantsDelete;
     }
@@ -385,6 +442,7 @@ public sealed class CharacterDefinitionEditor : Editor
         newEntry.FindPropertyRelative("to").objectReferenceValue   = to;
         newEntry.FindPropertyRelative("points").intValue           = points;
         newEntry.FindPropertyRelative("trackId").stringValue       = trackId ?? _map.schema.Tracks.FirstOrDefault()?.id ?? "default";
+        newEntry.FindPropertyRelative("known").boolValue            = false;
 
         _mapSO.ApplyModifiedProperties();
     }

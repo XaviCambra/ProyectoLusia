@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterId: 6dc18e8c88334803aa98a30675ebf4e4
   displayName: Sephtis
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 29b290cbd6f2c0a48a9744781e206386, type: 3}
   sex: 0
   race: 8
   age: 0

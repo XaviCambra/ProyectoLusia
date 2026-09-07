@@ -1281,7 +1281,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a6e05f5a018c63449a6d9245fd2f885, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  appName: App
+  appName: Chat
   appIcon: {fileID: -8862081451628272188, guid: b50636cbab492e9478ba3d568d20548e, type: 3}
   panel: {fileID: 2729867822982859479}
   runnerPrefab: {fileID: 6063212897858561426, guid: 175ce7a8296ba2a4ca31b25601e70791, type: 3}

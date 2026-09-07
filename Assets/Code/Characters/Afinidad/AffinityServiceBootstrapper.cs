@@ -10,6 +10,9 @@ public sealed class AffinityServiceBootstrapper : MonoBehaviour
     [SerializeField] private CharacterAffinityMap map;
     [SerializeField] private string               saveFileName = "affinity.json";
 
+    /// <summary>Solo para herramientas de Editor (ver AffinitySaveMenu) — no usar en juego.</summary>
+    public string SaveFileName => saveFileName;
+
     public static IAffinityService Service { get; private set; }
 
     private AffinityMapService _service;

@@ -24,6 +24,7 @@ public class ChatConversationRow : MonoBehaviour
         button.onClick.AddListener(onClick);
 
         conversation.OnNotificationChanged += HandleNotificationChanged;
+        PhoneSettings.OnChanged += HandleSettingsChanged;
         RefreshBadges();
     }
 
@@ -31,13 +32,17 @@ public class ChatConversationRow : MonoBehaviour
     {
         if (_conversation != null)
             _conversation.OnNotificationChanged -= HandleNotificationChanged;
+        PhoneSettings.OnChanged -= HandleSettingsChanged;
     }
 
     private void HandleNotificationChanged(ChatConversation _) => RefreshBadges();
+    private void HandleSettingsChanged() => RefreshBadges();
 
     private void RefreshBadges()
     {
-        var notification = _conversation != null ? _conversation.Notification : ChatNotification.None;
+        var notification = _conversation != null && PhoneSettings.NotificationsEnabled
+            ? _conversation.Notification
+            : ChatNotification.None;
         if (unreadBadge)          unreadBadge.SetActive(notification == ChatNotification.Unread);
         if (pendingResponseBadge) pendingResponseBadge.SetActive(notification == ChatNotification.AwaitingResponse);
     }

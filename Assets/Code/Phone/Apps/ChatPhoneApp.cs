@@ -98,57 +98,26 @@ public class ChatPhoneApp : PhoneAppBase
     }
 
     // -----------------------------------------------------------------------
-    // Alta en runtime (personajes/conversaciones nuevas a mitad de partida).
-    // Pensado para que lo llame un trigger externo, ver ChatRuntimeUnlockTrigger.
+    // Desbloqueo en runtime de contenido pre-autorado (ver ChatRuntimeUnlockTrigger).
     // -----------------------------------------------------------------------
 
     /// <summary>
-    /// Da de alta un contacto nuevo (con todas sus conversaciones) que no estaba
-    /// en el registry al arrancar. Sus conversaciones activas arrancan solas en
-    /// segundo plano igual que las que ya existian desde el principio.
+    /// Revela una conversacion ya presente en el registry (pre-autorada en el
+    /// Inspector, oculta hasta ahora porque su condicion inicial es false).
+    /// Solo toca el estado de sesion no serializado de la conversacion (ver
+    /// ChatConversation.Unlock) — nunca modifica el ChatContact ni el
+    /// ChatRegistry, para no dejar el asset "sucio" con progreso de partida.
+    /// Si es la primera conversacion visible de su contacto, el contacto entero
+    /// aparece solo (ChatContact.IsVisible ya depende de esto).
     /// </summary>
-    public void RegisterContact(ChatContact contact)
+    public void UnlockConversation(ChatConversation conversation)
     {
-        if (contact == null || registry == null || registry.contacts.Contains(contact)) return;
-
-        registry.contacts.Add(contact);
-        foreach (var conversation in contact.conversations)
-            if (conversation != null)
-                HookConversation(conversation);
-
+        if (conversation == null) return;
+        conversation.Unlock(); // dispara OnUnlocked -> TryAutoStart (enganchado en Awake)
         RefreshVisibleLists();
     }
 
-    /// <summary>
-    /// Anade una conversacion nueva a un contacto que ya esta en el registry (por
-    /// ejemplo, para desbloquear un tema nuevo con un personaje ya conocido). Si el
-    /// contacto tampoco estaba dado de alta, lo registra primero.
-    /// </summary>
-    public void RegisterConversation(ChatContact contact, ChatConversation conversation)
-    {
-        if (contact == null || conversation == null) return;
-
-        if (!registry.contacts.Contains(contact))
-        {
-            RegisterContact(contact);
-            return;
-        }
-
-        if (!contact.conversations.Contains(conversation))
-            contact.conversations.Add(conversation);
-
-        HookConversation(conversation);
-        RefreshVisibleLists();
-    }
-
-    /// <summary>Engancha una conversacion nueva al mismo ciclo de vida que las del registry inicial (auto-start ahora y al desbloquearse).</summary>
-    private void HookConversation(ChatConversation conversation)
-    {
-        conversation.OnUnlocked += TryAutoStart;
-        TryAutoStart(conversation);
-    }
-
-    /// <summary>Refresca las listas de contactos/conversaciones si estan en pantalla en este momento, para que la alta en runtime se vea sin salir y volver a entrar.</summary>
+    /// <summary>Refresca las listas de contactos/conversaciones si estan en pantalla en este momento, para que el desbloqueo se vea sin salir y volver a entrar.</summary>
     private void RefreshVisibleLists()
     {
         if (contactsScreen != null && contactsScreen.activeSelf)

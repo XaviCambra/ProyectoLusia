@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterId: e73428fb7b9b440ba5a49484c767803b
   displayName: Acheros
-  icon: {fileID: -8801421864487500016, guid: 2a45c73618918754e99526016925e309, type: 3}
+  icon: {fileID: 21300000, guid: 29b290cbd6f2c0a48a9744781e206386, type: 3}
   sex: 0
   race: 8
   age: 0

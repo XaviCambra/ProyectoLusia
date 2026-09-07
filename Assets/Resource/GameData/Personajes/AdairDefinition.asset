@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterId: 5d7a2fa10d0e4859a8f03d60690dfb06
   displayName: Adair
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 29b290cbd6f2c0a48a9744781e206386, type: 3}
   sex: 0
   race: 8
   age: 0

@@ -1,10 +1,12 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Da de alta contactos y/o conversaciones de chat en runtime (a mitad de
-/// partida), reutilizando ChatPhoneApp.RegisterContact/RegisterConversation.
+/// Desbloquea (ChatConversation.Unlock) una o varias conversaciones de chat ya
+/// presentes en el registry — pre-autoradas en el Inspector, ocultas hasta ahora
+/// porque su condicion inicial es false. Nunca crea ni modifica ChatContact ni
+/// ChatConversation como assets: solo cambia su estado de sesion no serializado,
+/// para no dejar el registry "sucio" con progreso de una partida concreta.
 ///
 /// Se puede disparar de varias formas a la vez, todas opcionales:
 ///  - Pulsando una tecla (key).
@@ -16,21 +18,11 @@ using UnityEngine;
 /// </summary>
 public class ChatRuntimeUnlockTrigger : MonoBehaviour
 {
-    [Serializable]
-    private class ConversationEntry
-    {
-        public ChatContact      contact;
-        public ChatConversation conversation;
-    }
-
     [Header("Chat a modificar")]
     [SerializeField] private ChatPhoneApp chatApp;
 
-    [Header("Que dar de alta al dispararse")]
-    [Tooltip("Contactos nuevos completos (con todas sus conversaciones).")]
-    [SerializeField] private List<ChatContact> contactsToAdd = new();
-    [Tooltip("Conversaciones nuevas para contactos que ya existen en el registry.")]
-    [SerializeField] private List<ConversationEntry> conversationsToAdd = new();
+    [Tooltip("Conversaciones ya pre-autoradas en algun ChatContact del registry que se desbloquean al dispararse.")]
+    [SerializeField] private List<ChatConversation> conversationsToUnlock = new();
 
     [Header("Disparadores (todos opcionales, se pueden combinar)")]
     [SerializeField] private KeyCode key = KeyCode.None;
@@ -72,7 +64,7 @@ public class ChatRuntimeUnlockTrigger : MonoBehaviour
             Trigger();
     }
 
-    /// <summary>Ejecuta el alta configurada. Publico para poder llamarlo desde fuera (UnityEvent, otro script, Animation Event...).</summary>
+    /// <summary>Ejecuta el desbloqueo configurado. Publico para poder llamarlo desde fuera (UnityEvent, otro script, Animation Event...).</summary>
     public void Trigger()
     {
         if (triggerOnce && _fired) return;
@@ -80,10 +72,7 @@ public class ChatRuntimeUnlockTrigger : MonoBehaviour
 
         _fired = true;
 
-        foreach (var contact in contactsToAdd)
-            chatApp.RegisterContact(contact);
-
-        foreach (var entry in conversationsToAdd)
-            chatApp.RegisterConversation(entry.contact, entry.conversation);
+        foreach (var conversation in conversationsToUnlock)
+            chatApp.UnlockConversation(conversation);
     }
 }

@@ -31,6 +31,8 @@ public sealed class Phone : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
+        PhoneSettings.ApplyOnLaunch();
+
         _apps = GetComponentsInChildren<PhoneAppBase>(true);
 
         foreach (var app in _apps)

@@ -29,22 +29,28 @@ public class ChatContactRow : MonoBehaviour
             if (conversation != null)
                 conversation.OnNotificationChanged += HandleNotificationChanged;
 
+        PhoneSettings.OnChanged += HandleSettingsChanged;
         RefreshBadges();
     }
 
     private void OnDestroy()
     {
-        if (_contact == null) return;
-        foreach (var conversation in _contact.conversations)
-            if (conversation != null)
-                conversation.OnNotificationChanged -= HandleNotificationChanged;
+        if (_contact != null)
+            foreach (var conversation in _contact.conversations)
+                if (conversation != null)
+                    conversation.OnNotificationChanged -= HandleNotificationChanged;
+
+        PhoneSettings.OnChanged -= HandleSettingsChanged;
     }
 
     private void HandleNotificationChanged(ChatConversation _) => RefreshBadges();
+    private void HandleSettingsChanged() => RefreshBadges();
 
     private void RefreshBadges()
     {
-        var notification = _contact != null ? _contact.Notification : ChatNotification.None;
+        var notification = _contact != null && PhoneSettings.NotificationsEnabled
+            ? _contact.Notification
+            : ChatNotification.None;
         if (unreadBadge)          unreadBadge.SetActive(notification == ChatNotification.Unread);
         if (pendingResponseBadge) pendingResponseBadge.SetActive(notification == ChatNotification.AwaitingResponse);
     }

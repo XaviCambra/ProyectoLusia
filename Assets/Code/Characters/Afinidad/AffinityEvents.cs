@@ -29,3 +29,17 @@ public sealed class AffinityRelationshipChangedArgs
         NewRelationship = newLevel;
     }
 }
+
+public sealed class AffinityKnownChangedArgs
+{
+    public CharacterDefinition From  { get; }
+    public CharacterDefinition To    { get; }
+    public bool                Known { get; }
+
+    public AffinityKnownChangedArgs(CharacterDefinition from, CharacterDefinition to, bool known)
+    {
+        From  = from;
+        To    = to;
+        Known = known;
+    }
+}
