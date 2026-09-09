@@ -71,7 +71,7 @@ MonoBehaviour:
     known: 0
   - from: {fileID: 11400000, guid: c359a6749d86a6d4face7e0153a1191e, type: 2}
     to: {fileID: 11400000, guid: 6559f6b57d3b7914b8fb957930ecca9c, type: 2}
-    points: 68
+    points: 83
     trackId: social
     known: 1
   - from: {fileID: 11400000, guid: c359a6749d86a6d4face7e0153a1191e, type: 2}

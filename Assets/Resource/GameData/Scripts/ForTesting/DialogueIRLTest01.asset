@@ -1,0 +1,182 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ab21e18d53040c43b9c61e72ca1d3af, type: 3}
+  m_Name: DialogueIRLTest01
+  m_EditorClassIdentifier: 
+  nodes:
+  - GUID: 7e4e8ee2-fc2b-4d7c-b512-4c43a32bb65a
+    nodeRect:
+      serializedVersion: 2
+      x: 132
+      y: 240
+      width: 400
+      height: 457
+    bgColorIndex: 0
+    bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
+    isStart: 1
+    startId: 
+    modules:
+    - rid: 8659960504343592960
+    - rid: 8659960504343592961
+  - GUID: ea1647b6-4885-4e21-9459-dce8930ee10c
+    nodeRect:
+      serializedVersion: 2
+      x: 634
+      y: 240
+      width: 400
+      height: 432
+    bgColorIndex: 0
+    bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 8659960504343592962
+    - rid: 8659960504343592963
+  - GUID: 4e7896fe-8400-4de3-99e5-c9bc9d244646
+    nodeRect:
+      serializedVersion: 2
+      x: 1603
+      y: 240
+      width: 400
+      height: 432
+    bgColorIndex: 0
+    bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 8659960504343592967
+    - rid: 8659960504343592968
+  - GUID: 2ae7115f-f023-4609-999e-146152c820ef
+    nodeRect:
+      serializedVersion: 2
+      x: 1123
+      y: 240
+      width: 400
+      height: 432
+    bgColorIndex: 0
+    bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 8659960504343592965
+    - rid: 8659960504343592966
+  - GUID: 16a8b482-1cdf-4f14-a53b-bea493671466
+    nodeRect:
+      serializedVersion: 2
+      x: 2082
+      y: 240
+      width: 400
+      height: 432
+    bgColorIndex: 0
+    bgColor: {r: 0.22, g: 0.23, b: 0.25, a: 1}
+    isStart: 0
+    startId: 
+    modules:
+    - rid: 8659960504343592969
+    - rid: 8659960504343592970
+  edges:
+  - fromNodeGUID: 7e4e8ee2-fc2b-4d7c-b512-4c43a32bb65a
+    fromPortName: Next
+    toNodeGUID: ea1647b6-4885-4e21-9459-dce8930ee10c
+  - fromNodeGUID: ea1647b6-4885-4e21-9459-dce8930ee10c
+    fromPortName: Next
+    toNodeGUID: 2ae7115f-f023-4609-999e-146152c820ef
+  - fromNodeGUID: 2ae7115f-f023-4609-999e-146152c820ef
+    fromPortName: Next
+    toNodeGUID: 4e7896fe-8400-4de3-99e5-c9bc9d244646
+  - fromNodeGUID: 4e7896fe-8400-4de3-99e5-c9bc9d244646
+    fromPortName: Next
+    toNodeGUID: 16a8b482-1cdf-4f14-a53b-bea493671466
+  frames: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 8659960504343592960
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: f4aa8da4c00b83a4b8fabc61cf5b0464, type: 2}
+    - rid: 8659960504343592961
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Jose
+        useLocalization: 0
+        text: Que tal todo bro?
+        locKey: 
+        isOwn: 0
+        useTypewriter: 1
+        profileOverride: {fileID: 0}
+    - rid: 8659960504343592962
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+    - rid: 8659960504343592963
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Aran
+        useLocalization: 0
+        text: Muy bien de chill
+        locKey: 
+        isOwn: 0
+        useTypewriter: 1
+        profileOverride: {fileID: 0}
+    - rid: 8659960504343592965
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: f4aa8da4c00b83a4b8fabc61cf5b0464, type: 2}
+    - rid: 8659960504343592966
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Jose
+        useLocalization: 0
+        text: Perf
+        locKey: 
+        isOwn: 0
+        useTypewriter: 1
+        profileOverride: {fileID: 0}
+    - rid: 8659960504343592967
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: cd6efe4ba0969ee479ac8ce46948b66b, type: 2}
+    - rid: 8659960504343592968
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Aran
+        useLocalization: 0
+        text: Que querias?
+        locKey: 
+        isOwn: 0
+        useTypewriter: 1
+        profileOverride: {fileID: 0}
+    - rid: 8659960504343592969
+      type: {class: ProfileModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        profile: {fileID: 11400000, guid: f4aa8da4c00b83a4b8fabc61cf5b0464, type: 2}
+    - rid: 8659960504343592970
+      type: {class: TextModule, ns: , asm: Assembly-CSharp}
+      data:
+        runMode: 2
+        speakerName: Jose
+        useLocalization: 0
+        text: Nada... Adios
+        locKey: 
+        isOwn: 0
+        useTypewriter: 1
+        profileOverride: {fileID: 0}
