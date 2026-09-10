@@ -12,7 +12,8 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _BLURMODE_DIRECTIONAL
+  - _BLURMODE_UNIFORM
+  - _BLURQUALITY_HIGH
   m_InvalidKeywords:
   - _EFFECT_BLUR
   m_LightmapFlags: 4
@@ -47,17 +48,21 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BlurAngle: 267
-    - _BlurIterations: 8
-    - _BlurMode: 1
-    - _BlurRadius: 1.28
+    - _BlurAngle: 0
+    - _BlurHighQuality: 1
+    - _BlurIterations: 32
+    - _BlurMode: 0
+    - _BlurRadius: 0.54
     - _Brightness: 0
     - _ColorMask: 15
+    - _DirectionalFalloff: 2
     - _DistortAmount: 0
     - _Effect: 0
     - _EnableExternalAlpha: 0
     - _GlitchSpeed: 5.7
     - _PixelSize: 26.4
+    - _RadialFalloff: 2
+    - _RadialInnerRadius: 0.5
     - _RgbSplitAmount: 0.05
     - _Saturation: 1
     - _SliceCount: 16.5
@@ -68,12 +73,12 @@ Material:
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
     - _TiltShiftCenter: 0.5
-    - _TiltShiftSoftness: 0.2
-    - _TiltShiftWidth: 0.208
+    - _TiltShiftSoftness: 0.431
+    - _TiltShiftWidth: 0.488
     - _ZWrite: 0
     m_Colors:
-    - _BlurCenter: {r: 1.76, g: 0.5, b: 0, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _BlurCenter: {r: 0, g: 0, b: 0, a: 0}
+    - _Color: {r: 0.3529412, g: 0.39215684, b: 0.490196, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
     - _TintColor: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []

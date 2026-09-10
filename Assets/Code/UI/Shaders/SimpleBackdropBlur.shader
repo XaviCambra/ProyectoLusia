@@ -4,11 +4,11 @@
 // mismo que ya usa toda la UI del proyecto). No depende de Renderer Features ni de texturas
 // globales -- _MainTex es sencillamente la textura que le pongas al RawImage.
 //
-// Cuatro variantes de blur, elegidas por _BlurMode:
+// Tres variantes de blur, elegidas por _BlurMode:
 //   Uniform     - el clasico, difumina por igual en todas direcciones.
 //   Directional - solo en un eje/angulo (tipo motion blur).
 //   Radial      - crece con la distancia a un punto central (tipo zoom/velocidad).
-//   TiltShift   - una franja se queda nitida, el resto se difumina segun se aleja de ella.
+// _BlurHighQuality (modo Uniform): 9 muestras (mas suave) o 5 (mas barato).
 Shader "UI/SimpleBackdropBlur"
 {
     Properties
@@ -17,22 +17,21 @@ Shader "UI/SimpleBackdropBlur"
         _Color ("Tint", Color) = (1, 1, 1, 1)
 
         [Space(10)]
-        [KeywordEnum(Uniform, Directional, Radial, TiltShift)] _BlurMode ("Modo de blur", Float) = 0
+        [KeywordEnum(Uniform, Directional, Radial)] _BlurMode ("Modo de blur", Float) = 0
 
         [Space(10)]
-        _BlurRadius ("Radio", Range(0, 10)) = 2
-        _BlurIterations ("Iteraciones / muestras", Range(1, 8)) = 1
+        _BlurRadius ("Radio", Range(0, 8)) = 2
+        _BlurIterations ("Iteraciones / muestras", Range(1, 32)) = 1
+        [Toggle(_BLURQUALITY_HIGH)] _BlurHighQuality ("Calidad alta (9 muestras en vez de 5, modo Uniform)", Float) = 1
 
         [Space(10)]
         _BlurAngle ("Direccional: angulo (grados)", Range(0, 360)) = 0
+        _DirectionalFalloff ("Direccional: caida del peso", Range(0.1, 4)) = 1
 
         [Space(10)]
         _BlurCenter ("Radial: centro (UV)", Vector) = (0.5, 0.5, 0, 0)
-
-        [Space(10)]
-        _TiltShiftCenter ("Tilt-shift: centro Y (UV)", Range(0, 1)) = 0.5
-        _TiltShiftWidth ("Tilt-shift: ancho nitido", Range(0, 1)) = 0.2
-        _TiltShiftSoftness ("Tilt-shift: suavizado del borde", Range(0.01, 1)) = 0.2
+        _RadialFalloff ("Radial: caida del peso", Range(0.1, 4)) = 1
+        _RadialInnerRadius ("Radial: radio interior nitido", Range(0, 1)) = 0
 
         [Space(10)]
         _TintColor ("Velo de color", Color) = (0, 0, 0, 0)
@@ -80,7 +79,8 @@ Shader "UI/SimpleBackdropBlur"
             #pragma target 3.0
             #pragma vertex vert
             #pragma fragment frag
-            #pragma shader_feature_local _BLURMODE_UNIFORM _BLURMODE_DIRECTIONAL _BLURMODE_RADIAL _BLURMODE_TILTSHIFT
+            #pragma shader_feature_local _BLURMODE_UNIFORM _BLURMODE_DIRECTIONAL _BLURMODE_RADIAL
+            #pragma shader_feature_local _ _BLURQUALITY_HIGH
             #pragma multi_compile_local _ UNITY_UI_CLIP_RECT
             #pragma multi_compile_local _ UNITY_UI_ALPHACLIP
 
@@ -94,10 +94,10 @@ Shader "UI/SimpleBackdropBlur"
             float     _BlurRadius;
             float     _BlurIterations;
             float     _BlurAngle;
+            float     _DirectionalFalloff;
             float4    _BlurCenter;
-            float     _TiltShiftCenter;
-            float     _TiltShiftWidth;
-            float     _TiltShiftSoftness;
+            float     _RadialFalloff;
+            float     _RadialInnerRadius;
             fixed4    _TintColor;
             float     _Brightness;
             float     _Saturation;
@@ -130,19 +130,29 @@ Shader "UI/SimpleBackdropBlur"
 
             // --- modos de blur ---
 
-            // Multi-tap 3x3, pesos tipo gaussiano, a un radio de texel concreto.
+            // Multi-tap a un radio de texel concreto, pesos tipo gaussiano. Calidad alta = 9
+            // muestras (incluye esquinas); calidad baja = 5 muestras (solo centro + cruz),
+            // mas barato, util cuando el rendimiento importa mas que la suavidad.
             fixed4 Blur3x3(float2 uv, float2 texel)
             {
                 fixed4 sum = 0;
-                sum += tex2D(_MainTex, uv + texel * float2(-1, -1)) * 0.0625;
-                sum += tex2D(_MainTex, uv + texel * float2( 0, -1)) * 0.125;
-                sum += tex2D(_MainTex, uv + texel * float2( 1, -1)) * 0.0625;
-                sum += tex2D(_MainTex, uv + texel * float2(-1,  0)) * 0.125;
-                sum += tex2D(_MainTex, uv + texel * float2( 0,  0)) * 0.25;
-                sum += tex2D(_MainTex, uv + texel * float2( 1,  0)) * 0.125;
-                sum += tex2D(_MainTex, uv + texel * float2(-1,  1)) * 0.0625;
-                sum += tex2D(_MainTex, uv + texel * float2( 0,  1)) * 0.125;
-                sum += tex2D(_MainTex, uv + texel * float2( 1,  1)) * 0.0625;
+                #if defined(_BLURQUALITY_HIGH)
+                    sum += tex2D(_MainTex, uv + texel * float2(-1, -1)) * 0.0625;
+                    sum += tex2D(_MainTex, uv + texel * float2( 0, -1)) * 0.125;
+                    sum += tex2D(_MainTex, uv + texel * float2( 1, -1)) * 0.0625;
+                    sum += tex2D(_MainTex, uv + texel * float2(-1,  0)) * 0.125;
+                    sum += tex2D(_MainTex, uv + texel * float2( 0,  0)) * 0.25;
+                    sum += tex2D(_MainTex, uv + texel * float2( 1,  0)) * 0.125;
+                    sum += tex2D(_MainTex, uv + texel * float2(-1,  1)) * 0.0625;
+                    sum += tex2D(_MainTex, uv + texel * float2( 0,  1)) * 0.125;
+                    sum += tex2D(_MainTex, uv + texel * float2( 1,  1)) * 0.0625;
+                #else
+                    sum += tex2D(_MainTex, uv + texel * float2( 0, -1)) * 0.16667;
+                    sum += tex2D(_MainTex, uv + texel * float2(-1,  0)) * 0.16667;
+                    sum += tex2D(_MainTex, uv + texel * float2( 0,  0)) * 0.33333;
+                    sum += tex2D(_MainTex, uv + texel * float2( 1,  0)) * 0.16667;
+                    sum += tex2D(_MainTex, uv + texel * float2( 0,  1)) * 0.16667;
+                #endif
                 return sum;
             }
 
@@ -154,6 +164,7 @@ Shader "UI/SimpleBackdropBlur"
                 int iterations = (int) max(_BlurIterations, 1);
 
                 fixed4 sum = 0;
+                [loop]
                 for (int i = 1; i <= iterations; i++)
                     sum += Blur3x3(uv, baseTexel * i);
 
@@ -161,6 +172,8 @@ Shader "UI/SimpleBackdropBlur"
             }
 
             // Muestras en linea recta segun _BlurAngle, con peso decreciente segun distancia.
+            // _MainTex_TexelSize.xy ya corrige el aspecto de la textura (no cuadrada): un
+            // angulo "recto" en pantalla se queda recto, no se tuerce hacia el lado mas largo.
             fixed4 BlurDirectional(float2 uv)
             {
                 float  rad  = radians(_BlurAngle);
@@ -171,9 +184,11 @@ Shader "UI/SimpleBackdropBlur"
                 fixed4 sum    = tex2D(_MainTex, uv);
                 float  weight = 1;
 
+                [loop]
                 for (int i = 1; i <= taps; i++)
                 {
-                    float w = 1.0 - (float) i / (taps + 1);
+                    float t = (float) i / (taps + 1);
+                    float w = pow(1.0 - t, max(_DirectionalFalloff, 0.0001));
                     sum    += tex2D(_MainTex, uv + step * i) * w;
                     sum    += tex2D(_MainTex, uv - step * i) * w;
                     weight += w * 2;
@@ -183,37 +198,31 @@ Shader "UI/SimpleBackdropBlur"
             }
 
             // Muestras hacia _BlurCenter, con peso decreciente: sensacion de velocidad/zoom.
+            // _RadialInnerRadius deja un circulo nitido sin blur antes de que empiece a crecer
+            // (tipo "vision de tunel"), _RadialFalloff controla como de rapido cae el peso.
             fixed4 BlurRadial(float2 uv)
             {
-                float2 dir  = (uv - _BlurCenter.xy) * (_BlurRadius * 0.005);
+                float2 toCenter = uv - _BlurCenter.xy;
+                float  dist     = length(toCenter);
+
+                if (dist <= _RadialInnerRadius) return tex2D(_MainTex, uv);
+
+                float2 dir  = toCenter * (_BlurRadius * 0.005);
                 int    taps = (int) max(_BlurIterations, 1);
 
                 fixed4 sum    = tex2D(_MainTex, uv);
                 float  weight = 1;
 
+                [loop]
                 for (int i = 1; i <= taps; i++)
                 {
                     float t = (float) i / taps;
-                    float w = 1.0 - t;
+                    float w = pow(1.0 - t, max(_RadialFalloff, 0.0001));
                     sum    += tex2D(_MainTex, uv - dir * t) * w;
                     weight += w;
                 }
 
                 return sum / weight;
-            }
-
-            // Franja nitida centrada en _TiltShiftCenter (eje Y); fuera de ese ancho se mezcla
-            // hacia el blur uniforme segun la distancia a la franja.
-            fixed4 BlurTiltShift(float2 uv)
-            {
-                float dist       = abs(uv.y - _TiltShiftCenter);
-                float blurAmount = smoothstep(_TiltShiftWidth, _TiltShiftWidth + max(_TiltShiftSoftness, 0.001), dist);
-
-                fixed4 sharp = tex2D(_MainTex, uv);
-                if (blurAmount <= 0.0001) return sharp;
-
-                fixed4 blurred = BlurUniform(uv);
-                return lerp(sharp, blurred, blurAmount);
             }
 
             fixed4 frag(v2f IN) : SV_Target
@@ -222,8 +231,6 @@ Shader "UI/SimpleBackdropBlur"
                     fixed4 result = BlurDirectional(IN.texcoord);
                 #elif defined(_BLURMODE_RADIAL)
                     fixed4 result = BlurRadial(IN.texcoord);
-                #elif defined(_BLURMODE_TILTSHIFT)
-                    fixed4 result = BlurTiltShift(IN.texcoord);
                 #else
                     fixed4 result = BlurUniform(IN.texcoord);
                 #endif
