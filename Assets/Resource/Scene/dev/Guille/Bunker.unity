@@ -253,54 +253,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &111973974
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 111973976}
-  - component: {fileID: 111973975}
-  m_Layer: 0
-  m_Name: DialogueRequestTrigger
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &111973975
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 111973974}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4a982529ede61140a549bdb136f0e10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  request: {fileID: 11400000, guid: e6bc783ad01a54549af40cd8518c465b, type: 2}
-  graph: {fileID: 11400000, guid: 843452bd9f943284fa6e58442b067f13, type: 2}
-  useKeyTrigger: 1
-  key: 103
---- !u!4 &111973976
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 111973974}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &186606591
 GameObject:
   m_ObjectHideFlags: 0
@@ -1208,8 +1160,8 @@ MonoBehaviour:
   requireTag: 1
   requiredTag: Player
   drawGizmos: 1
-  areaFillColor: {r: 0.2, g: 0.6, b: 1, a: 0.1}
-  areaOutlineColor: {r: 0.2, g: 0.6, b: 1, a: 0.9}
+  areaFillColor: {r: 1, g: 1, b: 1, a: 0.1}
+  areaOutlineColor: {r: 1, g: 1, b: 1, a: 0.9}
 --- !u!58 &1183953849
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -1299,27 +1251,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1183953846}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: acbec30f724053a4e99d33a497d496bf, type: 3}
+  m_Script: {fileID: 11500000, guid: 0c0da162d216da040acaa5c24ec12b98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useKey: 101
-  teleportPoint: {x: -0.75, y: 11.25}
-  areaRadius: 2
-  syncColliderRadius: 1
-  checkRadius: 0.25
-  obstacleLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  requireTag: 1
-  requiredTag: Player
-  resetVelocityOnTeleport: 1
-  drawGizmos: 1
-  areaFillColor: {r: 0.2, g: 0.6, b: 1, a: 0.1}
-  areaOutlineColor: {r: 0.2, g: 0.6, b: 1, a: 0.9}
-  targetFillColor: {r: 0.2, g: 1, b: 0.4, a: 0.25}
-  targetOutlineColor: {r: 0.2, g: 1, b: 0.4, a: 1}
-  linkLineColor: {r: 0.2, g: 0.8, b: 1, a: 0.8}
-  targetCrossSize: 0.18
+  request: {fileID: 11400000, guid: e6bc783ad01a54549af40cd8518c465b, type: 2}
+  graph: {fileID: 11400000, guid: 843452bd9f943284fa6e58442b067f13, type: 2}
 --- !u!1 &1234036075
 GameObject:
   m_ObjectHideFlags: 0
@@ -2128,6 +2064,5 @@ SceneRoots:
   - {fileID: 444724015}
   - {fileID: 2110366460}
   - {fileID: 439029629}
-  - {fileID: 111973976}
   - {fileID: 1183953847}
   - {fileID: 486069052}
