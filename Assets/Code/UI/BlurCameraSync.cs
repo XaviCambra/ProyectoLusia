@@ -9,6 +9,7 @@ using UnityEngine;
 [RequireComponent(typeof(Camera))]
 public class BlurCameraSync : MonoBehaviour
 {
+    [Tooltip("Si se deja vacia, o si la asignada desaparece (ej. MainCameraGuard la destruye por ser un duplicado), se usa Camera.main automaticamente.")]
     [SerializeField] private Camera sourceCamera;
 
     private Camera _camera;
@@ -17,6 +18,7 @@ public class BlurCameraSync : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (sourceCamera == null) sourceCamera = Camera.main;
         if (sourceCamera == null) return;
 
         transform.SetPositionAndRotation(sourceCamera.transform.position, sourceCamera.transform.rotation);

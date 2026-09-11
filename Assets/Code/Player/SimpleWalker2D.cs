@@ -2,7 +2,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(SpriteRenderer))]
-public class SimpleWalker2D : MonoBehaviour
+public class SimpleWalker2D : MonoBehaviour, IMovementLockable
 {
     [Header("Movimiento")]
     [Tooltip("Velocidad horizontal en unidades/segundo")]
@@ -57,5 +57,23 @@ public class SimpleWalker2D : MonoBehaviour
         Vector2 v = _rb.linearVelocity;
         v.x = _inputX * moveSpeed;
         _rb.linearVelocity = v;
+    }
+
+    /// <summary>
+    /// Al bloquear, primero para al personaje en seco (input y velocidad horizontal a cero) y
+    /// luego apaga el script -- si solo se apagara, la ultima velocidad aplicada se quedaria
+    /// arrastrando al personaje mientras Update/FixedUpdate dejan de correr.
+    /// </summary>
+    public void SetMovementLocked(bool locked)
+    {
+        if (locked)
+        {
+            _inputX = 0f;
+            Vector2 v = _rb.linearVelocity;
+            v.x = 0f;
+            _rb.linearVelocity = v;
+        }
+
+        enabled = !locked;
     }
 }

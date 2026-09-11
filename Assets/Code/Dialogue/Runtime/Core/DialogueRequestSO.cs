@@ -21,6 +21,9 @@ public sealed class DialogueRequestSO : ScriptableObject
     /// <summary>True mientras hay un dialogo pendiente de consumir o en curso.</summary>
     public bool IsActive => _isActive;
 
+    /// <summary>Se dispara justo cuando una solicitud de dialogo se acepta, antes de cargar la escena.</summary>
+    public event Action OnDialogueStarted;
+
     /// <summary>Se dispara cuando el dialogo en curso termina y la escena ya se ha descargado.</summary>
     public event Action OnDialogueFinished;
 
@@ -47,6 +50,7 @@ public sealed class DialogueRequestSO : ScriptableObject
         _pendingResumeNodeGuid = resumeNodeGuid;
         _isActive = true;
 
+        OnDialogueStarted?.Invoke();
         SceneManager.LoadSceneAsync(dialogueSceneName, LoadSceneMode.Additive);
         return true;
     }

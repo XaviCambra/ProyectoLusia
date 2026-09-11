@@ -41,8 +41,21 @@ public class InteractableKeyHintModule : MonoBehaviour
     GameObject _promptInstance;
     CanvasGroup _canvasGroup;
     GameObject _player;
+    bool _suppressed;
 
     void Awake() => _interactable = GetComponent<Interactable>();
+
+    /// <summary>
+    /// Oculta el aviso por completo (ignorando la distancia al jugador) mientras suppressed sea
+    /// true -- pensado para que otros modulos del mismo GameObject (InteractableDialogueModule,
+    /// etc.) lo llamen mientras estan "ocupados" haciendo su cosa y el aviso ya no pinta nada.
+    /// Este modulo no sabe ni le importa quien lo llama ni por que.
+    /// </summary>
+    public void SetSuppressed(bool suppressed)
+    {
+        _suppressed = suppressed;
+        if (_suppressed && _promptInstance) _promptInstance.SetActive(false);
+    }
 
     void Start()
     {
@@ -54,6 +67,12 @@ public class InteractableKeyHintModule : MonoBehaviour
     void Update()
     {
         if (!_promptInstance) return;
+
+        if (_suppressed)
+        {
+            if (_promptInstance.activeSelf) _promptInstance.SetActive(false);
+            return;
+        }
 
         if (_player == null)
         {

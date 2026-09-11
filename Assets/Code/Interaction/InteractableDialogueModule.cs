@@ -20,8 +20,13 @@ public class InteractableDialogueModule : MonoBehaviour
     public bool IsDialogueActive => request != null && request.IsActive;
 
     Interactable _interactable;
+    InteractableKeyHintModule _keyHint;
 
-    void Awake() => _interactable = GetComponent<Interactable>();
+    void Awake()
+    {
+        _interactable = GetComponent<Interactable>();
+        _keyHint = GetComponent<InteractableKeyHintModule>();
+    }
 
     void OnEnable()
     {
@@ -55,10 +60,13 @@ public class InteractableDialogueModule : MonoBehaviour
         Debug.Log(started
             ? $"[{name}] Dialogo '{graph?.name}' solicitado."
             : $"[{name}] Solicitud rechazada.", this);
+
+        if (started) _keyHint?.SetSuppressed(true);
     }
 
     void HandleDialogueFinished()
     {
         Debug.Log($"[{name}] Dialogo terminado.", this);
+        _keyHint?.SetSuppressed(false);
     }
 }
