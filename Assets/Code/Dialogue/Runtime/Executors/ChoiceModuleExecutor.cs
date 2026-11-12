@@ -41,7 +41,11 @@ public sealed class ChoiceModuleExecutor : ModuleExecutorBase
 
     public override async Task<string> ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
     {
-        if (_choiceUI == null) return null;
+        if (_choiceUI == null)
+        {
+            Debug.LogError($"[ChoiceModuleExecutor] Nodo '{ctx.NodeGuid}': no hay IChoiceUIController asignado.", this);
+            return null;
+        }
 
         var m = (ChoiceModule)module;
         _waitTcs = new TaskCompletionSource<string>();
@@ -54,6 +58,8 @@ public sealed class ChoiceModuleExecutor : ModuleExecutorBase
 
         if (!shown)
         {
+            Debug.LogError($"[ChoiceModuleExecutor] Nodo '{ctx.NodeGuid}': no se pudo mostrar ninguna opcion " +
+                           "(sin opciones, sin botones o ninguna cumple sus condiciones).", this);
             return null;
         }
 

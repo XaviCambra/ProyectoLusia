@@ -95,7 +95,11 @@ public class ChatUI : MonoBehaviour, IChatPresenter
 
     public async Task<int> ShowImageChoicesAsync(IReadOnlyList<ImageChoiceModule.ImageChoiceData> choices, CharacterDefinition speaker, CancellationToken ct)
     {
-        if (!imageChoicesBubblePrefab || !contentParent) return 0;
+        if (!imageChoicesBubblePrefab || !contentParent)
+        {
+            Debug.LogError("[ChatUI] Falta imageChoicesBubblePrefab o contentParent: se elige la primera opcion sin mostrarla.", this);
+            return 0;
+        }
 
         var bubble = Instantiate(imageChoicesBubblePrefab, contentParent);
         try
@@ -110,7 +114,11 @@ public class ChatUI : MonoBehaviour, IChatPresenter
 
     public async Task<int> ShowChoicesAsync(IReadOnlyList<ChoiceModule.ChoiceData> choices, CharacterDefinition speaker, CancellationToken ct)
     {
-        if (!choicesBubblePrefab || !contentParent) return 0;
+        if (!choicesBubblePrefab || !contentParent)
+        {
+            Debug.LogError("[ChatUI] Falta choicesBubblePrefab o contentParent: se elige la primera opcion sin mostrarla.", this);
+            return 0;
+        }
 
         var bubble = Instantiate(choicesBubblePrefab, contentParent);
         try

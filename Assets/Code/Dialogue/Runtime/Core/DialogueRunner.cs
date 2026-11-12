@@ -41,10 +41,10 @@ public sealed class DialogueRunner : MonoBehaviour
     private IModuleExecutor         _activeBlockingExecutor;
     private CancellationTokenSource _cts;
     private CharacterDefinition     _currentProfile;
-    private bool                    _startedExternally; // true si StartChat() ya arranco el dialogo (ver Start())
+    private bool                    _startedExternally; // true si StartDialogue() ya arranco el dialogo (ver Start())
 
     /// <summary>GUID del nodo actual, o null si no hay dialogo en curso. Sirve para
-    /// guardar por donde iba una conversacion y retomarla luego con StartChat.</summary>
+    /// guardar por donde iba una conversacion y retomarla luego con StartDialogue.</summary>
     public string CurrentNodeGuid => _current?.GUID;
 
     /// <summary>Se dispara cuando el dialogo llega a su fin de forma natural (sin
@@ -63,7 +63,7 @@ public sealed class DialogueRunner : MonoBehaviour
 
         // Si hay grafo asignado desde el inspector, inicializar ya (mismo timing de siempre:
         // antes de que corra ningun Start() de la escena). Si no lo hay (arranque bajo demanda,
-        // ej. StartChat llamado mas tarde por una app de telefono), se inicializa entonces.
+        // ej. StartDialogue llamado mas tarde por una app de telefono), se inicializa entonces.
         if (graph != null)
             InitializeGraph(graph);
 
@@ -77,9 +77,9 @@ public sealed class DialogueRunner : MonoBehaviour
 
     private void Start()
     {
-        // Si StartChat() ya arranco el dialogo este mismo frame (runner instanciado
+        // Si StartDialogue() ya arranco el dialogo este mismo frame (runner instanciado
         // dinamicamente y arrancado al momento, ej. ChatPhoneApp), no volver a
-        // arrancarlo aqui: Start() llega despues de Instantiate()+StartChat(), no antes.
+        // arrancarlo aqui: Start() llega despues de Instantiate()+StartDialogue(), no antes.
         if (graph == null || _startedExternally) return;
 
         // El grafo ya se inicializo en Awake() si estaba asignado desde el inspector;
@@ -99,7 +99,7 @@ public sealed class DialogueRunner : MonoBehaviour
     /// Si se indica <paramref name="resumeNodeGuid"/> y existe en el grafo, arranca ahi
     /// en vez del nodo de inicio (retomar una conversacion por donde se dejo).
     /// </summary>
-    public void StartChat(DialogueGraph newGraph, string resumeNodeGuid = null)
+    public void StartDialogue(DialogueGraph newGraph, string resumeNodeGuid = null)
     {
         if (newGraph == null || _navigator == null) return;
 
@@ -122,18 +122,33 @@ public sealed class DialogueRunner : MonoBehaviour
             executor.Initialize(g);
 
         _navigator.Init(g);
+
+        WarnAboutUnsupportedModules(g);
     }
 
     /// <summary>
-    /// Reasigna el presenter de chat en todos los executors que lo soporten
-    /// (<see cref="IPresenterHost"/>). Se usa al instanciar un runner dinamicamente
-    /// para una conversacion, antes de arrancarlo con <see cref="StartChat"/>.
+    /// Al arrancar un grafo, avisa (una vez por tipo) de los modulos que este runner se
+    /// saltaria por no tener executor registrado, en vez de que fallen en silencio al
+    /// llegar a su nodo. El chequeo completo de autoria esta en DialogueGraphValidator (editor).
     /// </summary>
-    public void SetPresenter(IChatPresenter presenter)
+    private void WarnAboutUnsupportedModules(DialogueGraph g)
     {
-        foreach (var executor in _executorList)
-            if (executor is IPresenterHost host)
-                host.SetPresenter(presenter);
+        HashSet<Type> missing = null;
+        foreach (var node in g.Nodes)
+        {
+            if (node?.modules == null) continue;
+            foreach (var module in node.modules)
+            {
+                if (module == null || _executors.ContainsKey(module.GetType())) continue;
+                missing ??= new HashSet<Type>();
+                missing.Add(module.GetType());
+            }
+        }
+
+        if (missing == null) return;
+        foreach (var type in missing)
+            Debug.LogWarning($"[DialogueRunner] '{name}' no tiene executor para {type.Name}, que usa el grafo " +
+                             $"'{g.name}'. Esos modulos se saltaran.", this);
     }
 
     /// <summary>Detiene el diálogo en curso y limpia el estado de todos los executors.</summary>
@@ -266,6 +281,14 @@ public sealed class DialogueRunner : MonoBehaviour
                 _nodeReadyToAdvance = true;
             else
                 Advance(null);
+        }
+        else
+        {
+            // Nodo de eleccion que termino sin elegir puerto (sin executor, sin opciones
+            // visibles, sin UI...). No hay forma segura de seguir: el dialogo se queda
+            // aqui, pero ya no en silencio.
+            Debug.LogError($"[DialogueRunner] Grafo '{graph?.name}': el nodo de eleccion '{node.GUID}' termino " +
+                           "sin elegir opcion. El dialogo queda detenido. Revisa el grafo con el boton Validar.", this);
         }
     }
 

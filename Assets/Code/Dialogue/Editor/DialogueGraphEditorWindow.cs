@@ -140,9 +140,22 @@ public class DialogueGraphEditorWindow : EditorWindow
             EditorUtility.SetDirty(_asset);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+
+            // Validar tras guardar: solo dice algo si hay problemas
+            RunValidation(logWhenClean: false);
         })
         { text = "Guardar" };
         toolbar.Add(btnSave);
+
+        // Validar el grafo (ver DialogueGraphValidator) y seleccionar los nodos con problemas
+        var btnValidate = new Button(() =>
+        {
+            if (_isLoading || _asset == null) return;
+            MarkAssetDirtyAndSave(); // sincroniza vista -> asset antes de validar
+            RunValidation(logWhenClean: true);
+        })
+        { text = "Validar" };
+        toolbar.Add(btnValidate);
 
         // Recargar desde el asset seleccionado
         var btnLoad = new Button(() =>
@@ -159,6 +172,33 @@ public class DialogueGraphEditorWindow : EditorWindow
         toolbar.Add(btnLoad);
 
         rootVisualElement.Add(toolbar);
+    }
+
+    /// <summary>Valida el asset abierto, vuelca el resultado a la consola y selecciona en
+    /// la vista los nodos afectados para encontrarlos rapido.</summary>
+    private void RunValidation(bool logWhenClean)
+    {
+        if (_asset == null || _graphView == null) return;
+
+        var issues = DialogueGraphValidator.ValidateWithDetectedEngine(_asset);
+        if (issues.Count == 0)
+        {
+            if (logWhenClean) Debug.Log($"[DialogueGraphValidator] '{_asset.name}': sin problemas.", _asset);
+            return;
+        }
+
+        DialogueGraphValidator.Log(_asset, issues);
+
+        var badGuids = new System.Collections.Generic.HashSet<string>();
+        foreach (var i in issues)
+            if (!string.IsNullOrEmpty(i.nodeGuid)) badGuids.Add(i.nodeGuid);
+
+        _graphView.ClearSelection();
+        _graphView.nodes.ForEach(n =>
+        {
+            if (n is DialogueNodeView nv && nv.Data != null && badGuids.Contains(nv.Data.GUID))
+                _graphView.AddToSelection(nv);
+        });
     }
 
     private void OnDisable()

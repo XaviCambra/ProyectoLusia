@@ -214,7 +214,7 @@ public class ChatPhoneApp : PhoneAppBase
 
     /// <summary>
     /// Instancia un runner nuevo para esta conversacion y la arranca desde el principio.
-    /// El presenter se conecta a <paramref name="live"/> ANTES de StartChat para que el
+    /// El presenter se conecta a <paramref name="live"/> ANTES de StartDialogue para que el
     /// primer nodo ya se muestre en pantalla en vez de correr en silencio (ver StartConversation).
     /// </summary>
     private ChatThread StartThread(ChatConversation conversation, IChatPresenter live)
@@ -223,13 +223,17 @@ public class ChatPhoneApp : PhoneAppBase
         var presenter = new ConversationChatPresenter(conversation);
         presenter.Attach(live);
 
-        runner.SetPresenter(presenter);
+        // El runner es neutro (no sabe de chat): el presenter de esta conversacion se
+        // inyecta directamente en los executors de chat del prefab.
+        foreach (var host in runner.GetComponentsInChildren<IPresenterHost>())
+            host.SetPresenter(presenter);
+
         runner.OnDialogueEnded += () => EndThread(conversation);
 
         var thread = new ChatThread { runner = runner, presenter = presenter };
         _activeThreads[conversation] = thread;
 
-        runner.StartChat(conversation.graph);
+        runner.StartDialogue(conversation.graph);
         return thread;
     }
 

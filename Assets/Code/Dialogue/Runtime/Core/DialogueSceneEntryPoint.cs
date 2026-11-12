@@ -31,7 +31,7 @@ public sealed class DialogueSceneEntryPoint : MonoBehaviour
         }
 
         runner.OnDialogueEnded += HandleDialogueEnded;
-        runner.StartChat(graph, resumeNodeGuid);
+        runner.StartDialogue(graph, resumeNodeGuid);
     }
 
     private void HandleDialogueEnded()

@@ -36,10 +36,22 @@ public sealed class ChatChoiceModuleExecutor : ModuleExecutorBase, IPresenterHos
             ? m.choices.FindAll(_conditionEvaluator.IsAllowed)
             : m.choices;
 
-        var idx = _presenter != null
-            ? await _presenter.ShowChoicesAsync(visible, ctx.CurrentProfile, ctx.Token)
-            : 0;
+        // Antes: sin presenter se elegia la opcion 0 sola, y sin opciones visibles se
+        // pintaba una burbuja vacia que colgaba la conversacion. Ahora se avisa y se
+        // devuelve null (el runner deja el dialogo detenido con un error propio).
+        if (_presenter == null)
+        {
+            Debug.LogError($"[ChatChoiceModuleExecutor] Nodo '{ctx.NodeGuid}': no hay IChatPresenter asignado.", this);
+            return null;
+        }
+        if (visible.Count == 0)
+        {
+            Debug.LogError($"[ChatChoiceModuleExecutor] Nodo '{ctx.NodeGuid}': ninguna opcion cumple sus condiciones. " +
+                           "Anade una opcion sin condicion como salida segura.", this);
+            return null;
+        }
 
-        return visible.Count > idx ? visible[idx].portName : "Next";
+        var idx = await _presenter.ShowChoicesAsync(visible, ctx.CurrentProfile, ctx.Token);
+        return visible.Count > idx ? visible[idx].portName : null;
     }
 }

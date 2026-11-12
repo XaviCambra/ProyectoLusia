@@ -19,5 +19,13 @@ public class ImageChoiceModule : DialogueModuleBase
 
     public override string DisplayName => "Image Choice";
 
+    // Igual que ChoiceModule: siempre Blocking. Con otro RunMode el runner ignoraria
+    // el puerto elegido y el nodo se quedaria colgado.
+    public override ModuleRunMode RunMode
+    {
+        get => ModuleRunMode.Blocking;
+        set { } // No-op: ignoramos asignaciones externas
+    }
+
     public List<ImageChoiceData> choices = new();
 }

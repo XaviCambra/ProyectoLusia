@@ -130,6 +130,8 @@ public sealed class GraphNavigator : MonoBehaviour, IGraphNavigator
 
             if (_edges.ContainsKey(edgeKey))
             {
+                Debug.LogWarning($"[GraphNavigator] Grafo '{_graph.name}': varias aristas salen del puerto " +
+                                 $"'{fromPort}' del nodo '{e.fromNodeGUID}'. Se usa solo la primera.");
                 continue;
             }
 

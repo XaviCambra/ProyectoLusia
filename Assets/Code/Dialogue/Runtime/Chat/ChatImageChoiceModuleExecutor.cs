@@ -28,10 +28,20 @@ public sealed class ChatImageChoiceModuleExecutor : ModuleExecutorBase, IPresent
     {
         var m = (ImageChoiceModule)module;
 
-        var idx = _presenter != null
-            ? await _presenter.ShowImageChoicesAsync(m.choices, ctx.CurrentProfile, ctx.Token)
-            : 0;
+        // Igual que ChatChoiceModuleExecutor: sin presenter o sin opciones se avisa y se
+        // devuelve null, en vez de elegir la opcion 0 sola o colgarse con una burbuja vacia.
+        if (_presenter == null)
+        {
+            Debug.LogError($"[ChatImageChoiceModuleExecutor] Nodo '{ctx.NodeGuid}': no hay IChatPresenter asignado.", this);
+            return null;
+        }
+        if (m.choices == null || m.choices.Count == 0)
+        {
+            Debug.LogError($"[ChatImageChoiceModuleExecutor] Nodo '{ctx.NodeGuid}': Image Choice sin opciones.", this);
+            return null;
+        }
 
-        return m.choices.Count > idx ? m.choices[idx].portName : "Next";
+        var idx = await _presenter.ShowImageChoicesAsync(m.choices, ctx.CurrentProfile, ctx.Token);
+        return m.choices.Count > idx ? m.choices[idx].portName : null;
     }
 }

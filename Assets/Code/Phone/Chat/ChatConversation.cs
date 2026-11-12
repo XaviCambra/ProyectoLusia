@@ -15,6 +15,7 @@ public enum ChatNotification { None, Unread, AwaitingResponse }
 public class NamedBool
 {
     public string name;
+    [Tooltip("Valor inicial al empezar la partida. En runtime NO se modifica (ver ChatConversation.SetCondition).")]
     public bool   value;
 }
 
@@ -28,7 +29,13 @@ public class ChatConversation : ScriptableObject
 {
     public string          displayName;
     public DialogueGraph   graph;
+    [Tooltip("Condiciones de desbloqueo con su valor INICIAL (dato de autoria). El valor en runtime vive aparte y no toca el asset.")]
     public List<NamedBool> conditions = new();
+
+    // Valor actual de cada condicion durante la partida. Separado de 'conditions' para
+    // que el progreso nunca se escriba en el asset (en editor, cambiar un campo
+    // serializado de un ScriptableObject en Play Mode se queda en el asset al salir).
+    [NonSerialized] private Dictionary<string, bool> _conditionValues = new();
 
     [NonSerialized] private ConversationState _state;
     public ConversationState State => _state;
@@ -55,8 +62,19 @@ public class ChatConversation : ScriptableObject
 
     private void OnEnable()
     {
-        bool allMet = conditions.Count == 0 || conditions.TrueForAll(c => c.value);
-        _state = allMet ? ConversationState.Active : ConversationState.Hidden;
+        _conditionValues = new Dictionary<string, bool>();
+        foreach (var c in conditions)
+            if (c != null && !string.IsNullOrEmpty(c.name))
+                _conditionValues[c.name] = c.value;
+
+        _state = AllConditionsMet() ? ConversationState.Active : ConversationState.Hidden;
+    }
+
+    private bool AllConditionsMet()
+    {
+        foreach (var met in _conditionValues.Values)
+            if (!met) return false;
+        return true;
     }
 
     /// <summary>Añade un mensaje al historial visible de esta conversacion (ver ConversationChatPresenter).</summary>
@@ -92,11 +110,17 @@ public class ChatConversation : ScriptableObject
         OnNotificationChanged?.Invoke(this);
     }
 
+    /// <summary>Cambia el valor en runtime de una condicion (no el asset) y desbloquea la
+    /// conversacion si con eso se cumplen todas.</summary>
     public void SetCondition(string conditionName, bool value)
     {
-        var cond = conditions.Find(c => c.name == conditionName);
-        if (cond == null || cond.value == value) return;
-        cond.value = value;
+        if (string.IsNullOrEmpty(conditionName) || !_conditionValues.TryGetValue(conditionName, out var current))
+        {
+            Debug.LogWarning($"[ChatConversation] '{name}' no tiene ninguna condicion llamada '{conditionName}'.", this);
+            return;
+        }
+        if (current == value) return;
+        _conditionValues[conditionName] = value;
         TryUnlock();
     }
 
@@ -117,7 +141,7 @@ public class ChatConversation : ScriptableObject
     private void TryUnlock()
     {
         if (_state != ConversationState.Hidden) return;
-        if (conditions.TrueForAll(c => c.value))
+        if (AllConditionsMet())
         {
             _state = ConversationState.Active;
             OnUnlocked?.Invoke(this);
