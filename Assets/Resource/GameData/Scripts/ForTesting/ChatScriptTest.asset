@@ -168,7 +168,7 @@ MonoBehaviour:
       x: 2029
       y: 386
       width: 400
-      height: 1024
+      height: 902
     bgColorIndex: 4
     bgColor: {r: 0.25, g: 0.43, b: 0.45, a: 1}
     isStart: 0
