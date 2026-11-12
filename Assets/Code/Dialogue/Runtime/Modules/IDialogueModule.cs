@@ -24,6 +24,13 @@ public enum ModuleRunMode
 /// Contrato base para todos los módulos de un nodo de diálogo.
 /// Los módulos son unidades de funcionalidad independiente que se
 /// ejecutan dentro de un nodo en el orden que el diseñador establezca.
+///
+/// Quien ejecuta cada modulo es el <see cref="IModuleExecutor"/> de su tipo que este
+/// montado en la jerarquia del <see cref="DialogueRunner"/> (hay un solo runner; los
+/// "motores" Retratos y Chat son solo distintos juegos de executors). Si el runner no
+/// tiene executor para un modulo, ese modulo se salta: DialogueRunner avisa al arrancar
+/// el grafo, y el boton Validar del editor lo detecta en los grafos de chat. Los
+/// comentarios "// USO:" de cada modulo dicen que motor lo monta hoy.
 /// </summary>
 public interface IDialogueModule
 {

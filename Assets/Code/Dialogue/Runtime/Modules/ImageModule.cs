@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-// USO: Solo sistema de Chat Bubble. Ignorado por DialogueRunner.
+// USO: Solo Chat (ImageModuleExecutor). Retratos no lo monta: ahi se salta. Ver IDialogueModule.
 /// <summary>
 /// Módulo de imagen: muestra un sprite enmarcado en el chat, más grande que un emoji.
 /// A diferencia de EmojiModule, el prefab asociado incluye un marco visual alrededor de la imagen.

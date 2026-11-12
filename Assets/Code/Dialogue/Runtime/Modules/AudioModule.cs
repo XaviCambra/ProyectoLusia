@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
 
-// USO: Solo sistema de Retratos (DialogueRunner). Ignorado por Chat Bubble.
+// USO: Executor AudioModuleExecutor. Hoy solo lo monta el runner de Chat (ChatRunnerBackground.prefab);
+// la escena de Retratos (dev/Guille/Dialogues) NO lo tiene, asi que ahi se salta. Ver IDialogueModule.
 /// <summary>
 /// Módulo de audio: reproduce un AudioClip cuando el nodo llega
 /// a este módulo. Puede configurarse como bloqueante (espera a que

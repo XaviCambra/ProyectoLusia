@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-// USO: Solo sistema de Retratos (DialogueRunner). Ignorado por Chat Bubble.
+// USO: Solo Retratos (EmoteModuleExecutor). El runner de Chat no lo monta: ahi se salta. Ver IDialogueModule.
 /// <summary>
 /// Módulo de emote: reproduce (o detiene) un AnimationClip en el portrait
 /// del personaje indicado mediante Playables. No gestiona placement ni sprite.

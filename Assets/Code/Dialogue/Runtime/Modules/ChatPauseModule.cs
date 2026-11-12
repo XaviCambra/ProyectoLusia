@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-// USO: Solo escenas de Chat (requiere ChatPauseModuleExecutor). Sin efecto si no hay executor para este modulo en la escena.
+// USO: Solo Chat (ChatPauseModuleExecutor). Retratos no lo monta: ahi se salta. Ver IDialogueModule.
 /// <summary>
 /// Pausa silenciosa: detiene la ejecución del nodo durante
 /// <see cref="duration"/> segundos antes de continuar al siguiente módulo.

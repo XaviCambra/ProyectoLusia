@@ -11,7 +11,7 @@ public class TextModule : DialogueModuleBase
 {
     public override string DisplayName => "Text";
 
-    [Tooltip("Nombre del personaje que habla. Puede estar vacío para narración.")]
+    [Tooltip("Nombre del personaje que habla. Retratos: vacio = narracion. Chat: opcional; si esta vacio se usa el nombre del perfil activo (ProfileModule).")]
     public string speakerName = "";
 
     [Tooltip("Si está activo, se usa la clave de localización en lugar del texto literal.")]

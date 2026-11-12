@@ -1,35 +1,10 @@
-using System;
-using System.Threading.Tasks;
 using UnityEngine;
 
 // USO: Solo sistema de Chat Bubble. Ignorado por Retratos (no hay executor equivalente).
 /// <summary>
-/// Executor para <see cref="ImageModule"/>.
-/// Añade una burbuja de imagen vía <see cref="IChatPresenter"/>.
+/// Executor para <see cref="ImageModule"/>: anade una burbuja de imagen.
+/// Toda la logica esta en <see cref="ChatMessageExecutor{TModule}"/> y
+/// <see cref="ChatEntryFactory"/>.
 /// </summary>
 [DisallowMultipleComponent]
-public sealed class ImageModuleExecutor : ModuleExecutorBase, IPresenterHost
-{
-    [SerializeField] private MonoBehaviour presenterRef; // IChatPresenter
-
-    private IChatPresenter _presenter;
-
-    public override Type ModuleType => typeof(ImageModule);
-
-    private void Awake()
-    {
-        _presenter = presenterRef as IChatPresenter;
-    }
-
-    public void SetPresenter(IChatPresenter presenter) => _presenter = presenter;
-
-    public override Task<string> ExecuteAsync(IDialogueModule module, ModuleExecutionContext ctx)
-    {
-        var m = (ImageModule)module;
-        if (m.image == null) return Task.FromResult<string>(null);
-
-        var entry = ChatEntry.ForImage(ctx.CurrentProfile?.displayName, m.image, m.isOwn, ctx.CurrentProfile?.avatarSprite);
-        _presenter?.AddMessage(entry);
-        return Task.FromResult<string>(null);
-    }
-}
+public sealed class ImageModuleExecutor : ChatMessageExecutor<ImageModule> { }

@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-// USO: Solo sistema de Chat Bubble. Ignorado por DialogueRunner.
+// USO: Solo Chat (ChatImageChoiceModuleExecutor). Retratos no lo monta: ahi el nodo se queda
+// detenido con error. Ver IDialogueModule.
 /// <summary>
 /// Módulo de opciones con imagen: presenta al jugador una cuadrícula de sprites
 /// como respuesta en el chat. Cada opción navega a un puerto de salida distinto.

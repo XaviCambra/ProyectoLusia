@@ -1,11 +1,10 @@
 using System;
 using UnityEngine;
 
-// USO: Solo sistema de Chat Bubble. Ignorado por DialogueRunner.
+// USO: Solo Chat (ChatTypingModuleExecutor). Retratos no lo monta: ahi se salta. Ver IDialogueModule.
 /// <summary>
 /// Muestra el indicador "está escribiendo..." de un personaje durante
 /// <see cref="duration"/> segundos antes de continuar.
-/// Ignorado por DialogueRunner (sin executor registrado).
 /// </summary>
 [Serializable]
 public class ChatTypingModule : DialogueModuleBase

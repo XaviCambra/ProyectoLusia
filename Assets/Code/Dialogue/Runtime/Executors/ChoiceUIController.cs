@@ -46,7 +46,6 @@ public sealed class ChoiceUIController : MonoBehaviour, IChoiceUIController
         }
     }
 
-    public void Init()      => Hide();
     public void BeginNode() => Hide();
 
     public bool Show(ChoiceModule module, string nodeGuid, Action<string> onClick)

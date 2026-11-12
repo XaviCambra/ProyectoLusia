@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-// USO: Solo sistema de Retratos (DialogueRunner). Ignorado por Chat Bubble.
+// USO: Solo Retratos (PortraitModuleExecutor). El runner de Chat no lo monta: ahi se salta. Ver IDialogueModule.
 /// <summary>
 /// Módulo de retrato: gestiona la aparición, posición, animación y
 /// efecto de fade del retrato de un personaje en pantalla.
